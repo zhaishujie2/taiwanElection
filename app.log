@@ -1,0 +1,54 @@
+
+2018-04-26 17:22:57,287 - INFO - views.py - get_sessions - 34 - 哈哈哈
+2018-04-26 17:23:59,940 - INFO - views.py - get_sessions - 34 - 哈哈哈
+2018-04-27 16:35:41,475 - ERROR - views.py - login_user - 27 - The session is unavailable because no secret key was set.  Set the secret_key on the application to something unique and secret.
+2018-04-27 16:37:04,093 - ERROR - views.py - login_user - 27 - The session is unavailable because no secret key was set.  Set the secret_key on the application to something unique and secret.
+2018-04-27 16:37:30,746 - ERROR - views.py - login_user - 27 - The session is unavailable because no secret key was set.  Set the secret_key on the application to something unique and secret.
+2018-04-27 16:37:46,198 - ERROR - views.py - login_user - 27 - The session is unavailable because no secret key was set.  Set the secret_key on the application to something unique and secret.
+2018-04-27 16:38:42,859 - ERROR - views.py - login_user - 27 - The session is unavailable because no secret key was set.  Set the secret_key on the application to something unique and secret.
+2018-04-27 16:40:00,158 - ERROR - views.py - login_user - 27 - The session is unavailable because no secret key was set.  Set the secret_key on the application to something unique and secret.
+2018-04-27 16:40:51,434 - ERROR - views.py - login_user - 27 - The session is unavailable because no secret key was set.  Set the secret_key on the application to something unique and secret.
+2018-04-27 16:42:30,564 - ERROR - views.py - login_user - 27 - The session is unavailable because no secret key was set.  Set the secret_key on the application to something unique and secret.
+2018-04-27 16:43:40,829 - ERROR - views.py - login_user - 27 - The session is unavailable because no secret key was set.  Set the secret_key on the application to something unique and secret.
+2018-04-27 16:44:48,325 - ERROR - views.py - login_user - 25 - The session is unavailable because no secret key was set.  Set the secret_key on the application to something unique and secret.
+2018-04-27 16:44:59,012 - ERROR - views.py - login_user - 24 - The session is unavailable because no secret key was set.  Set the secret_key on the application to something unique and secret.
+2018-04-27 16:45:06,864 - ERROR - views.py - login_user - 24 - The session is unavailable because no secret key was set.  Set the secret_key on the application to something unique and secret.
+2018-04-27 16:46:01,455 - ERROR - views.py - login_user - 24 - The session is unavailable because no secret key was set.  Set the secret_key on the application to something unique and secret.
+2018-04-27 16:48:32,368 - DEBUG - draw_mysql.py - login - 15 - Unicode-objects must be encoded before hashing
+2018-04-27 16:48:38,694 - DEBUG - draw_mysql.py - login - 15 - Unicode-objects must be encoded before hashing
+2018-04-27 16:48:50,858 - ERROR - draw_mysql.py - login - 15 - Unicode-objects must be encoded before hashing
+2018-04-27 16:49:09,950 - ERROR - draw_mysql.py - login - 15 - Unicode-objects must be encoded before hashing
+2018-04-27 16:50:13,027 - ERROR - draw_mysql.py - login - 15 - Unicode-objects must be encoded before hashing
+2018-04-27 16:50:25,037 - ERROR - draw_mysql.py - login - 15 - Unicode-objects must be encoded before hashing
+2018-04-27 16:52:19,739 - ERROR - draw_mysql.py - login - 15 - (1044, "Access denied for user 'taiwan'@'%' to database 'taiwan_election'")
+2018-04-27 16:52:26,660 - ERROR - draw_mysql.py - login - 15 - (1044, "Access denied for user 'taiwan'@'%' to database 'taiwan_election'")
+2018-04-27 16:52:36,775 - ERROR - draw_mysql.py - login - 15 - (1044, "Access denied for user 'taiwan'@'%' to database 'taiwan_election'")
+2018-04-27 16:55:25,119 - ERROR - draw_mysql.py - login - 15 - 'Cursor' object has no attribute 'cursor'
+2018-04-27 16:55:32,632 - ERROR - draw_mysql.py - login - 15 - 'Cursor' object has no attribute 'cursor'
+2018-04-27 17:19:53,941 - INFO - views.py - get_sessions - 33 - 获取user:zsj
+2018-04-27 17:20:04,826 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:20:42,618 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:21:31,139 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:22:43,458 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:22:59,295 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:23:13,346 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:23:20,297 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:24:31,299 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:24:41,462 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:25:18,771 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:27:48,689 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:28:01,350 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:28:34,907 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:28:52,500 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:29:46,507 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:30:20,324 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:31:24,306 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:32:39,758 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:34:40,065 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:35:00,920 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:35:35,146 - INFO - views.py - get_sessions - 33 - 获取user:admin
+2018-04-27 17:35:36,307 - INFO - views.py - del_session - 44 - 用户注销数据！
+2018-04-27 17:37:01,724 - INFO - views.py - get_sessions - 33 - 获取user:zsj
+2018-04-27 17:37:22,843 - INFO - views.py - del_session - 44 - 用户注销数据！
+2018-04-27 17:38:21,326 - INFO - views.py - get_sessions - 34 - 没有用户登陆
+2018-04-27 17:38:44,237 - INFO - views.py - get_sessions - 34 - 没有用户登陆
