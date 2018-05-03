@@ -35,3 +35,7 @@ def record_session():
     else:
         app.logger.error("传入area_id,year有误 id:"+id+"year:"+year)
         return jsonify({"message":"传入area_id,year有误"}),406
+
+@mod.route('/test/')
+def test():
+    return jsonify({"message":json.loads(session["electors"])}),200
