@@ -40,4 +40,3 @@ def record_session():
 def test():
     return jsonify({"message":json.loads(session["electors"])}),200
 
-#haha
