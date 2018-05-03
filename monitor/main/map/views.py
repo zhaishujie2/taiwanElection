@@ -39,3 +39,5 @@ def record_session():
 @mod.route('/test/')
 def test():
     return jsonify({"message":json.loads(session["electors"])}),200
+
+#haha
