@@ -43,11 +43,11 @@ def del_session():
     app.logger.info("用户注销数据！")
     user = session.get("user")
     if user == None:
-        return "1"
+        return jsonify({"message":"注销成功"}),200
     else:
         session.pop("user")
         user = session.get("user")
         if user == None:
-            return "1"
+            return jsonify({"message":"注销成功"}),200
         else:
-            return "0"
+            return jsonify({"message":"注销失败"}),406
