@@ -32,6 +32,7 @@ app.config['DEBUG_TB_TEMPLATE_EDITOR_ENABLED'] = True
 app.config['DEBUG'] = True
 app.config['ADMINS'] = frozenset(['17789624306@163.com'])
 app.config['SECRET_KEY'] = '123456'
+#add Module
 from .main import  userModule
 from .main import mapModule
 app.register_blueprint(userModule)
