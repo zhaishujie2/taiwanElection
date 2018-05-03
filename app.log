@@ -52,3 +52,66 @@
 2018-04-27 17:37:22,843 - INFO - views.py - del_session - 44 - 用户注销数据！
 2018-04-27 17:38:21,326 - INFO - views.py - get_sessions - 34 - 没有用户登陆
 2018-04-27 17:38:44,237 - INFO - views.py - get_sessions - 34 - 没有用户登陆
+2018-05-03 15:31:12,919 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:32:04,292 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:33:06,419 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:34:15,409 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:34:18,410 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:35:28,362 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:35:36,238 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:37:04,566 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:37:21,487 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:37:41,403 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:37:42,902 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:37:49,571 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:38:02,367 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:38:02,514 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:38:02,687 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:38:02,805 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:38:02,934 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:38:03,133 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:38:05,256 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:38:23,192 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:38:23,648 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:38:25,783 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:38:27,848 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:38:39,206 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:38:56,043 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:39:02,386 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
+2018-05-03 15:39:39,539 - INFO - views.py - get_map - 16 - 获取2019年的政党信息
+2018-05-03 15:39:39,552 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int
+2018-05-03 15:40:02,734 - INFO - views.py - get_map - 16 - 获取2019年的政党信息
+2018-05-03 15:40:02,748 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int
+2018-05-03 15:40:23,587 - INFO - views.py - get_map - 16 - 获取2019年的政党信息
+2018-05-03 15:40:23,600 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int
+2018-05-03 15:40:29,089 - INFO - views.py - get_map - 16 - 获取2019年的政党信息
+2018-05-03 15:40:29,101 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int
+2018-05-03 15:40:29,559 - INFO - views.py - get_map - 16 - 获取2019年的政党信息
+2018-05-03 15:40:29,571 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int
+2018-05-03 15:40:29,732 - INFO - views.py - get_map - 16 - 获取2019年的政党信息
+2018-05-03 15:40:29,745 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int
+2018-05-03 15:40:29,929 - INFO - views.py - get_map - 16 - 获取2019年的政党信息
+2018-05-03 15:40:29,932 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int
+2018-05-03 15:40:30,125 - INFO - views.py - get_map - 16 - 获取2019年的政党信息
+2018-05-03 15:40:30,138 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int
+2018-05-03 15:40:30,325 - INFO - views.py - get_map - 16 - 获取2019年的政党信息
+2018-05-03 15:40:30,329 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int
+2018-05-03 15:40:32,522 - INFO - views.py - get_map - 16 - 获取2019年的政党信息
+2018-05-03 15:40:32,525 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int
+2018-05-03 15:40:32,795 - INFO - views.py - get_map - 16 - 获取2019年的政党信息
+2018-05-03 15:40:32,807 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int
+2018-05-03 15:40:32,970 - INFO - views.py - get_map - 16 - 获取2019年的政党信息
+2018-05-03 15:40:32,975 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int
+2018-05-03 15:40:33,200 - INFO - views.py - get_map - 16 - 获取2019年的政党信息
+2018-05-03 15:40:33,213 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int
+2018-05-03 15:40:33,411 - INFO - views.py - get_map - 16 - 获取2019年的政党信息
+2018-05-03 15:40:33,423 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int
+2018-05-03 15:40:33,612 - INFO - views.py - get_map - 16 - 获取2019年的政党信息
+2018-05-03 15:40:33,624 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int
+2018-05-03 15:40:33,793 - INFO - views.py - get_map - 16 - 获取2019年的政党信息
+2018-05-03 15:40:33,797 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int
+2018-05-03 15:40:34,824 - INFO - views.py - get_map - 16 - 获取年的政党信息
+2018-05-03 15:41:15,132 - INFO - views.py - get_map - 16 - 获取2019年的政党信息
+2018-05-03 15:41:15,145 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int
+2018-05-03 15:41:46,298 - INFO - views.py - get_map - 16 - 获取2019年的政党信息
+2018-05-03 15:41:46,311 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int

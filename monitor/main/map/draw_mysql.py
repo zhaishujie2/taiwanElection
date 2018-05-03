@@ -19,7 +19,7 @@ def get_map_color(year):
         return dict
     except (Exception) as e:
         app.logger.error(e)
-        return "0"
+        return 0
     finally:
         closeAll(conn,cur)
 
