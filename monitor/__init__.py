@@ -35,5 +35,7 @@ app.config['SECRET_KEY'] = '123456'
 #add Module
 from .main import  userModule
 from .main import mapModule
+from .main import informationModule
 app.register_blueprint(userModule)
 app.register_blueprint(mapModule)
+app.register_blueprint(informationModule)

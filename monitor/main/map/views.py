@@ -21,24 +21,26 @@ def get_map():
 
 @mod.route('/record_session/',methods=['POST'])
 def record_session():
-    id = request.form.get('id', '')
-    year = request.form.get('year', '')
-    if id !='' and year!='':
+    data = request.form.get('data', '')
+    if data == '':
+        return jsonify({"message":"data is null"}),406
+    try:
+        data = json.loads(data)
+        id = data["id"]
+        year = data["year"]
         user_dict = get_egional_electors(int(id),int(year))
         if user_dict!=0:
-            session["electors"] = json.dumps(user_dict)
+            session["electors"] = user_dict
             session["year"] = year
             session["area_id"] = id
             return jsonify({"message":"ok"}),200
         else:
             return jsonify({"message":"传入的值在数据库中无法查出数据"}),406
-    else:
+    except:
         app.logger.error("传入area_id,year有误 id:"+id+"year:"+year)
         return jsonify({"message":"传入area_id,year有误"}),406
 
-@mod.route('/test/')
-def test():
-    return jsonify({"message":json.loads(session["electors"])}),200
+
 
 
 

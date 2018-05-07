@@ -115,3 +115,4 @@
 2018-05-03 15:41:15,145 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int
 2018-05-03 15:41:46,298 - INFO - views.py - get_map - 16 - 获取2019年的政党信息
 2018-05-03 15:41:46,311 - ERROR - draw_mysql.py - get_map_color - 21 - must be str, not int
+2018-05-07 18:51:26,518 - INFO - views.py - get_map - 16 - 获取2018年的政党信息
