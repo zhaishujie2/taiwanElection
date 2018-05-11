@@ -99,7 +99,7 @@ def get_facebook_pages(name,start_date,end_date):
     result = es.search(index=es_facebook_index, doc_type=es_facebook_type, body=query)['hits']['hits']
     return len(result)
 
-def get_facebook_data(page_number,page_size,name,start_date,end_date):
+def get_facebook_data(name,page_number,page_size,start_date,end_date):
     start_from = (page_number-1)*page_size
     start_timestamps, end_timestamps = get_time(start_date, end_date)
     if start_timestamps==0 or end_timestamps == 0 :
@@ -136,7 +136,7 @@ def get_all_facebook_pages(dict_name,start_date,end_date):
     return (len(result))
 
 
-def get_all_facebook_data(page_number,page_size,dict_name,start_date,end_date):
+def get_all_facebook_data(dict_name,page_number,page_size,start_date,end_date):
     start_from = (page_number-1)*page_size
     start_timestamps, end_timestamps = get_time(start_date, end_date)
     if start_timestamps==0 or end_timestamps == 0 :
@@ -171,7 +171,7 @@ def get_news_pages(name,start_date,end_date):
     result = es.search(index=es_news_index, doc_type=es_news_type, body=query)['hits']['hits']
     return len(result)
 
-def get_news_data(page_number,page_size,name,start_date,end_date):
+def get_news_data(name,page_number,page_size,start_date,end_date):
     start_from = (page_number-1)*page_size
     start_timestamps, end_timestamps = get_time(start_date, end_date)
     if start_timestamps==0 or end_timestamps == 0 :
@@ -211,7 +211,7 @@ def get_all_news_pages(dict_name,start_date,end_date):
     return (len(result))
 
 
-def get_all_news_data(page_number,page_size,dict_name,start_date,end_date):
+def get_all_news_data(dict_name,page_number,page_size,start_date,end_date):
     start_from = (page_number-1)*page_size
     start_timestamps, end_timestamps = get_time(start_date, end_date)
     if start_timestamps==0 or end_timestamps == 0 :
@@ -253,7 +253,7 @@ def get_twitter_pages(name,start_date,end_date):
     result = es.search(index=es_twitter_index, doc_type=es_twitter_type, body=query)['hits']['hits']
     return len(result)
 
-def get_twitter_data(page_number,page_size,name,start_date,end_date):
+def get_twitter_data(name,page_number,page_size,start_date,end_date):
     start_from = (page_number-1)*page_size
     start_timestamps, end_timestamps = get_time(start_date, end_date)
     query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
@@ -289,7 +289,7 @@ def get_all_twitter_pages(dict_name,start_date,end_date):
     return (len(result))
 
 
-def get_all_twitter_data(page_number,page_size,dict_name,start_date,end_date):
+def get_all_twitter_data(dict_name,page_number,page_size,start_date,end_date):
     start_from = (page_number-1)*page_size
     start_timestamps, end_timestamps = get_time(start_date, end_date)
     if start_timestamps==0 or end_timestamps == 0 :
@@ -338,3 +338,4 @@ def get_all_twitter_data(page_number,page_size,dict_name,start_date,end_date):
     # result = get_twitter_pages("林佳龙","2018-5-7","2018-5-7")
     # result = get_twitter_data(1,1,"林佳龙","2018-5-7","2018-5-7")
     # print (result)
+#哈哈哈
