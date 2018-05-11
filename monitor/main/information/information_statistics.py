@@ -338,3 +338,4 @@ def get_all_twitter_data(dict_name,page_number,page_size,start_date,end_date):
     # result = get_twitter_pages("林佳龙","2018-5-7","2018-5-7")
     # result = get_twitter_data(1,1,"林佳龙","2018-5-7","2018-5-7")
     # print (result)
+#哈哈哈
