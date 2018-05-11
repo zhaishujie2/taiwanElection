@@ -37,7 +37,9 @@ from .main import  userModule
 from .main import mapModule
 from .main import informationModule
 from .main import homeModule
+from .main import systemModule
 app.register_blueprint(userModule)
 app.register_blueprint(mapModule)
 app.register_blueprint(informationModule)
 app.register_blueprint(homeModule)
+app.register_blueprint(systemModule)
