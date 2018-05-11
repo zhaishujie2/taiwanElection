@@ -1,6 +1,7 @@
 # coding=utf-8
 from flask import request, session,jsonify
 from .draw_mysql import get_map_color,get_egional_electors
+from .news_show import taiwan_latest_news,taiwan_event_news
 from monitor import app
 from . import mod
 import json
@@ -40,7 +41,30 @@ def record_session():
         app.logger.error("传入area_id,year有误 id:"+id+"year:"+year)
         return jsonify({"message":"传入area_id,year有误"}),406
 
+@mod.route('/get_latest_news/')
+def get_latest_news():
+    count = request.args.get('count', '')
+    if count == '':
+        app.logger.error("count传入错误")
+        return jsonify({"message":"count传入错误"}),406
+    else:
+        result = taiwan_latest_news(int(count))
+        if result==0:
+            return jsonify({"message":"es查询出现错误"}),406
+        else:
+            return jsonify({"message":result}),400
 
-
+@mod.route('/get_event_news/')
+def get_event_news():
+    count = request.args.get('count', '')
+    if count == '':
+        app.logger.error("count传入错误")
+        return jsonify({"message":"count传入错误"}),406
+    else:
+        result = taiwan_event_news(int(count))
+        if result==0:
+            return jsonify({"message":"es查询出现错误"}),406
+        else:
+            return jsonify({"message":result}),400
 
 
