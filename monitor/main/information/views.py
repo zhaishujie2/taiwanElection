@@ -7,6 +7,7 @@ from .information_statistics import get_information_facebook_statistics_count, g
     get_information_twitter_statistics_count, get_facebook_pages, get_all_facebook_pages, get_facebook_data, \
     get_all_facebook_data, get_news_pages, get_news_data, get_all_news_pages, get_all_news_data, get_twitter_pages, \
     get_twitter_data, get_all_twitter_pages, get_all_twitter_data
+from .character_analysis import get_candidates
 
 
 @mod.route('/get_facebook_statistics/', methods=['POST'])
@@ -406,3 +407,18 @@ def twitter_data_all():
             return jsonify({"message": "The time field is in the wrong format"}), 200
         else:
             return jsonify({"message": result}), 200
+
+
+
+@mod.route('/get_candidates/')
+def candidates():
+    try:
+        dict_name = session["electors"]
+    except:
+        return jsonify({"message": "session  is null"}), 401
+    print (dict_name)
+    result = get_candidates(dict_name)
+    if result ==0:
+        return jsonify({"message": "Calculation error"}), 406
+    else:
+        return jsonify({"message": result}), 200
