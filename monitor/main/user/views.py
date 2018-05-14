@@ -22,7 +22,7 @@ def login_user():
                 app.logger.error(e)
                 return jsonify({"message":"session update error"}),406
         else:
-            return jsonify({"message":"user or password is error"}),406
+            return jsonify({"message":"username or password is incorrect"}),201
 
 # 获得登陆用户名
 @mod.route('/get_session/')
