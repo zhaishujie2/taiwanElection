@@ -52,7 +52,7 @@ def get_latest_news():
         if result==0:
             return jsonify({"message":"es查询出现错误"}),406
         else:
-            return jsonify({"message":result}),400
+            return jsonify({"message":result}),200
 
 @mod.route('/get_event_news/')
 def get_event_news():
@@ -65,6 +65,6 @@ def get_event_news():
         if result==0:
             return jsonify({"message":"es查询出现错误"}),406
         else:
-            return jsonify({"message":result}),400
+            return jsonify({"message":result}),200
 
 
