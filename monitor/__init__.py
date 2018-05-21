@@ -38,8 +38,10 @@ from .main import mapModule
 from .main import informationModule
 from .main import homeModule
 from .main import systemModule
+from .main import forecastModule
 app.register_blueprint(userModule)
 app.register_blueprint(mapModule)
 app.register_blueprint(informationModule)
 app.register_blueprint(homeModule)
 app.register_blueprint(systemModule)
+app.register_blueprint(forecastModule)
