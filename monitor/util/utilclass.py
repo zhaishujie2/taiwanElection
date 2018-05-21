@@ -28,6 +28,8 @@ def get_date(start_time,end_time):
     except:
         return 0
 
+def get_date_item(date_time):
+    return datetime.datetime.strptime(date_time, '%Y-%m-%d')
 if __name__ == '__main__':
     list = get_time("2018-5-1","2018-5-7")
     print (list)
