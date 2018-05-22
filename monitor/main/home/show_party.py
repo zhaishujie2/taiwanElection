@@ -10,7 +10,7 @@ def get_party(message):
             leader_dict = OrderedDict()
             member_list = []
             houxuanren_sql = """SELECT `partisan` FROM candidate_personnel_information WHERE `candidate_id`= '%s'"""%(name_id)
-            member_sql = """SELECT `name`,`job`,`department` FROM personnel_information WHERE `candidate_id` = '%s'"""%(name_id)
+            member_sql = """SELECT `name`,`job`,`department`,`id` FROM personnel_information WHERE `candidate_id` = '%s'"""%(name_id)
             houxuanren_conn = getconn()
             houxuanren_cur = houxuanren_conn.cursor()
             member_conn = getconn()
@@ -24,6 +24,7 @@ def get_party(message):
                 member_dict['name'] = member[0]
                 member_dict['job'] = member[1]
                 member_dict['department'] = member[2]
+                member_dict['id'] = member[3]
                 member_list.append(member_dict)
             leader_dict['name'] = name
             leader_dict['id'] = name_id
