@@ -110,6 +110,8 @@ def get_everyinformation(type,content):
         app.logger.error(erro)
         return str(erro)
 
+
+
 # if __name__ == '__main__':
 #     # message = {"1": "卢秀燕", "2": "林佳龙"}
 #     # get_party(message)

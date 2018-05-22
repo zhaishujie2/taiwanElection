@@ -60,7 +60,7 @@ def get_candidates(dict_name):
         if face_sum ==0:
             pass
         else:
-            flag = len(face_sum)
+            flag = len(face_dict)
             duty = 1
             i=1
             for item in face_dict.keys():
