@@ -16,5 +16,7 @@ es_twitter_index = 'twitter'
 es_twitter_type = "fulltext"
 es_facebook_index = 'facebook'
 es_facebook_type = "fulltext"
+es_forum_index = 'forum'
+es_forum_type = "fulltext"
 #------------------------------------
 #修改
