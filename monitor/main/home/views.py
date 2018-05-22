@@ -5,7 +5,7 @@ from . import mod
 import json
 
 #画候选人团队
-@mod.route('/team_infos')
+@mod.route('/team_infos/')
 def get_all_information():
     message = json.loads(session["electors"])
     if len(session["electors"]) == 0 or message == None:
@@ -15,7 +15,7 @@ def get_all_information():
     return jsonify({"message":result})
 
 #获取个人信息
-@mod.route('/every_infos',methods=['POST'])
+@mod.route('/every_infos/',methods=['POST'])
 def get_information():
     type = request.form.get('type','')
     name_id = request.form.get('id','')
