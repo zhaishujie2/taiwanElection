@@ -27,6 +27,8 @@ def get_google_trend(start_time, end_time, dict_name):
 #---------------------------------------------------------------------------------------
             for item in result:
                 dict_item[item[1].strftime("%Y-%m-%d")] = item[0]
+            # print(dict_item)
+            # print(list_data)
             for item in list_data:
                 if item not in dict_item:
                     dict_item[item] = 0
@@ -88,17 +90,19 @@ def get_facebook_trend(start_time, end_time, dict_name):
     upshot["table"] = table_list
     return upshot
 
-
+#获取支持率
 def get_popular_info(start_time,end_time,message):
     conn = getconn()
     cur = conn.cursor()
     id_list = message.keys()
+    list_data = get_date(start_time, end_time)
     try:
         hxr_dic = {}
+        date_list = []
+        series_dict = {}
         for name_id in id_list:
-            sql = "SELECT CAST(`create_data` AS CHAR),`popularity_score` FROM popularity WHERE '{}' <= `create_data`  AND `create_data` <= '{}' AND `candidate_id` ='{}' ORDER BY `create_data` ASC".format(start_time,end_time,name_id)
-            # print(sql)
-            re = cur.execute(sql)
+            sql = """SELECT CAST(`create_data` AS CHAR),`popularity_score`,`candidate_id` FROM popularity WHERE %s <= `create_data`  AND `create_data` <= %s AND `candidate_id` = %s ORDER BY `create_data` ASC"""
+            re = cur.execute(sql,(start_time,end_time,name_id))
             # print(count)
             if re < 1:
                 return 0
@@ -107,8 +111,20 @@ def get_popular_info(start_time,end_time,message):
                 every_dic = {}
                 for re in result:
                     every_dic[re[0]] = re[1]
+                # hxr_dic[message.get(name_id)] = every_dic
+                for date in date_list:
+                    if date not in every_dic:
+                        every_dic[date] = 0
                 hxr_dic[message.get(name_id)] = every_dic
-        return hxr_dic
+                print(hxr_dic)
+                series = []
+                for item in list_data:
+                    series.append(hxr_dic[message.get(name_id)][item])
+                series_dict[message.get(name_id)] = series
+        result = {}
+        result["xAxis"] = list_data
+        result["series"] = series_dict
+        return result
     except Exception as erro:
         app.logger.error(erro)
         return 0
