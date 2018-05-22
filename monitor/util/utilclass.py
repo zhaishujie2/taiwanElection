@@ -30,6 +30,9 @@ def get_date(start_time,end_time):
 
 def get_date_item(date_time):
     return datetime.datetime.strptime(date_time, '%Y-%m-%d')
+
+def get_timestamps_to_date(timestamps):
+    return datetime.datetime.fromtimestamp(timestamps).strftime('%Y-%m-%d')
 if __name__ == '__main__':
     list = get_time("2018-5-1","2018-5-7")
     print (list)
