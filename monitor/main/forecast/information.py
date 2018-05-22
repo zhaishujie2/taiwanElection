@@ -1,5 +1,6 @@
 # coding=utf-8
 import datetime
+from monitor import app
 from monitor.util.config import es_host, es_facebook_index, es_facebook_type, es_news_index, es_news_type, \
     es_twitter_index, es_twitter_type
 from elasticsearch import Elasticsearch
@@ -86,4 +87,31 @@ def get_facebook_trend(start_time, end_time, dict_name):
     upshot["echart"] = {"xAxis":list_data,"series":series_dict}
     upshot["table"] = table_list
     return upshot
+
+
+def get_popular_info(start_time,end_time,message):
+    conn = getconn()
+    cur = conn.cursor()
+    id_list = message.keys()
+    try:
+        hxr_dic = {}
+        for name_id in id_list:
+            sql = "SELECT CAST(`create_data` AS CHAR),`popularity_score` FROM popularity WHERE '{}' <= `create_data`  AND `create_data` <= '{}' AND `candidate_id` ='{}' ORDER BY `create_data` ASC".format(start_time,end_time,name_id)
+            # print(sql)
+            re = cur.execute(sql)
+            # print(count)
+            if re < 1:
+                return 0
+            else:
+                result = cur.fetchall()
+                every_dic = {}
+                for re in result:
+                    every_dic[re[0]] = re[1]
+                hxr_dic[message.get(name_id)] = every_dic
+        return hxr_dic
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
+    finally:
+        closeAll(conn,cur)
 
