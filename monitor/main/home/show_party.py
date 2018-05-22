@@ -1,11 +1,12 @@
 # coding=utf-8
 from monitor.util.mysql_util import getconn,closeAll
 from collections import OrderedDict
-
+from monitor import app
 #获取每个候选人团队信息
 def get_party(message):
     try:
         every_list = []
+        print(type(message))
         for name_id,name in message.items():
             leader_dict = OrderedDict()
             member_list = []
@@ -35,73 +36,79 @@ def get_party(message):
             closeAll(member_conn,member_cur)
         return every_list
     except Exception as erro:
+        app.logger.error(erro)
         return str(erro)
 
 #获取每一个人的详细信息
 def get_everyinformation(type,content):
-    if type == '1' and len(content) == 1:
-        result_list = []
-        id = content.get('id')
-        leader_infos_dict = {}
-        leader_sql = """SELECT `job`,`department`,`information`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain` FROM `candidate_personnel_information` WHERE  `candidate_id` = '%s'"""%(id)
-        conn = getconn()
-        cur = conn.cursor()
-        cur.execute(leader_sql)
-        result = cur.fetchall()
-        for item in result:
-            leader_infos_dict['job'] = item[0]
-            leader_infos_dict['department'] = item[1]
-            leader_infos_dict['information'] = item[2]
-            leader_infos_dict['family'] = item[3]
-            leader_infos_dict['job_manager'] = item[4]
-            leader_infos_dict['political'] = item[5]
-            leader_infos_dict['society'] = item[6]
-            leader_infos_dict['competition'] = item[7]
-            leader_infos_dict['situation'] = item[8]
-            leader_infos_dict['stain'] = item[9]
-        result_list.append(leader_infos_dict)
-        closeAll(conn,cur)
-        return result_list,'0'
-
-    elif type == '2' and len(content) == 4:
-        keys_list = []
-        for item in content.keys():
-            keys_list.append(item)
-        if keys_list != ['id', 'name', 'department', 'job']:
-            return "请输入正确的条件信息",'0'
-        else:
-            name_id = content.get('id')
-            name = content.get('name')
-            department = content.get('department')
-            job = content.get('job')
+    try:
+        if type == '1' and len(content) == 1:
+            result_list = []
+            id = content.get('id')
+            leader_infos_dict = {}
+            leader_sql = """SELECT `job`,`department`,`information`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain` FROM `candidate_personnel_information` WHERE  `candidate_id` = '%s'"""%(id)
             conn = getconn()
             cur = conn.cursor()
-            member_sql = """SELECT `job`,`department`,`information`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`name` FROM `personnel_information` WHERE `candidate_id` = '%s' AND `name` = '%s'  AND `department` = '%s' AND `job` = '%s'"""%(name_id,name,department,job)
-            count = cur.execute(member_sql)
-            if count != 0:
-                result = cur.fetchall()
-                member_dict = {}
-                result_list = []
-                for item in result:
-                    member_dict['job'] = item[0]
-                    member_dict['department'] = item[1]
-                    member_dict['information'] = item[2]
-                    member_dict['family'] = item[3]
-                    member_dict['job_manager'] = item[4]
-                    member_dict['political'] = item[5]
-                    member_dict['society'] = item[6]
-                    member_dict['competition'] = item[7]
-                    member_dict['situation'] = item[8]
-                    member_dict['stain'] = item[9]
-                    member_dict['name'] = item[10]
-                result_list.append(member_dict)
-                closeAll(conn,cur)
-                return result_list,'1'
+            cur.execute(leader_sql)
+            result = cur.fetchall()
+            for item in result:
+                leader_infos_dict['job'] = item[0]
+                leader_infos_dict['department'] = item[1]
+                leader_infos_dict['information'] = item[2]
+                leader_infos_dict['family'] = item[3]
+                leader_infos_dict['job_manager'] = item[4]
+                leader_infos_dict['political'] = item[5]
+                leader_infos_dict['society'] = item[6]
+                leader_infos_dict['competition'] = item[7]
+                leader_infos_dict['situation'] = item[8]
+                leader_infos_dict['stain'] = item[9]
+            result_list.append(leader_infos_dict)
+            closeAll(conn,cur)
+            return result_list,'0'
+
+        elif type == '2' and len(content) == 4:
+            keys_list = []
+            for item in content.keys():
+                keys_list.append(item)
+            if keys_list != ['id', 'name', 'department', 'job']:
+                return "请输入正确的条件信息",'0'
             else:
-                closeAll(conn,cur)
-                return "查无此人",'1'
-    else:
-        return "传入正确的类型",'0'
+                name_id = content.get('id')
+                name = content.get('name')
+                department = content.get('department')
+                job = content.get('job')
+                conn = getconn()
+                cur = conn.cursor()
+                member_sql = """SELECT `job`,`department`,`information`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`name` FROM `personnel_information` WHERE `candidate_id` = '%s' AND `name` = '%s'  AND `department` = '%s' AND `job` = '%s'"""%(name_id,name,department,job)
+                print(member_sql)
+                count = cur.execute(member_sql)
+                if count != 0:
+                    result = cur.fetchall()
+                    member_dict = {}
+                    result_list = []
+                    for item in result:
+                        member_dict['job'] = item[0]
+                        member_dict['department'] = item[1]
+                        member_dict['information'] = item[2]
+                        member_dict['family'] = item[3]
+                        member_dict['job_manager'] = item[4]
+                        member_dict['political'] = item[5]
+                        member_dict['society'] = item[6]
+                        member_dict['competition'] = item[7]
+                        member_dict['situation'] = item[8]
+                        member_dict['stain'] = item[9]
+                        member_dict['name'] = item[10]
+                    result_list.append(member_dict)
+                    closeAll(conn,cur)
+                    return result_list,'1'
+                else:
+                    closeAll(conn,cur)
+                    return "查无此人",'1'
+        else:
+            return "传入正确的类型",'0'
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(erro)
 
 
 
