@@ -7,11 +7,14 @@ import json
 #画候选人团队
 @mod.route('/team_infos/')
 def get_all_information():
-    message = json.loads(session["electors"])
-    if len(session["electors"]) == 0 or message == None:
+    message = {}
+    try:
+        message = session["electors"]
+    except:
         return jsonify({"message":"session  is null"}),400
-    else:
-        result = get_party(message)
+    result = get_party(message)
+    if result ==0:
+        return jsonify({"message":"The time field is in the wrong format"}),401
     return jsonify({"message":result})
 
 #获取个人信息
