@@ -11,7 +11,7 @@ def get_all_information():
     try:
         message = session["electors"]
     except:
-        return jsonify({"message":"session  is null"}),400
+        return jsonify({"message":"session  is null"}),401
     result = get_party(message)
     if result ==0:
         return jsonify({"message":"The time field is in the wrong format"}),401

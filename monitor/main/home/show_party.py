@@ -9,7 +9,6 @@ def get_party(message):
         for name_id,name in message.items():
             leader_dict = OrderedDict()
             member_list = []
-            member_dict = {}
             houxuanren_sql = """SELECT `partisan` FROM candidate_personnel_information WHERE `candidate_id`= '%s'"""%(name_id)
             member_sql = """SELECT `name`,`job`,`department` FROM personnel_information WHERE `candidate_id` = '%s'"""%(name_id)
             houxuanren_conn = getconn()
@@ -21,6 +20,7 @@ def get_party(message):
             members = member_cur.fetchall()
             party = houxuanren_cur.fetchone()
             for member in members:
+                member_dict = {}
                 member_dict['name'] = member[0]
                 member_dict['job'] = member[1]
                 member_dict['department'] = member[2]
@@ -101,6 +101,8 @@ def get_everyinformation(type,content):
                 return "查无此人",'1'
     else:
         return "传入正确的类型",'0'
+
+
 
 # if __name__ == '__main__':
 #     # message = {"1": "卢秀燕", "2": "林佳龙"}

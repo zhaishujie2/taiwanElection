@@ -412,11 +412,12 @@ def twitter_data_all():
 
 @mod.route('/get_candidates/')
 def candidates():
+    dict_name={}
     try:
         dict_name = session["electors"]
     except:
         return jsonify({"message": "session  is null"}), 401
-    print (dict_name)
+    print(dict_name)
     result = get_candidates(dict_name)
     if result ==0:
         return jsonify({"message": "Calculation error"}), 406
