@@ -7,9 +7,11 @@ def get_popular_info(date,message):
     cur = conn.cursor()
     id_list = message.keys()
     try:
+        start_date = date.get('start_date')
+        end_date = date.get('end_date')
         hxr_dic = {}
         for name_id in id_list:
-            sql = "SELECT CAST(`create_data` AS CHAR),`popularity_score` FROM popularity WHERE DATE_SUB('{}', INTERVAL 7 DAY) < `create_data`  AND `create_data` <= '{}' AND `candidate_id` ='{}' ORDER BY `create_data` ASC".format(date,date,name_id)
+            sql = "SELECT CAST(`create_data` AS CHAR),`popularity_score` FROM popularity WHERE '{}' <= `create_data`  AND `create_data` <= '{}' AND `candidate_id` ='{}' ORDER BY `create_data` ASC".format(start_date,end_date,name_id)
             # print(sql)
             re = cur.execute(sql)
             # print(count)
