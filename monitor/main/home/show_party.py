@@ -148,8 +148,8 @@ def get_gov_area(id, year):
             return {}
         else:
             result = cur.fetchone()
-            info_dict['gov'] = result[0]
-            info_dict['area_info'] = result[1]
+            info_dict['area_info'] = result[0]
+            info_dict['gov'] = result[1]
             return info_dict
     except Exception as erro:
         app.logger.error(erro)
