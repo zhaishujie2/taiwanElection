@@ -20,3 +20,7 @@ es_forum_index = 'forum'
 es_forum_type = "fulltext"
 #------------------------------------
 #修改
+fb_weight= 0.55
+tw_weight = 0.12
+news_weight = 0.25
+ptt_weight = 0.08
