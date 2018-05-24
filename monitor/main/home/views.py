@@ -1,6 +1,6 @@
 # coding=utf-8
 from flask import request, session,jsonify
-from monitor.main.home.show_party import get_party,get_everyinformation
+from monitor.main.home.show_party import get_party,get_everyinformation,get_gov_area
 from . import mod
 import json
 
@@ -47,3 +47,16 @@ def get_information():
         if tag == '0':
             return jsonify({"message":result}),400
 
+#获取地区基本信息
+@mod.route('/gov_area/')
+def gov_area():
+    message = {}
+    try:
+        year = session["year"]
+        id = session["area_id"]
+    except:
+        return jsonify({"message":"session  is null"}),401
+    result = get_gov_area(id,year)
+    if result == 0:
+        return jsonify({"message":"The time field is in the wrong format"}),401
+    return jsonify({"message":result})
