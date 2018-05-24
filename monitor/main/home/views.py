@@ -34,13 +34,11 @@ def get_information():
     #     content['department'] = department
     #     content['job'] = job
     content = eval(request.form.get('content',''))
-    print(content)
     if type == '' or type == None:
         return jsonify({"message":"输入类型"}),400
     elif content == '' or content == None:
         return jsonify({"message":"输入条件"}),400
     else:
-        print(len(content))
         result,tag = get_everyinformation(type,content)
         if tag == '1':
             return jsonify({"message":result}),200

@@ -12,9 +12,9 @@ def get_party(message):
             leader_dict = OrderedDict()
             member_list = []
             houxuanren_sql = """SELECT `partisan` FROM candidate_personnel_information WHERE `candidate_id`= '%s'""" % (
-            name_id)
+                name_id)
             member_sql = """SELECT `name`,`job`,`department`,`id` FROM personnel_information WHERE `candidate_id` = '%s'""" % (
-            name_id)
+                name_id)
             houxuanren_conn = getconn()
             houxuanren_cur = houxuanren_conn.cursor()
             member_conn = getconn()
@@ -50,73 +50,94 @@ def get_everyinformation(type, content):
             result_list = []
             id = content.get('id')
             leader_infos_dict = {}
-            leader_sql = """SELECT `job`,`department`,`information`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain` FROM `candidate_personnel_information` WHERE  `candidate_id` = '%s'""" % (
-            id)
+            information = {}
+            leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan` FROM `candidate_personnel_information` WHERE  `candidate_id` = %s"""
             conn = getconn()
             cur = conn.cursor()
-            cur.execute(leader_sql)
+            cur.execute(leader_sql, (id))
             result = cur.fetchall()
             for item in result:
                 leader_infos_dict['job'] = item[0]
                 leader_infos_dict['department'] = item[1]
-                leader_infos_dict['information'] = item[2]
-                leader_infos_dict['family'] = item[3]
-                leader_infos_dict['job_manager'] = item[4]
-                leader_infos_dict['political'] = item[5]
-                leader_infos_dict['society'] = item[6]
-                leader_infos_dict['competition'] = item[7]
-                leader_infos_dict['situation'] = item[8]
-                leader_infos_dict['stain'] = item[9]
+                leader_infos_dict['family'] = item[2]
+                leader_infos_dict['job_manager'] = item[3]
+                leader_infos_dict['political'] = item[4]
+                leader_infos_dict['society'] = item[5]
+                leader_infos_dict['competition'] = item[6]
+                leader_infos_dict['situation'] = item[7]
+                leader_infos_dict['stain'] = item[8]
+                information['sex'] = item[9]
+                information['name_en'] = item[10]
+                information['birthday'] = str(item[11])
+                information['birthplace'] = item[12]
+                information['taiwan_id'] = item[13]
+                information['passport'] = item[14]
+                information['personal_webpage'] = item[15]
+                information['personal_phone'] = item[16]
+                information['work_phone'] = item[17]
+                information['email'] = item[18]
+                information['address'] = item[19]
+                information['education'] = item[20]
+                information['partisan'] = item[21]
+                leader_infos_dict['information'] = information
             result_list.append(leader_infos_dict)
             closeAll(conn, cur)
-            return result_list, '0'
+            return result_list, '1'
 
-        elif type == '2' and len(content) == 4:
+        elif type == '2' and len(content) == 2:
             keys_list = []
             for item in content.keys():
                 keys_list.append(item)
-            if keys_list != ['id', 'name', 'department', 'job']:
-                return "请输入正确的条件信息", '0'
+            id = content.get('id')
+            name = content.get('name')
+            conn = getconn()
+            cur = conn.cursor()
+            member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan` FROM `personnel_information` WHERE `id` = %s AND `name` = %s"""
+            count = cur.execute(member_sql, (id, name))
+            if count != 0:
+                result = cur.fetchall()
+                member_dict = {}
+                information = {}
+                result_list = []
+                for item in result:
+                    member_dict['job'] = item[0]
+                    member_dict['department'] = item[1]
+                    member_dict['family'] = item[2]
+                    member_dict['job_manager'] = item[3]
+                    member_dict['political'] = item[4]
+                    member_dict['society'] = item[5]
+                    member_dict['competition'] = item[6]
+                    member_dict['situation'] = item[7]
+                    member_dict['stain'] = item[8]
+                    information['sex'] = item[9]
+                    information['name_en'] = item[10]
+                    information['birthday'] = str(item[11])
+                    information['birthplace'] = item[12]
+                    information['taiwan_id'] = item[13]
+                    information['passport'] = item[14]
+                    information['personal_webpage'] = item[15]
+                    information['personal_phone'] = item[16]
+                    information['work_phone'] = item[17]
+                    information['email'] = item[18]
+                    information['address'] = item[19]
+                    information['education'] = item[20]
+                    information['partisan'] = item[21]
+                    member_dict['information'] = information
+                result_list.append(member_dict)
+                closeAll(conn, cur)
+                return result_list, '1'
             else:
-                name_id = content.get('id')
-                name = content.get('name')
-                department = content.get('department')
-                job = content.get('job')
-                conn = getconn()
-                cur = conn.cursor()
-                member_sql = """SELECT `job`,`department`,`information`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`name` FROM `personnel_information` WHERE `candidate_id` = '%s' AND `name` = '%s'  AND `department` = '%s' AND `job` = '%s'""" % (
-                name_id, name, department, job)
-                count = cur.execute(member_sql)
-                if count != 0:
-                    result = cur.fetchall()
-                    member_dict = {}
-                    result_list = []
-                    for item in result:
-                        member_dict['job'] = item[0]
-                        member_dict['department'] = item[1]
-                        member_dict['information'] = item[2]
-                        member_dict['family'] = item[3]
-                        member_dict['job_manager'] = item[4]
-                        member_dict['political'] = item[5]
-                        member_dict['society'] = item[6]
-                        member_dict['competition'] = item[7]
-                        member_dict['situation'] = item[8]
-                        member_dict['stain'] = item[9]
-                        member_dict['name'] = item[10]
-                    result_list.append(member_dict)
-                    closeAll(conn, cur)
-                    return result_list, '1'
-                else:
-                    closeAll(conn, cur)
-                    return "查无此人", '1'
+                closeAll(conn, cur)
+                return "查无此人", '1'
         else:
             return "传入正确的类型", '0'
     except Exception as erro:
         app.logger.error(erro)
         return str(erro)
 
-#获取
-def get_gov_area(id,year):
+
+# 获取地区信息
+def get_gov_area(id, year):
     conn = getconn()
     cur = conn.cursor()
     info_dict = {}
@@ -137,9 +158,9 @@ def get_gov_area(id,year):
         closeAll(conn, cur)
 
 # if __name__ == '__main__':
-    # print (get_gov_area(7017,2018))
-    # message = {"1": "卢秀燕", "2": "林佳龙"}
-    # get_party(message)
+# print (get_gov_area(7017,2018))
+# message = {"1": "卢秀燕", "2": "林佳龙"}
+# get_party(message)
 #     # content = {"id":"1"}
 #     content = {"id":"1","name":"小白","department":"13局","job":"部长"}
 #     get_everyinformation('2',content)
