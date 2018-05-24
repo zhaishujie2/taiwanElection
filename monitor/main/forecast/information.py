@@ -98,7 +98,6 @@ def get_popular_info(start_time,end_time,message):
     list_data = get_date(start_time, end_time)
     try:
         hxr_dic = {}
-        date_list = []
         series_dict = {}
         for name_id in id_list:
             sql = """SELECT CAST(`create_data` AS CHAR),`popularity_score`,`candidate_id` FROM popularity WHERE %s <= `create_data`  AND `create_data` <= %s AND `candidate_id` = %s ORDER BY `create_data` ASC"""
@@ -112,11 +111,10 @@ def get_popular_info(start_time,end_time,message):
                 for re in result:
                     every_dic[re[0]] = re[1]
                 # hxr_dic[message.get(name_id)] = every_dic
-                for date in date_list:
+                for date in list_data:
                     if date not in every_dic:
                         every_dic[date] = 0
                 hxr_dic[message.get(name_id)] = every_dic
-                print(hxr_dic)
                 series = []
                 for item in list_data:
                     series.append(hxr_dic[message.get(name_id)][item])
@@ -131,3 +129,8 @@ def get_popular_info(start_time,end_time,message):
     finally:
         closeAll(conn,cur)
 
+if __name__ == '__main__':
+    dict = {}
+    dict[1] = "卢秀燕"
+    dict[2] = "林佳龙"
+    get_popular_info("2018-5-1","2018-5-2",dict)
