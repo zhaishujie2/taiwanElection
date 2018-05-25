@@ -11,16 +11,14 @@ def get_party(message):
         for name_id, name in message.items():
             leader_dict = OrderedDict()
             member_list = []
-            houxuanren_sql = """SELECT `partisan` FROM candidate_personnel_information WHERE `candidate_id`= '%s'""" % (
-                name_id)
-            member_sql = """SELECT `name`,`job`,`department`,`id` FROM personnel_information WHERE `candidate_id` = '%s'""" % (
-                name_id)
+            houxuanren_sql = """SELECT `partisan` FROM candidate_personnel_information WHERE `candidate_id`= %s"""
+            member_sql = """SELECT `name`,`job`,`department`,`id` FROM personnel_information WHERE `candidate_id` = %s"""
             houxuanren_conn = getconn()
             houxuanren_cur = houxuanren_conn.cursor()
             member_conn = getconn()
             member_cur = member_conn.cursor()
-            houxuanren_cur.execute(houxuanren_sql)
-            member_cur.execute(member_sql)
+            houxuanren_cur.execute(houxuanren_sql,(name_id))
+            member_cur.execute(member_sql,(name_id))
             members = member_cur.fetchall()
             party = houxuanren_cur.fetchone()
             for member in members:
@@ -82,7 +80,7 @@ def get_everyinformation(type, content):
                 leader_infos_dict['information'] = information
             result_list.append(leader_infos_dict)
             closeAll(conn, cur)
-            return result_list, '1'
+            return result_list
 
         elif type == '2' and len(content) == 2:
             keys_list = []
@@ -125,15 +123,17 @@ def get_everyinformation(type, content):
                     member_dict['information'] = information
                 result_list.append(member_dict)
                 closeAll(conn, cur)
-                return result_list, '1'
+                return result_list
             else:
                 closeAll(conn, cur)
-                return "查无此人", '1'
+                app.logger.error("查无此人")
+                return 0
         else:
-            return "传入正确的类型", '0'
+            app.logger.error("传入正确的类型")
+            return 0
     except Exception as erro:
         app.logger.error(erro)
-        return str(erro)
+        return 0
 
 
 # 获取地区信息
@@ -162,6 +162,14 @@ def get_all_candidate_infos(region,year):
     try:
         conn = getconn()
         cur = conn.cursor()
+        select_dict_sql = """SELECT `administrative_id`,`administrative_name` FROM `administrative_area`"""
+        cur.execute(select_dict_sql)
+        dict_re = cur.fetchall()
+        dict_list = []
+        for item in dict_re:
+            dict_dict = {}
+            dict_dict[item[0]] = item[1]
+            dict_list.append(dict_dict)
         select_id_sql = """SELECT `regional_consolidation` FROM `administrative_area` WHERE `administrative_id` = %s"""
         cur.execute(select_id_sql,(region))
         id_item = cur.fetchone()
@@ -185,7 +193,8 @@ def get_all_candidate_infos(region,year):
                 infos_dict['year'] = item[5]
                 infos_list.append(infos_dict)
             closeAll(conn,cur)
-            return infos_list
+            end_list = [{"elections":infos_list,"area":dict_list}]
+            return end_list
         else:
             select_sql = """SELECT `administrative_id`,`elector`,`election_score`,`election_parties`,`period`,`year` FROM `previous_elections` WHERE year < %s AND  `administrative_id` = %s GROUP BY `administrative_id`,`year`,`elector`,`election_parties`,`period` ORDER BY `period` ASC,administrative_id DESC,election_score DESC """
             try:
@@ -206,7 +215,8 @@ def get_all_candidate_infos(region,year):
                 infos_dict['year'] = item[5]
                 infos_list.append(infos_dict)
             closeAll(conn,cur)
-            return infos_list
+            end_list = [{"elections":infos_list,"area":dict_list}]
+            return end_list
     except Exception as erro:
         app.logger.error(erro)
         return 0

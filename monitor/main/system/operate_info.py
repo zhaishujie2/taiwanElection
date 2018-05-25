@@ -31,7 +31,6 @@ def delete_info(data):
     conn = getconn()
     cur = conn.cursor()
     ids = data.get('id')
-    print(ids)
     try:
         delete_sql = """DELETE FROM `spider_infos` WHERE id = '{}'""".format(ids)
         re = cur.execute(delete_sql)
@@ -103,8 +102,7 @@ def select_info(datas):
             else:
                 where_sql += "{} = '{}'".format(k,v)
 
-        select_sql = """SELECT * FROM `spider_infoss` WHERE  """ + where_sql
-        # print(select_sql)
+        select_sql = """SELECT * FROM `spider_infos` WHERE  """ + where_sql
         re = cur.execute(select_sql)
         if re < 1:
             return '0'
