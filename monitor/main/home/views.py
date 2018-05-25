@@ -1,6 +1,6 @@
 # coding=utf-8
 from flask import request, session,jsonify
-from monitor.main.home.show_party import get_party,get_everyinformation,get_gov_area
+from .show_party import get_party,get_everyinformation,get_gov_area,get_all_candidate_infos
 from . import mod
 import json
 from .election import get_popularity
@@ -89,3 +89,20 @@ def get_popularity_statistics():
             return jsonify({"message": "The time field is in the wrong format"}), 200
         else:
             return jsonify({"message": result}), 200
+
+#获取历届选举信息
+@mod.route('/candidate_infos/')
+def get_candidate_infos():
+    year = 0
+    id = 0
+    dict_name = {}
+    try:
+        year = int(session["year"])
+        id = int(session["area_id"])
+    except:
+        return jsonify({"message": "session  is null"}), 401
+    result = get_all_candidate_infos(id, year)
+    if result == 0:
+        return jsonify({"message": "The time field is in the wrong format"}), 402
+    else:
+        return jsonify({"message": result}), 200
