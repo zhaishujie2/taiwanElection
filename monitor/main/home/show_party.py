@@ -157,6 +157,59 @@ def get_gov_area(id, year):
     finally:
         closeAll(conn, cur)
 
+#获取历届选举人情况
+def get_all_candidate_infos(region,year):
+    try:
+        conn = getconn()
+        cur = conn.cursor()
+        select_id_sql = """SELECT `regional_consolidation` FROM `administrative_area` WHERE `administrative_id` = %s"""
+        cur.execute(select_id_sql,(region))
+        id_item = cur.fetchone()
+        if id_item[0] != None and id_item[0] != '':
+            select_sql = """SELECT `administrative_id`,`elector`,`election_score`,`election_parties`,`period`,`year` FROM `previous_elections` WHERE year < %s AND  (`administrative_id` = %s OR `administrative_id` = %s) GROUP BY `administrative_id`,`year`,`elector`,`election_parties`,`period` ORDER BY `period` ASC,administrative_id DESC,election_score DESC """
+            try:
+                cur.execute(select_sql,(year,region,id_item[0]))
+            except Exception as erro:
+                app.logger.error(erro)
+                closeAll(conn,cur)
+                return 0
+            other_results = cur.fetchall()
+            infos_list = []
+            for item in other_results:
+                infos_dict = {}
+                infos_dict['administrative_id'] = item[0]
+                infos_dict['elector'] = item[1]
+                infos_dict['election_score'] = item[2]
+                infos_dict['election_parties'] = item[3]
+                infos_dict['period'] = item[4]
+                infos_dict['year'] = item[5]
+                infos_list.append(infos_dict)
+            closeAll(conn,cur)
+            return infos_list
+        else:
+            select_sql = """SELECT `administrative_id`,`elector`,`election_score`,`election_parties`,`period`,`year` FROM `previous_elections` WHERE year < %s AND  `administrative_id` = %s GROUP BY `administrative_id`,`year`,`elector`,`election_parties`,`period` ORDER BY `period` ASC,administrative_id DESC,election_score DESC """
+            try:
+                cur.execute(select_sql,(year,region))
+            except Exception as erro:
+                app.logger.error(erro)
+                closeAll(conn,cur)
+                return 0
+            results = cur.fetchall()
+            infos_list = []
+            for item in results:
+                infos_dict = {}
+                infos_dict['administrative_id'] = item[0]
+                infos_dict['elector'] = item[1]
+                infos_dict['election_score'] = item[2]
+                infos_dict['election_parties'] = item[3]
+                infos_dict['period'] = item[4]
+                infos_dict['year'] = item[5]
+                infos_list.append(infos_dict)
+            closeAll(conn,cur)
+            return infos_list
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
 # if __name__ == '__main__':
 # print (get_gov_area(7017,2018))
 # message = {"1": "卢秀燕", "2": "林佳龙"}
