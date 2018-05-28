@@ -166,10 +166,10 @@ def get_all_candidate_infos(region,year):
         cur.execute(select_dict_sql)
         dict_re = cur.fetchall()
         dict_list = []
+        dict_dict = {}
         for item in dict_re:
-            dict_dict = {}
-            dict_dict[item[0]] = item[1]
-            dict_list.append(dict_dict)
+            dict_dict[str(item[0])] = item[1]
+        dict_list.append(dict_dict)
         select_id_sql = """SELECT `regional_consolidation` FROM `administrative_area` WHERE `administrative_id` = %s"""
         cur.execute(select_id_sql,(region))
         id_item = cur.fetchone()
