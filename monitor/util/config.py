@@ -24,3 +24,6 @@ fb_weight= 0.55
 tw_weight = 0.12
 news_weight = 0.25
 ptt_weight = 0.08
+
+#-----------------------------------
+year = 2018

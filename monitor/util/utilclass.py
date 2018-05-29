@@ -33,6 +33,13 @@ def get_date_item(date_time):
 
 def get_timestamps_to_date(timestamps):
     return datetime.datetime.fromtimestamp(timestamps).strftime('%Y-%m-%d')
+
+#获得几天前的日期
+def get_before_time(tiem,day):
+    d1 = datetime.datetime.strptime(tiem, '%Y-%m-%d')
+    start_time = d1-datetime.timedelta(days=day)
+    return start_time.strftime("%Y-%m-%d")
+
 if __name__ == '__main__':
     list = get_time("2018-5-1","2018-5-7")
     print (list)
