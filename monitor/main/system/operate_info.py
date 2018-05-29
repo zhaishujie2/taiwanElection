@@ -2,8 +2,9 @@
 from monitor.util.mysql_util import getconn,closeAll
 from monitor import app
 from flask import session
+
 #facebook写入数据
-def insert_info(datas):
+def insert_info(auto_id,datas):
     conn = getconn()
     cur = conn.cursor()
 
@@ -14,7 +15,7 @@ def insert_info(datas):
         administrative_name = datas.get('username')
     year = datas.get('year')
     facebook_url = datas.get('facebook_url')
-    insert_sql = """INSERT INTO `spider_infos` (`administrative_id`,`administrative_name`,`year`,`facebook_url`) VALUES (%s,%s,%s,%s)"""
+    insert_sql = """INSERT INTO `spider_infos` (`id`,`administrative_id`,`administrative_name`,`year`,`facebook_url`) VALUES (%s,%s,%s,%s,%s)"""
     select_sql = """SELECT `id`  FROM `spider_infos` WHERE `administrative_id` = %s AND `administrative_name`= %s AND `year`= %s AND `facebook_url`= %s"""
     try:
         # print(insert_sql)
@@ -23,7 +24,7 @@ def insert_info(datas):
         if select_re != 0:
             return 406
         elif select_re == 0:
-            insert_re = cur.execute(insert_sql,(administrative_id,administrative_name,year,facebook_url))
+            insert_re = cur.execute(insert_sql,(auto_id,administrative_id,administrative_name,year,facebook_url))
         # print(re)
         if insert_re < 1:
             return 0
@@ -39,11 +40,14 @@ def insert_info(datas):
 def delete_info(data):
     conn = getconn()
     cur = conn.cursor()
-    ids = data.get('id')
+    ids = data.get('candidate_id')
     try:
         delete_sql = """DELETE FROM `spider_infos` WHERE id = %s """
         re = cur.execute(delete_sql,(ids))
         if re < 1:
+            conn.rollback()
+            cur.close()
+            conn.close()
             return 0
         else:
             return 1
@@ -143,6 +147,7 @@ def get_is_candidate(data):
     cur = conn.cursor()
     select_sql = """SELECT `username` FROM `candidate` WHERE `administrative_id` = %s AND `username` = %s AND `year` = %s"""
     region_number_select_sql = """SELECT `administrative_id` FROM `administrative_area`"""
+    count = ''
     try:
         count = cur.execute(select_sql,(administrative_id,username,year))
         cur.execute(region_number_select_sql)
@@ -158,7 +163,7 @@ def get_is_candidate(data):
         return 0
     finally:
         closeAll(conn,cur)
-    return count
+        return count
 
 #根据id查询单条数据
 def get_one_infos(info_type,data):
@@ -347,47 +352,52 @@ def get_region_dict(data):
             return 0
 
 
-#删除候选人信息
+#删除候选人信息或者团队人员信息
 def delete_people_information(type,content):
-    pass
+    conn = getconn()
+    cur = conn.cursor()
+    candidate_id = content.get('candidate_id')
+    info_type = content.get('type')
+    try:
+        if info_type == '1':
+            spider_re = delete_info(content)
+            if spider_re == 1:
+                delete_candidate_personnel_information_sql = """DELETE FROM `candidate_personnel_information` WHERE `candidate_id` = %s """
+                delete_candidate_sql = """DELETE FROM `candidate` WHERE `candidate_id` = %s """
+                information_re = cur.execute(delete_candidate_personnel_information_sql,(candidate_id))
+                if information_re < 1:
+                    conn.rollback()
+                    cur.close()
+                    conn.close()
+                    return 0
+                else:
+                    candidate_re = cur.execute(delete_candidate_sql,(candidate_id))
+                    if candidate_re < 1:
+                        conn.rollback()
+                        cur.close()
+                        conn.close()
+                        return 0
+                    closeAll(conn,cur)
+                    return 1
+        elif info_type == '2':
+            delete_sql = """DELETE FROM `personnel_information` WHERE `id` = %s """
+            re = cur.execute(delete_sql,(candidate_id))
+            if re < 1:
+                conn.rollback()
+                cur.close()
+                conn.close()
+                return 0
+            else:
+                closeAll(conn,cur)
+                return 1
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
 
 
 #查询关联表和Facebook信息是否存在
 def select_candidate_facebook(info_type,content):
-    # try:
-    if info_type == '1':
-        conn = getconn()
-        cur = conn.cursor()
-        must_keys = ['administrative_id','username','year','facebook_url']
-        lost_key = []
-        num = 0
-        for key in must_keys:
-            if content.get(key) == None or content.get(key) == '':
-                lost_key.append(key)
-                num += 1
-                if num >=len(must_keys):
-                    break
-        if len(lost_key) != 0:
-            return "输入缺失{}数据".format(lost_key)
-        elif len(lost_key) == 0:
-            administrative_re = get_is_candidate(content)
-            # print(count)
-            if administrative_re != 0 and administrative_re == 407:
-                closeAll(conn,cur)
-                app.logger.error("所输入候选人已存在")
-                return 407
-            elif administrative_re == 0:
-                facebook_re = select_info(content)
-                if facebook_re != 0:
-                    app.logger.error("候选人facebook主页信息未录入")
-                    cur.close()
-                    conn.close()
-                    return 0
-
-
-#查询关联表和Facebook信息是否写入
-def select_insert_candidate_facebook(info_type,content):
-    # try:
+    try:
         if info_type == '1':
             conn = getconn()
             cur = conn.cursor()
@@ -401,448 +411,339 @@ def select_insert_candidate_facebook(info_type,content):
                     if num >=len(must_keys):
                         break
             if len(lost_key) != 0:
-                return "输入缺失{}数据".format(lost_key),"2"
+                return "输入缺失{}数据".format(lost_key)
             elif len(lost_key) == 0:
                 administrative_re = get_is_candidate(content)
+                # print(count)
+                if administrative_re == 407:
+                    closeAll(conn,cur)
+                    app.logger.error("所输入地区代码错误")
+                    return 407
+                elif administrative_re != 0 and administrative_re != 407:
+                    closeAll(conn,cur)
+                    app.logger.error("所输入候选人已存在")
+                    return 406
+                elif administrative_re == 0:
+                    facebook_re = select_info(content)
+                    if facebook_re != 0:
+                        app.logger.error("候选人facebook主页信息已录入")
+                        cur.close()
+                        conn.close()
+                        return 0
+                    elif facebook_re == 0:
+                        app.logger.error("候选人facebook主页信息未录入")
+                        return 1
+        elif info_type == '2':
+            return 1
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
+
+
+#写入关联表和Facebook信息
+def insert_candidate_facebook(info_type,content):
+    try:
+        if info_type == '1':
+            conn = getconn()
+            cur = conn.cursor()
+            must_keys = ['administrative_id','username','year','facebook_url']
+            lost_key = []
+            num = 0
+            for key in must_keys:
+                if content.get(key) == None or content.get(key) == '':
+                    lost_key.append(key)
+                    num += 1
+                    if num >=len(must_keys):
+                        break
+            if len(lost_key) != 0:
+                return "输入缺失{}数据".format(lost_key)
+            elif len(lost_key) == 0:
                 administrative_id = content.get('administrative_id')
                 if content.get('username') != None:
                     username = content.get('username')
                 else:
                     username = content.get('administrative_name')
                 year = content.get('year')
-                print(administrative_re)
-                if administrative_re != 0 and administrative_re != 406:
-                    closeAll(conn,cur)
-                    app.logger.error("所输入候选人已存在")
-                    return 406
-                elif administrative_re == 0:
-                    insert_sql = """INSERT INTO `candidate` (`administrative_id`,`username`,`year`) VALUES (%s,%s,%s)"""
-                    try:
-                        hxr_re = cur.execute(insert_sql,(administrative_id,username,year))
-                    except Exception as erro:
-                        app.logger.error(erro)
-                        return 0
-                    if hxr_re == 0:
-                        app.logger.error("候选人信息未记录")
-                        cur.rollback()
-                        cur.close()
-                        conn.close()
-                        return 0
-                    elif hxr_re == 1:
-                        facebook_re = select_info(content)
-                        if facebook_re != 0:
-                            app.logger.error("候选人facebook主页信息未录入")
-                            cur.rollback()
-                            cur.close()
-                            conn.close()
+                insert_sql = """INSERT INTO `candidate` (`administrative_id`,`username`,`year`) VALUES (%s,%s,%s)"""
+                try:
+                    hxr_re = cur.execute(insert_sql,(administrative_id,username,year))
+                    auto_id = conn.insert_id()#返回最新写入的id
+                except Exception as erro:
+                    app.logger.error(erro)
+                    return 0
+                if hxr_re == 0:
+                    app.logger.error("候选人信息未记录")
+                    conn.rollback()
+                    cur.close()
+                    conn.close()
+                    return 0
+                elif hxr_re == 1:
+                        insert_re = insert_info(auto_id,content)
+                        if insert_re == 1:
+                            app.logger.error("候选人信息写入")
+                            closeAll(conn,cur)
+                            # add_administrative_infos(outo_id,)
+                            return auto_id
+                        else:
                             return 0
-                        elif facebook_re == 0:
-                            insert_re = insert_info(content)
-                            if insert_re != 0:
-                                app.logger.error("候选人信息写入")
-                                closeAll(conn,cur)
-                                return 1
-                            else:
-                                return 0
-    # except Exception as erro:
-    #     app.logger.error(erro)
-    #     print(erro)
-    #     return 0
-
-#写入候选人详细信息
-def add_administrative_infos(content):
-    conn = getconn()
-    cur = conn.cursor()
-    sex = ''
-    if content.get('sex')!= '' or content.get('sex') != None :
-        sex = content.get('sex')
-
-    name_en = ''
-    if content.get('name_en') != '':
-        name_en = content.get('name_en')
-
-    birthday = ''
-    if content.get('birthday') != '':
-        birthday = content.get('birthday'),
-
-    birthplace= ''
-    if content.get('birthplace') != '':
-        birthplace = content.get('birthplace')
-
-    taiwan_id = ''
-    if content.get('taiwan_id') != '':
-        taiwan_id = content.get('taiwan_id')
-
-    passport = ''
-    if content.get('passport') != '':
-        passport = content.get('passport')
-
-    personal_webpage = ''
-    if content.get('personal_webpage') != '':
-        personal_webpage = content.get('personal_webpage')
-
-    personal_phone = ''
-    if content.get('personal_phone') != '':
-        personal_phone = content.get('personal_phone')
-
-    work_phone = ''
-    if content.get('work_phone') != '':
-        work_phone = content.get('work_phone')
-
-    email = ''
-    if content.get('email') != '':
-        email = content.get('email')
-
-    address = ''
-    if content.get('address') != '':
-        address = content.get('address')
-
-    education = ''
-    if content.get('education') != '':
-        education = content.get('education')
-
-    job = ''
-    if content.get('job') != '':
-        job = content.get('job')
-
-    department = ''
-    if content.get('department') != '':
-        department = content.get('department')
-
-    family = ''
-    if content.get('family') != '':
-        family = content.get('family')
-
-    job_manager = ''
-    if content.get('job_manager') != '':
-        job_manager = content.get('job_manager')
-
-    political = ''
-    if content.get('political') != '':
-        political = content.get('political')
-
-    society = ''
-    if content.get('society') != '':
-        society = content.get('society')
-
-    competition = ''
-    if content.get('competition') != '':
-        competition = content.get('competition')
-
-    situation = ''
-    if content.get('situation') != '':
-        situation = content.get('situation')
-
-    partisan = ''
-    if content.get('partisan') != '':
-        partisan = content.get('partisan')
-
-    stain = ''
-    if content.get('stain') != '':
-        stain = content.get('stain')
-
-    insert_houxuanren_sql = """INSERT INTO `candidate_personnel_information` (`sex`,`name_en`,`birthday`, `birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`partisan`,`stain`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-    try:
-        hxr_infos_re = cur.execute(insert_houxuanren_sql,(sex,name_en,birthday, birthplace,taiwan_id,passport,personal_webpage,personal_phone,work_phone,email,address,education,job,department,family,job_manager,political,society,competition,situation,partisan,stain))
-    # print(re)
+        elif info_type == '2':
+            return 1
     except Exception as erro:
         app.logger.error(erro)
         return 0
-    if hxr_infos_re != 0:
-        app.logger.error("写入候选人信息成功")
-        closeAll(conn,cur)
-        return 1
-    elif hxr_infos_re == 0:
-        app.logger.erro('写入候选人信息错误')
-        cur.rollback()
-        cur.close()
-        conn.close()
+
+#写入候选人详细信息或者是团队成员信息
+def add_administrative_infos(auto_id,info_type,content):
+    try:
+        conn = getconn()
+        cur = conn.cursor()
+        if info_type =='1':
+            candidate_id = ''
+            if auto_id != '' or auto_id != None:
+                candidate_id = auto_id
+            else:
+                app.logger.error("自动生成id错误")
+                return 0
+            name = ''
+            if content.get('username') != None:
+                name = content.get('username')
+            else:
+                name = content.get('administrative_name')
+            sex = ''
+            if content.get('sex')!= '' or content.get('sex') != None :
+                sex = content.get('sex')
+
+            name_en = ''
+            if content.get('name_en') != '':
+                name_en = content.get('name_en')
+
+            birthday = ''
+            if content.get('birthday') != '':
+                birthday = content.get('birthday'),
+
+            birthplace= ''
+            if content.get('birthplace') != '':
+                birthplace = content.get('birthplace')
+
+            taiwan_id = ''
+            if content.get('taiwan_id') != '':
+                taiwan_id = content.get('taiwan_id')
+
+            passport = ''
+            if content.get('passport') != '':
+                passport = content.get('passport')
+
+            personal_webpage = ''
+            if content.get('personal_webpage') != '':
+                personal_webpage = content.get('personal_webpage')
+
+            personal_phone = ''
+            if content.get('personal_phone') != '':
+                personal_phone = content.get('personal_phone')
+
+            work_phone = ''
+            if content.get('work_phone') != '':
+                work_phone = content.get('work_phone')
+
+            email = ''
+            if content.get('email') != '':
+                email = content.get('email')
+
+            address = ''
+            if content.get('address') != '':
+                address = content.get('address')
+
+            education = ''
+            if content.get('education') != '':
+                education = content.get('education')
+
+            job = ''
+            if content.get('job') != '':
+                job = content.get('job')
+
+            department = ''
+            if content.get('department') != '':
+                department = content.get('department')
+
+            family = ''
+            if content.get('family') != '':
+                family = content.get('family')
+
+            job_manager = ''
+            if content.get('job_manager') != '':
+                job_manager = content.get('job_manager')
+
+            political = ''
+            if content.get('political') != '':
+                political = content.get('political')
+
+            society = ''
+            if content.get('society') != '':
+                society = content.get('society')
+
+            competition = ''
+            if content.get('competition') != '':
+                competition = content.get('competition')
+
+            situation = ''
+            if content.get('situation') != '':
+                situation = content.get('situation')
+
+            partisan = ''
+            if content.get('partisan') != '':
+                partisan = content.get('partisan')
+
+            stain = ''
+            if content.get('stain') != '':
+                stain = content.get('stain')
+
+            insert_houxuanren_sql = """INSERT INTO `candidate_personnel_information` (`candidate_id`,`name`,`sex`,`name_en`,`birthday`, `birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`partisan`,`stain`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+            try:
+                hxr_infos_re = cur.execute(insert_houxuanren_sql,(candidate_id,name,sex,name_en,birthday, birthplace,taiwan_id,passport,personal_webpage,personal_phone,work_phone,email,address,education,job,department,family,job_manager,political,society,competition,situation,partisan,stain))
+            # print(re)
+            except Exception as erro:
+                app.logger.error(erro)
+                return 0
+            if hxr_infos_re != 0:
+                app.logger.error("写入候选人信息成功")
+                closeAll(conn,cur)
+                return 1
+            elif hxr_infos_re == 0:
+                app.logger.erro('写入候选人信息错误')
+                conn.rollback()
+                cur.close()
+                conn.close()
+                return 0
+        elif info_type == '2':
+            message = session["electors"]
+            key_list = []
+            for key in message.keys():
+                key_list.append(key)
+            candidate_id = ''
+            if (content.get('candidate_id') != '' and content.get('candidate_id') != None) and content.get('candidate_id') in key_list:
+                candidate_id = content.get('candidate_id')
+            else:
+                app.logger.error("输入所属团队领导人标识")
+                return 0
+            name = ''
+            if content.get('name') != '' and content.get('name') != None:
+                name = content.get('name')
+
+            sex = ''
+            if  content.get('sex')!= '' and content.get('sex') != None:
+                sex = content.get('sex')
+
+            name_en = ''
+            if content.get('name_en') != '' and content.get('name_en') != None:
+                name_en = content.get('name_en')
+
+            birthday = ''
+            if content.get('birthday') != '' :
+                birthday = content.get('birthday')
+
+            birthplace= ''
+            if content.get('birthplace') != '' and content.get('birthplace') != None:
+                birthplace = content.get('birthplace')
+
+            taiwan_id = ''
+            if content.get('taiwan_id') != '' and content.get('taiwan_id') != None:
+                taiwan_id = content.get('taiwan_id')
+
+            passport = ''
+            if content.get('passport') != '' and content.get('passport') != None:
+                passport = content.get('passport')
+
+            personal_webpage = ''
+            if content.get('personal_webpage') != ''and content.get('personal_webpage') != None:
+                personal_webpage = content.get('personal_webpage')
+
+            personal_phone = ''
+            if content.get('personal_phone') != '' and content.get('personal_phone') != None:
+                personal_phone = content.get('personal_phone')
+
+            work_phone = ''
+            if content.get('work_phone') != '' and content.get('work_phone') != None:
+                work_phone = content.get('work_phone')
+
+            email = ''
+            if content.get('email') != '' and content.get('email') != None:
+                email = content.get('email')
+
+            address = ''
+            if content.get('address') != '' and content.get('address') != None:
+                address = content.get('address')
+
+            education = ''
+            if content.get('education') != '' and content.get('education') != None:
+                education = content.get('education')
+
+            job = ''
+            if content.get('job') != '' and content.get('job') != None:
+                job = content.get('job')
+
+            department = ''
+            if content.get('department') != '' and content.get('department') != None:
+                department = content.get('department')
+
+            family = ''
+            if content.get('family') != '' and content.get('family') != None:
+                family = content.get('family')
+
+            job_manager = ''
+            if content.get('job_manager') != '' and content.get('job_manager') != None:
+                job_manager = content.get('job_manager')
+
+            political = ''
+            if content.get('political') != '' and content.get('political') != None:
+                political = content.get('political')
+
+            society = ''
+            if content.get('society') != '' and content.get('society') != None:
+                society = content.get('society')
+
+            competition = ''
+            if content.get('competition') != '' and content.get('competition') != None:
+                competition = content.get('competition')
+
+            situation = ''
+            if content.get('situation') != '' and content.get('situation') != None:
+                situation = content.get('situation')
+
+            partisan = ''
+            if content.get('partisan') != '' and content.get('partisan') != None:
+                partisan = content.get('partisan')
+
+            stain = ''
+            if content.get('stain') != '' and content.get('stain') != None:
+                stain = content.get('stain')
+            conn = getconn()
+            cur = conn.cursor()
+            select_sql = ''
+            if birthday != '' and birthday != None:
+                select_sql = """SELECT * FROM  `personnel_information` WHERE `candidate_id` = %s AND `name` = %s AND `sex` = %s AND `name_en` = %s AND `birthday` = %s AND  `birthplace` = %s AND `taiwan_id` = %s AND `passport` = %s AND `personal_webpage` = %s AND `personal_phone` = %s AND `work_phone` = %s AND `email` = %s AND `address` = %s AND `education` = %s AND `job` = %s AND `department` = %s AND `family` = %s AND `job_manager` = %s AND `political` = %s AND `society` = %s AND `competition` = %s AND `situation` = %s AND `partisan` = %s AND `stain` = %s"""
+            else:
+                select_sql = """SELECT * FROM  `personnel_information` WHERE `candidate_id` = %s AND `name` = %s AND `sex` = %s AND `name_en` = %s AND `birthday` IS %s AND  `birthplace` = %s AND `taiwan_id` = %s AND `passport` = %s AND `personal_webpage` = %s AND `personal_phone` = %s AND `work_phone` = %s AND `email` = %s AND `address` = %s AND `education` = %s AND `job` = %s AND `department` = %s AND `family` = %s AND `job_manager` = %s AND `political` = %s AND `society` = %s AND `competition` = %s AND `situation` = %s AND `partisan` = %s AND `stain` = %s"""
+            member_re = cur.execute(select_sql,(candidate_id,name,sex,name_en,birthday, birthplace,taiwan_id,passport,personal_webpage,personal_phone,work_phone,email,address,education,job,department,family,job_manager,political,society,competition,situation,partisan,stain))
+            if member_re != 0:
+                app.logger.error("该成员信息已存在")
+                return 406
+            elif member_re == 0:
+                insert_sql = """INSERT INTO `personnel_information` (`candidate_id`,`name`,`sex`,`name_en`,`birthday`, `birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`partisan`,`stain`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+                re = cur.execute(insert_sql,(candidate_id,name,sex,name_en,birthday, birthplace,taiwan_id,passport,personal_webpage,personal_phone,work_phone,email,address,education,job,department,family,job_manager,political,society,competition,situation,partisan,stain))
+                # print(re)
+                if re != 0:
+                    app.logger.error("成员信息写入成功")
+                    closeAll(conn,cur)
+                    return 1
+                elif re == 0:
+                    app.logger.error("成员信息未记录")
+                    closeAll(conn,cur)
+                    return 0
+    except Exception as erro:
+        app.logger.error(erro)
         return 0
 
-#新增候选人或者团队人员信息
-#存候选人信息的流程是 candidate->spider_infos->candidate_personnel_information
-# def add_people_informations(type,content):
-#     try:
-#         if type == '1':
-#             conn = getconn()
-#             cur = conn.cursor()
-#             must_keys = ['administrative_id','username','year','facebook_url']
-#             lost_key = []
-#             num = 0
-#             for key in must_keys:
-#                 if content.get(key) == None or content.get(key) == '':
-#                     lost_key.append(key)
-#                     num += 1
-#                     if num >=len(must_keys):
-#                         break
-#             if len(lost_key) != 0:
-#                 return "输入缺失{}数据".format(lost_key),"2"
-#             elif len(lost_key) == 0:
-#                 administrative_id = content.get('administrative_id')
-#                 username = content.get('username')
-#                 year = content.get('year')
-#                 facebook_url = content.get('facebook_url')
-#                 select_sql = """SELECT `candidate_id` FROM `candidate` WHERE `administrative_id` = %s AND `username` = %s AND `year` = %s"""
-#                 count = cur.execute(select_sql,(administrative_id,username,year))
-#                 # print(count)
-#                 if count != 0:
-#                     closeAll(conn,cur)
-#                     app.logger.error("所输入候选人已存在")
-#                     return 0
-#                 elif count == 0:
-#                     insert_sql = """INSERT INTO `candidate` (`administrative_id`,`username`,`year`) VALUES (%s,%s,%s)"""
-#                     try:
-#                         hxr_re = cur.execute(insert_sql,(administrative_id,username,year))
-#                     except Exception as erro:
-#                         app.logger.error(erro)
-#                         return str(erro),"2"
-#                     if hxr_re == 0:
-#                         app.logger.error("候选人信息未记录")
-#                         cur.rollback()
-#                         cur.close()
-#                         conn.close()
-#                         return 0
-#                     else:
-#                         insert_spider_sql = """INSERT INTO `spider_infos` (`administrative_id`,`administrative_name`,`year`,`facebook_url`) VALUES (%s,%s,%s,%s)"""
-#                         try:
-#                             spider_re = cur.execute(insert_spider_sql,(administrative_id,username,year,facebook_url))
-#                         except Exception as erro:
-#                             app.logger.error(erro)
-#                             return str(erro),"2"
-#                         if spider_re  == 0:
-#                             app.logger.error("候选人facebook主页信息未录入")
-#                             cur.rollback()
-#                             cur.close()
-#                             conn.close()
-#                             return 0
-#                         else:
-#                             sex = ''
-#                             if content.get('sex')!= '' or content.get('sex') != None :
-#                                 sex = content.get('sex')
-#
-#                             name_en = ''
-#                             if content.get('name_en') != '':
-#                                 name_en = content.get('name_en')
-#
-#                             birthday = ''
-#                             if content.get('birthday') != '':
-#                                 birthday = content.get('birthday'),
-#
-#                             birthplace= ''
-#                             if content.get('birthplace') != '':
-#                                 birthplace = content.get('birthplace')
-#
-#                             taiwan_id = ''
-#                             if content.get('taiwan_id') != '':
-#                                 taiwan_id = content.get('taiwan_id')
-#
-#                             passport = ''
-#                             if content.get('passport') != '':
-#                                 passport = content.get('passport')
-#
-#                             personal_webpage = ''
-#                             if content.get('personal_webpage') != '':
-#                                 personal_webpage = content.get('personal_webpage')
-#
-#                             personal_phone = ''
-#                             if content.get('personal_phone') != '':
-#                                 personal_phone = content.get('personal_phone')
-#
-#                             work_phone = ''
-#                             if content.get('work_phone') != '':
-#                                 work_phone = content.get('work_phone')
-#
-#                             email = ''
-#                             if content.get('email') != '':
-#                                 email = content.get('email')
-#
-#                             address = ''
-#                             if content.get('address') != '':
-#                                 address = content.get('address')
-#
-#                             education = ''
-#                             if content.get('education') != '':
-#                                 education = content.get('education')
-#
-#                             job = ''
-#                             if content.get('job') != '':
-#                                 job = content.get('job')
-#
-#                             department = ''
-#                             if content.get('department') != '':
-#                                 department = content.get('department')
-#
-#                             family = ''
-#                             if content.get('family') != '':
-#                                 family = content.get('family')
-#
-#                             job_manager = ''
-#                             if content.get('job_manager') != '':
-#                                 job_manager = content.get('job_manager')
-#
-#                             political = ''
-#                             if content.get('political') != '':
-#                                 political = content.get('political')
-#
-#                             society = ''
-#                             if content.get('society') != '':
-#                                 society = content.get('society')
-#
-#                             competition = ''
-#                             if content.get('competition') != '':
-#                                 competition = content.get('competition')
-#
-#                             situation = ''
-#                             if content.get('situation') != '':
-#                                 situation = content.get('situation')
-#
-#                             partisan = ''
-#                             if content.get('partisan') != '':
-#                                 partisan = content.get('partisan')
-#
-#                             stain = ''
-#                             if content.get('stain') != '':
-#                                 stain = content.get('stain')
-#
-#                             insert_houxuanren_sql = """INSERT INTO `candidate_personnel_information` (`sex`,`name_en`,`birthday`, `birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`partisan`,`stain`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-#                             hxr_infos_re = cur.execute(insert_houxuanren_sql,(sex,name_en,birthday, birthplace,taiwan_id,passport,personal_webpage,personal_phone,work_phone,email,address,education,job,department,family,job_manager,political,society,competition,situation,partisan,stain))
-#                             # print(re)
-#                             if hxr_infos_re != 0:
-#                                 app.logger.error("候选人信息写入成功")
-#                                 closeAll(conn,cur)
-#                                 return 1
-#                             elif hxr_infos_re == 0:
-#                                 app.logger.erro('写入候选人信息错误')
-#                                 cur.rollback()
-#                                 cur.close()
-#                                 conn.close()
-#                                 return 0
-#         elif type == '2':
-#             message = session["electors"]
-#             key_list = []
-#             for key in message.keys():
-#                 key_list.append(key)
-#             candidate_id = ''
-#             if content.get('candidate_id') != '' and content.get('candidate_id') != None and content.get('candidate_id') in key_list:
-#                 candidate_id = content.get('candidate_id')
-#             else:
-#                 app.logger.error("输入所属团队领导人标识")
-#                 return 0
-#             name = ''
-#             if content.get('name') != '' and content.get('name') != None:
-#                 name = content.get('name')
-#
-#             sex = ''
-#             if  content.get('sex')!= '' and content.get('sex') != None:
-#                 sex = content.get('sex')
-#
-#             name_en = ''
-#             if content.get('name_en') != '' and content.get('name_en') != None:
-#                 name_en = content.get('name_en')
-#
-#             birthday = ''
-#             if content.get('birthday') != '' :
-#                 birthday = content.get('birthday')
-#
-#             birthplace= ''
-#             if content.get('birthplace') != '' and content.get('birthplace') != None:
-#                 birthplace = content.get('birthplace')
-#
-#             taiwan_id = ''
-#             if content.get('taiwan_id') != '' and content.get('taiwan_id') != None:
-#                 taiwan_id = content.get('taiwan_id')
-#
-#             passport = ''
-#             if content.get('passport') != '' and content.get('passport') != None:
-#                 passport = content.get('passport')
-#
-#             personal_webpage = ''
-#             if content.get('personal_webpage') != ''and content.get('personal_webpage') != None:
-#                 personal_webpage = content.get('personal_webpage')
-#
-#             personal_phone = ''
-#             if content.get('personal_phone') != '' and content.get('personal_phone') != None:
-#                 personal_phone = content.get('personal_phone')
-#
-#             work_phone = ''
-#             if content.get('work_phone') != '' and content.get('work_phone') != None:
-#                 work_phone = content.get('work_phone')
-#
-#             email = ''
-#             if content.get('email') != '' and content.get('email') != None:
-#                 email = content.get('email')
-#
-#             address = ''
-#             if content.get('address') != '' and content.get('address') != None:
-#                 address = content.get('address')
-#
-#             education = ''
-#             if content.get('education') != '' and content.get('education') != None:
-#                 education = content.get('education')
-#
-#             job = ''
-#             if content.get('job') != '' and content.get('job') != None:
-#                 job = content.get('job')
-#
-#             department = ''
-#             if content.get('department') != '' and content.get('department') != None:
-#                 department = content.get('department')
-#
-#             family = ''
-#             if content.get('family') != '' and content.get('family') != None:
-#                 family = content.get('family')
-#
-#             job_manager = ''
-#             if content.get('job_manager') != '' and content.get('job_manager') != None:
-#                 job_manager = content.get('job_manager')
-#
-#             political = ''
-#             if content.get('political') != '' and content.get('political') != None:
-#                 political = content.get('political')
-#
-#             society = ''
-#             if content.get('society') != '' and content.get('society') != None:
-#                 society = content.get('society')
-#
-#             competition = ''
-#             if content.get('competition') != '' and content.get('competition') != None:
-#                 competition = content.get('competition')
-#
-#             situation = ''
-#             if content.get('situation') != '' and content.get('situation') != None:
-#                 situation = content.get('situation')
-#
-#             partisan = ''
-#             if content.get('partisan') != '' and content.get('partisan') != None:
-#                 partisan = content.get('partisan')
-#
-#             stain = ''
-#             if content.get('stain') != '' and content.get('stain') != None:
-#                 stain = content.get('stain')
-#             conn = getconn()
-#             cur = conn.cursor()
-#             select_sql = ''
-#             if birthday != '' and birthday != None:
-#                 select_sql = """SELECT * FROM  `personnel_information` WHERE `candidate_id` = %s AND `name` = %s AND `sex` = %s AND `name_en` = %s AND `birthday` = %s AND  `birthplace` = %s AND `taiwan_id` = %s AND `passport` = %s AND `personal_webpage` = %s AND `personal_phone` = %s AND `work_phone` = %s AND `email` = %s AND `address` = %s AND `education` = %s AND `job` = %s AND `department` = %s AND `family` = %s AND `job_manager` = %s AND `political` = %s AND `society` = %s AND `competition` = %s AND `situation` = %s AND `partisan` = %s AND `stain` = %s"""
-#             else:
-#                 select_sql = """SELECT * FROM  `personnel_information` WHERE `candidate_id` = %s AND `name` = %s AND `sex` = %s AND `name_en` = %s AND `birthday` IS %s AND  `birthplace` = %s AND `taiwan_id` = %s AND `passport` = %s AND `personal_webpage` = %s AND `personal_phone` = %s AND `work_phone` = %s AND `email` = %s AND `address` = %s AND `education` = %s AND `job` = %s AND `department` = %s AND `family` = %s AND `job_manager` = %s AND `political` = %s AND `society` = %s AND `competition` = %s AND `situation` = %s AND `partisan` = %s AND `stain` = %s"""
-#             member_re = cur.execute(select_sql,(candidate_id,name,sex,name_en,birthday, birthplace,taiwan_id,passport,personal_webpage,personal_phone,work_phone,email,address,education,job,department,family,job_manager,political,society,competition,situation,partisan,stain))
-#             if member_re != 0:
-#                 app.logger.error("该成员信息已存在")
-#                 return "该成员信息已存在","2"
-#             elif member_re == 0:
-#                 insert_sql = """INSERT INTO `personnel_information` (`candidate_id`,`name`,`sex`,`name_en`,`birthday`, `birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`partisan`,`stain`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-#                 re = cur.execute(insert_sql,(candidate_id,name,sex,name_en,birthday, birthplace,taiwan_id,passport,personal_webpage,personal_phone,work_phone,email,address,education,job,department,family,job_manager,political,society,competition,situation,partisan,stain))
-#                 # print(re)
-#                 if re != 0:
-#                     closeAll(conn,cur)
-#                     return "ok","1"
-#                 elif re == 0:
-#                     closeAll(conn,cur)
-#                     return "成员信息未记录","0"
-#     except Exception as erro:
-#         app.logger.error(erro)
-#         return str(erro),"2"
+
 # if __name__ == '__main__':
 #     # a = insert_info('7017','李晨','2018','www.facebook.com')
 #     a = delete_info(11)#{"administrative_id":"7019","administrative_name":"李晨"}

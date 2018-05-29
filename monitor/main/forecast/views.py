@@ -53,7 +53,7 @@ def get_facebook_trend_info():
             return jsonify({"message": "start_time or end_time is error"}), 406
         result = get_facebook_trend(start_time, end_time, dict_name)
         if result == 0:
-            return jsonify({"message": "The time field is in the wrong format"}), 200
+            return jsonify({"message": "The time field is in the wrong format"}), 401
         else:
             return jsonify({"message": result}), 200
 
@@ -81,6 +81,6 @@ def get_popular_trend_info():
             return jsonify({"message": "start_time or end_time is error"}), 406
         result = get_popular_info(start_time, end_time, dict_name)
         if result == 0:
-            return jsonify({"message": "The time field is in the wrong format"}), 400
+            return jsonify({"message": "The time field is in the wrong format"}), 403
         else:
             return jsonify({"message": result}), 200

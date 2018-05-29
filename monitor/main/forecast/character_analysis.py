@@ -75,5 +75,4 @@ def get_candidates(dict_name):
         result_dict["activity"] = face_dict
         return result_dict
     except Exception as e:
-        print(e)
         return 0

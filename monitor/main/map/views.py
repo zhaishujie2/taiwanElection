@@ -23,6 +23,7 @@ def get_map():
 @mod.route('/record_session/',methods=['POST'])
 def record_session():
     data = request.form.get('data', '')
+    dict = {}
     if data == '':
         return jsonify({"message":"data is null"}),406
     try:
@@ -34,7 +35,11 @@ def record_session():
             session["electors"] = user_dict
             session["year"] = year
             session["area_id"] = id
-            return jsonify({"message":"ok"}),200
+            dict["electors"] = user_dict
+            dict["year"] = year
+            dict["area_id"] = id
+
+            return jsonify({"message":dict}),200
         else:
             return jsonify({"message":"传入的值在数据库中无法查出数据"}),406
     except:
