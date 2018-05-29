@@ -38,7 +38,7 @@ def get_information():
             return jsonify({"message":result}),200
     except Exception as erro:
         app.logger.error(erro)
-        return 0
+        return str(0)
 
 #获取地区基本信息
 @mod.route('/gov_area/')
