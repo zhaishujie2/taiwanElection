@@ -10,7 +10,7 @@ import datetime
 es = Elasticsearch(es_host, timeout=600)
 
 
-def insert_popularity_demo(start_time,end_time):
+def update_popularity_demo(start_time,end_time):
     conn = getconn()
     cur= conn.cursor()
     try:
@@ -26,9 +26,9 @@ def insert_popularity_demo(start_time,end_time):
                 dict[person[0]] = person[2]
             popularity_dict =  (get_popularity(start_time,end_time,dict))
             for  key,value in dict.items():
-                sql = "INSERT INTO popularity (candidate_id,create_data,popularity_score)  VALUES (%s,%s,%s)"
+                sql = "UPDATE popularity SET popularity_score=%s WHERE candidate_id=%s AND create_data=%s"
                 print (popularity_dict[value]*100)
-                cur.execute(sql,(key,end_time,popularity_dict[value]*100))
+                cur.execute(sql,(popularity_dict[value]*100,key,end_time))
                 conn.commit()
     except:
         return 0
@@ -227,4 +227,4 @@ if __name__ == '__main__':
     #     insert_popularity_demo(start_time,item)
     end_time = datetime.datetime.now().strftime("%Y-%m-%d")
     start_time = get_before_time(end_time,45)
-    insert_popularity_demo(start_time,end_time)
+    print(update_popularity_demo(start_time,end_time))
