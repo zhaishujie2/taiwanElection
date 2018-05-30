@@ -35,7 +35,10 @@ def record_session():
             session["electors"] = user_dict
             session["year"] = year
             session["area_id"] = id
-            dict["electors"] = user_dict
+            user = {}
+            for key,value in user_dict.items():
+                user[value] = key
+            dict["electors"] = user
             dict["year"] = year
             dict["area_id"] = id
 
