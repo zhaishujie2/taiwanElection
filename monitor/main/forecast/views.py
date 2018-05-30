@@ -23,7 +23,6 @@ def get_google_trend_info():
             data = json.loads(data)
             start_time = data["start_time"]
             end_time = data["end_time"]
-            print (start_time,end_time)
         except:
             return jsonify({"message": "start_time or end_time is error"}), 406
         result = get_google_trend(start_time, end_time, dict_name)

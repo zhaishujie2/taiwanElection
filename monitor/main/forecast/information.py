@@ -19,7 +19,7 @@ def get_google_trend(start_time, end_time, dict_name):
         dict = {}
         for id in dict_name.keys():
             series = []
-            sql = "select trend,date_time from google_trend where DATE(date_time) > %s and  DATE(date_time)< %s and candidate_id=%s"
+            sql = "select trend,date_time from google_trend where DATE(date_time) >= %s and  DATE(date_time)<= %s and candidate_id=%s"
             count = cur.execute(sql, (start_time, end_time, id))
             result = cur.fetchmany(count)
             dict_item = {}
@@ -27,8 +27,6 @@ def get_google_trend(start_time, end_time, dict_name):
 #---------------------------------------------------------------------------------------
             for item in result:
                 dict_item[item[1].strftime("%Y-%m-%d")] = item[0]
-            # print(dict_item)
-            # print(list_data)
             for item in list_data:
                 if item not in dict_item:
                     dict_item[item] = 0
@@ -102,7 +100,6 @@ def get_popular_info(start_time,end_time,message):
         for name_id in id_list:
             sql = """SELECT CAST(`create_data` AS CHAR),`popularity_score`,`candidate_id` FROM popularity WHERE %s <= `create_data`  AND `create_data` <= %s AND `candidate_id` = %s ORDER BY `create_data` ASC"""
             re = cur.execute(sql,(start_time,end_time,name_id))
-            # print(count)
             if re < 1:
                 return 0
             else:
