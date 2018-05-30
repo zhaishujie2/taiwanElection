@@ -393,6 +393,8 @@ def delete_people_information(type,content):
     except Exception as erro:
         app.logger.error(erro)
         return 0
+    # finally:
+    #     closeAll(conn,cur)
 
 
 #查询关联表和Facebook信息是否存在
@@ -743,7 +745,89 @@ def add_administrative_infos(auto_id,info_type,content):
         app.logger.error(erro)
         return 0
 
+#更新候选人信息和团队人员信息
+def update_people_information(info_type,content):
+    try:
+        where_dict = content.get('where_dict')
+        up_dict = content.get('up_dict')
+        print(where_dict)
+        if len(where_dict) == 0 or len(up_dict) == 0:
+            if len(where_dict) == 0:
+                app.logger.error("更新条件不能为空")
+                return 0
+            if len(up_dict) == 0:
+                app.logger.error("更新内容不能为空")
+                return 0
+        if info_type == '1':
+            conn = getconn()
+            cur = conn.cursor()
+            where_sql = ''
+            up_sql = ''
+            where_num = 0
+            up_num = 0
+            for k,v in where_dict.items():
+                where_num += 1
+                if where_num < len(where_dict):
+                    where_sql += "{} = '{}' AND ".format(k,v)
+                else:
+                    where_sql += "{} = '{}'".format(k,v)
+            for k,v in up_dict.items():
+                up_num += 1
+                if up_num < len(up_dict):
+                    up_sql += "{} = '{}', ".format(k,v)
+                else:
+                    up_sql += "{} = '{}' ".format(k,v)
 
+            update_sql = """UPDATE `candidate_personnel_information` SET """ + up_sql +' WHERE '+ where_sql
+            # print(update_sql)
+            try:
+                re = cur.execute(update_sql)
+                if re < 1 :
+                    app.logger.error("候选人信息未更新")
+                    return 0
+                else:
+                    app.logger.error("候选人信息更新成功")
+                    return 1
+            except Exception as erro:
+                app.logger.error(erro)
+                return 0
+            finally:
+                closeAll(conn,cur)
+        elif info_type == '2':
+            conn = getconn()
+            cur = conn.cursor()
+            up_sql = ''
+            up_num = 0
+            ids = ''
+            if where_dict.get('id') != None:
+                ids = where_dict.get('id')
+            else:
+                ids = where_dict.get('candidate_id')
+            for k,v in up_dict.items():
+                up_num += 1
+                if up_num < len(up_dict):
+                    up_sql += "{} = '{}', ".format(k,v)
+                else:
+                    up_sql += "{} = '{}' ".format(k,v)
+
+            update_sql = """UPDATE `personnel_information` SET """ + up_sql +' WHERE  `id` = %s'
+            # print(update_sql)
+            try:
+                re = cur.execute(update_sql,(ids))
+                if re < 1 :
+                    app.logger.error("团队成员信息未更新")
+                    return 0
+                else:
+                    app.logger.error("团队成员信息更新成功")
+                    return 1
+            except Exception as erro:
+                app.logger.error(erro)
+                return 0
+            finally:
+                closeAll(conn,cur)
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
 # if __name__ == '__main__':
 #     # a = insert_info('7017','李晨','2018','www.facebook.com')
 #     a = delete_info(11)#{"administrative_id":"7019","administrative_name":"李晨"}

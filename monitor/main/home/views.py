@@ -22,7 +22,7 @@ def get_all_information():
 #获取个人信息
 @mod.route('/every_infos/',methods=['POST'])
 def get_information():
-    try:
+    # try:
         datas = request.form.get('data','')
         data = json.loads(datas)
         info_type = data.get('type')
@@ -36,9 +36,9 @@ def get_information():
             if result == 0:
                 return jsonify({"message":"The data is wrong "}),400
             return jsonify({"message":result}),200
-    except Exception as erro:
-        app.logger.error(erro)
-        return str(0)
+    # except Exception as erro:
+    #     app.logger.error(erro)
+    #     return str(0)
 
 #获取地区基本信息
 @mod.route('/gov_area/')

@@ -2,7 +2,7 @@
 from flask import jsonify,request
 from . import mod
 from monitor import app
-from monitor.main.system.operate_info import insert_info,delete_info,update_info,select_info,get_is_candidate,get_region_dict,get_one_infos,select_candidate_facebook,add_administrative_infos,insert_candidate_facebook,delete_people_information
+from monitor.main.system.operate_info import insert_info,delete_info,update_info,select_info,get_is_candidate,get_region_dict,get_one_infos,select_candidate_facebook,add_administrative_infos,insert_candidate_facebook,delete_people_information,update_people_information
 import json
 
 #facebook写入数据
@@ -183,7 +183,7 @@ def update_information():
         if data == '':
             return jsonify({"message": "data input is null"}), 406
         else:
-            result = delete_people_information(info_type,data)
+            result = update_people_information(info_type,data)
             if result == None:
                 return jsonify({"message": "The data is wrong"}), 400
             else:
