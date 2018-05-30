@@ -92,27 +92,29 @@ def get_everyinformation(type, content):
             return result_list
 
         elif type == '2':
-            message = session["electors"]
-            key_list = []
-            for key in message.keys():
-                key_list.append(key)
+            # message = session["electors"]
+            # key_list = []
+            # for key in message.keys():
+            #     key_list.append(key)
             id = ''
-            if (content.get('candidate_id') != '' and content.get('candidate_id') != None) and content.get('candidate_id') in key_list:
-                id = content.get('candidate_id')
-            else:
-                app.logger.error("输入所属团队领导人标识")
-                return 0
-            name = content.get('name')
+            # if (content.get('candidate_id') != '' and content.get('candidate_id') != None) and content.get('candidate_id') in key_list:
+            # if (content.get('candidate_id') != '' and content.get('candidate_id') != None):
+            #     candidate_id = content.get('candidate_id')
+            # else:
+            #     app.logger.error("输入所属团队领导人标识")
+            #     return 0
+            candidate_id = content.get('candidate_id')
+            id = content.get('id')
             conn = getconn()
             cur = conn.cursor()
-            member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name` FROM `personnel_information` WHERE `id` = %s AND `name` = %s"""
-            all_member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name` FROM `personnel_information`"""
+            member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id` FROM `personnel_information` WHERE `id` = %s """
+            all_member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id` FROM `personnel_information` WHERE `candidate_id` = %s"""
             every = content.get('every')
             count = ''
             if every == '0':
-                count = cur.execute(member_sql,(id,name))
+                count = cur.execute(member_sql,(id))
             elif every == '1':
-                cur.execute(all_member_sql)
+                cur.execute(all_member_sql,(candidate_id))
             if count != 0:
                 result = cur.fetchall()
 
@@ -120,6 +122,7 @@ def get_everyinformation(type, content):
                 for item in result:
                     member_dict = {}
                     information = {}
+                    member_dict['candidate_id'] = item[24]
                     member_dict['name'] = item[23]
                     member_dict['auto_id'] = item[22]
                     member_dict['job'] = item[0]
@@ -150,7 +153,7 @@ def get_everyinformation(type, content):
                 return result_list
             else:
                 closeAll(conn, cur)
-                app.logger.error("查人员信息")
+                app.logger.error("查无此人员信息")
                 return 0
         else:
             app.logger.error("传入正确的类型")
