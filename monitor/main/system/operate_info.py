@@ -1,8 +1,10 @@
 # coding=utf-8
 from monitor.util.mysql_util import getconn,closeAll
 from monitor import app
+import base64
 from flask import session
 
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 #facebook写入数据
 def insert_info(auto_id,datas):
     conn = getconn()
@@ -356,7 +358,12 @@ def get_region_dict(data):
 def delete_people_information(type,content):
     conn = getconn()
     cur = conn.cursor()
-    candidate_id = content.get('candidate_id')
+    candidate_id = ''
+
+    if content.get('candidate_id') != '' and content.get('candidate_id') != None:
+        candidate_id = content.get('candidate_id')
+    else:
+        candidate_id = content.get('id')
     info_type = content.get('type')
     try:
         if info_type == '1':
@@ -393,8 +400,6 @@ def delete_people_information(type,content):
     except Exception as erro:
         app.logger.error(erro)
         return 0
-    # finally:
-    #     closeAll(conn,cur)
 
 
 #查询关联表和Facebook信息是否存在
@@ -428,12 +433,12 @@ def select_candidate_facebook(info_type,content):
                 elif administrative_re == 0:
                     facebook_re = select_info(content)
                     if facebook_re != 0:
-                        app.logger.error("候选人facebook主页信息已录入")
+                        app.logger.error("候选人facebook主页信息已存在，不用重新录入")
                         cur.close()
                         conn.close()
                         return 0
                     elif facebook_re == 0:
-                        app.logger.error("候选人facebook主页信息未录入")
+                        app.logger.error("候选人facebook主页信息可以进行录入")
                         return 1
         elif info_type == '2':
             return 1
@@ -471,6 +476,7 @@ def insert_candidate_facebook(info_type,content):
                     hxr_re = cur.execute(insert_sql,(administrative_id,username,year))
                     auto_id = conn.insert_id()#返回最新写入的id
                 except Exception as erro:
+                    print(erro)
                     app.logger.error(erro)
                     return 0
                 if hxr_re == 0:
@@ -499,7 +505,7 @@ def add_administrative_infos(auto_id,info_type,content):
     try:
         conn = getconn()
         cur = conn.cursor()
-        if info_type =='1':
+        if (info_type =='1' and auto_id != '') or auto_id != None:
             candidate_id = ''
             if auto_id != '' or auto_id != None:
                 candidate_id = auto_id
@@ -604,6 +610,10 @@ def add_administrative_infos(auto_id,info_type,content):
                 hxr_infos_re = cur.execute(insert_houxuanren_sql,(candidate_id,name,sex,name_en,birthday, birthplace,taiwan_id,passport,personal_webpage,personal_phone,work_phone,email,address,education,job,department,family,job_manager,political,society,competition,situation,partisan,stain))
             # print(re)
             except Exception as erro:
+                app.logger.erro('写入候选人信息错误')
+                conn.rollback()
+                cur.close()
+                conn.close()
                 app.logger.error(erro)
                 return 0
             if hxr_infos_re != 0:
@@ -616,13 +626,19 @@ def add_administrative_infos(auto_id,info_type,content):
                 cur.close()
                 conn.close()
                 return 0
-        elif info_type == '2':
-            message = session["electors"]
-            key_list = []
-            for key in message.keys():
-                key_list.append(key)
+        elif (info_type =='2' and auto_id != '') or auto_id != None:
+            # message = session["electors"]
+            # key_list = []
+            # for key in message.keys():
+            #     key_list.append(key)
+            # candidate_id = ''
+            # if (content.get('candidate_id') != '' and content.get('candidate_id') != None) and content.get('candidate_id') in key_list:
+            #     candidate_id = content.get('candidate_id')
+            # else:
+            #     app.logger.error("输入所属团队领导人标识")
+            #     return 0
             candidate_id = ''
-            if (content.get('candidate_id') != '' and content.get('candidate_id') != None) and content.get('candidate_id') in key_list:
+            if content.get('candidate_id') != '' and content.get('candidate_id') != None:
                 candidate_id = content.get('candidate_id')
             else:
                 app.logger.error("输入所属团队领导人标识")
@@ -742,6 +758,9 @@ def add_administrative_infos(auto_id,info_type,content):
                     closeAll(conn,cur)
                     return 0
     except Exception as erro:
+        conn.rollback()
+        cur.close()
+        conn.close()
         app.logger.error(erro)
         return 0
 
@@ -750,7 +769,6 @@ def update_people_information(info_type,content):
     try:
         where_dict = content.get('where_dict')
         up_dict = content.get('up_dict')
-        print(where_dict)
         if len(where_dict) == 0 or len(up_dict) == 0:
             if len(where_dict) == 0:
                 app.logger.error("更新条件不能为空")
@@ -811,7 +829,6 @@ def update_people_information(info_type,content):
                     up_sql += "{} = '{}' ".format(k,v)
 
             update_sql = """UPDATE `personnel_information` SET """ + up_sql +' WHERE  `id` = %s'
-            # print(update_sql)
             try:
                 re = cur.execute(update_sql,(ids))
                 if re < 1 :
@@ -828,6 +845,226 @@ def update_people_information(info_type,content):
     except Exception as erro:
         app.logger.error(erro)
         return 0
+
+# 获取每一个人的详细信息加上every条件后可以返回所有
+def get_everyinformation(type, content):
+    try:
+        if type == '1' :
+            result_list = []
+            id = content.get('id')
+            one_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`year`,`administrative_id` FROM (SELECT * FROM `candidate_personnel_information` WHERE `candidate_id` = %s )a ,(SELECT `year`,`candidate_id` as ids,`administrative_id` FROM `candidate` WHERE `candidate_id` = %s)b WHERE a.candidate_id = b.ids """
+            all_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`year`,`administrative_id` FROM(SELECT * FROM `candidate_personnel_information` )a ,(SELECT `year`,`candidate_id` as ids,`administrative_id`  FROM `candidate` )b WHERE a.candidate_id = b.ids ORDER BY `year` DESC """
+            conn = getconn()
+            cur = conn.cursor()
+            every = content.get('every')
+            if every == '0':
+                cur.execute(one_leader_sql,(id,id))
+            elif every == '1':
+                cur.execute(all_leader_sql)
+            result = cur.fetchall()
+            for item in result:
+                leader_infos_dict = {}
+                information = {}
+                administrative_id = item[25]
+                region = get_region_dict({"id":administrative_id})
+                leader_infos_dict['administrative_id'] = region
+                leader_infos_dict['year'] = item[24]
+                leader_infos_dict['auto_id'] = item[23]
+                leader_infos_dict['name'] = item[22]
+                leader_infos_dict['job'] = item[0]
+                leader_infos_dict['department'] = item[1]
+                leader_infos_dict['family'] = item[2]
+                leader_infos_dict['job_manager'] = item[3]
+                leader_infos_dict['political'] = item[4]
+                leader_infos_dict['society'] = item[5]
+                leader_infos_dict['competition'] = item[6]
+                leader_infos_dict['situation'] = item[7]
+                leader_infos_dict['stain'] = item[8]
+                information['sex'] = item[9]
+                information['name_en'] = item[10]
+                information['birthday'] = str(item[11])
+                information['birthplace'] = item[12]
+                information['taiwan_id'] = item[13]
+                information['passport'] = item[14]
+                information['personal_webpage'] = item[15]
+                information['personal_phone'] = item[16]
+                information['work_phone'] = item[17]
+                information['email'] = item[18]
+                information['address'] = item[19]
+                information['education'] = item[20]
+                information['partisan'] = item[21]
+                leader_infos_dict['information'] = information
+                result_list.append(leader_infos_dict)
+            closeAll(conn, cur)
+            return result_list
+
+        elif type == '2':
+            # message = session["electors"]
+            # key_list = []
+            # for key in message.keys():
+            #     key_list.append(key)
+            id = ''
+            # if (content.get('candidate_id') != '' and content.get('candidate_id') != None) and content.get('candidate_id') in key_list:
+            # if (content.get('candidate_id') != '' and content.get('candidate_id') != None):
+            #     candidate_id = content.get('candidate_id')
+            # else:
+            #     app.logger.error("输入所属团队领导人标识")
+            #     return 0
+            candidate_id = content.get('candidate_id')
+            if content.get('id') == None:
+                id = content.get('candidate_id')
+            conn = getconn()
+            cur = conn.cursor()
+            every = content.get('every')
+            member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id`,`year`,`administrative_id` FROM(SELECT * FROM `personnel_information` WHERE `id` = %s)a, (SELECT `year`,`candidate_id` as ids,`administrative_id` FROM `candidate` WHERE `candidate_id` = (SELECT `candidate_id` FROM `personnel_information` WHERE `id` = %s ))b WHERE a.candidate_id = b.ids """
+            all_member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id`,`year`,`administrative_id` FROM (SELECT * FROM `personnel_information` WHERE `candidate_id` = %s)a,(SELECT `year`,`candidate_id` as ids,`administrative_id`  FROM `candidate` WHERE `candidate_id` =%s)b  WHERE a.candidate_id = b.ids """
+            # member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id` FROM `personnel_information` WHERE `id` = %s """
+            # all_member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id` FROM `personnel_information` WHERE `candidate_id` = %s"""
+            count = ''
+            if every == '0':
+                count = cur.execute(member_sql,(id,id))
+            elif every == '1':
+                cur.execute(all_member_sql,(candidate_id,candidate_id))
+            if count != 0:
+                result = cur.fetchall()
+
+                result_list = []
+                for item in result:
+                    member_dict = {}
+                    information = {}
+                    administrative_id = item[26]
+                    region = get_region_dict({"id":administrative_id})
+                    member_dict['administrative_id'] = region
+                    member_dict['year'] = item[25]
+                    member_dict['candidate_id'] = item[24]
+                    member_dict['name'] = item[23]
+                    member_dict['auto_id'] = item[22]
+                    member_dict['job'] = item[0]
+                    member_dict['department'] = item[1]
+                    member_dict['family'] = item[2]
+                    member_dict['job_manager'] = item[3]
+                    member_dict['political'] = item[4]
+                    member_dict['society'] = item[5]
+                    member_dict['competition'] = item[6]
+                    member_dict['situation'] = item[7]
+                    member_dict['stain'] = item[8]
+                    information['sex'] = item[9]
+                    information['name_en'] = item[10]
+                    information['birthday'] = str(item[11])
+                    information['birthplace'] = item[12]
+                    information['taiwan_id'] = item[13]
+                    information['passport'] = item[14]
+                    information['personal_webpage'] = item[15]
+                    information['personal_phone'] = item[16]
+                    information['work_phone'] = item[17]
+                    information['email'] = item[18]
+                    information['address'] = item[19]
+                    information['education'] = item[20]
+                    information['partisan'] = item[21]
+                    member_dict['information'] = information
+                    result_list.append(member_dict)
+                closeAll(conn, cur)
+                return result_list
+            else:
+                closeAll(conn, cur)
+                app.logger.error("查无此人员信息")
+                return 0
+        else:
+            app.logger.error("传入正确的类型")
+            return 0
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
+
+
+#根据地区返回该地区的所有年份
+def get_all_years(info_type,data):
+    conn = getconn()
+    cur = conn.cursor()
+
+    if info_type == 'years':
+        try:
+            administrative_id = data.get('administrative_id')
+            years_select_sql = """SELECT `year` FROM `candidate` WHERE `administrative_id` = %s GROUP BY `year`"""
+            re = cur.execute(years_select_sql,(administrative_id))
+            if re < 1:
+                return 0
+            else:
+                result = cur.fetchall()
+                result_lists = []
+                mid_list = []
+                dict = {}
+                for item in result:
+                    mid_list.append(item[0])
+                dict['years'] = mid_list
+                result_lists.append(dict)
+                return result_lists
+        except Exception as erro:
+            app.logger.error(erro)
+            return 0
+        finally:
+            closeAll(conn,cur)
+    elif info_type == 'candidates':
+        try:
+            year = data.get('year')
+            administrative_id = data.get('administrative_id')
+            candidates_select_sql = """SELECT `candidate_id`,`username` FROM `candidate` WHERE `year` = %s AND `administrative_id` = %s"""
+            re = cur.execute(candidates_select_sql,(year,administrative_id))
+            if re < 1:
+                return 0
+            else:
+                result = cur.fetchall()
+                lists = []
+                for item in result:
+                    dict = {}
+                    dict['candidate_id'] = item[0]
+                    dict['name'] = item[1]
+                    lists.append(dict)
+                return lists
+        except Exception as erro:
+            app.logger.error(erro)
+            return 0
+        finally:
+            closeAll(conn,cur)
+
+#写入图片
+def insert_img(img,img_id):
+    try:
+        print(1)
+        strs = img.encode('utf-8').split(',')[1]
+        img_end = strs.replace(' ','+')
+        data = base64.b64decode(img_end)
+        # with open('/usr/share/nginx/html/customs/newsImg/'+img_id+'.jpg','wb') as f:
+        with open('/C:/Users/lichen/Desktop/aa/'+img_id+'.jpg','wb') as f:
+            f.write(data)
+            f.flush
+        return 1
+    except:
+        return 0
+
+#做分页
+def get_pages():
+    conn = getconn()
+    cur = conn.cursor()
+    try:
+        all_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`year`,`administrative_id` FROM(SELECT * FROM `candidate_personnel_information` )a ,(SELECT `year`,`candidate_id` as ids,`administrative_id`  FROM `candidate` )b WHERE a.candidate_id = b.ids ORDER BY `year` DESC """
+        count = cur.execute(all_leader_sql)
+        if count < 1:
+            return 0
+        else:
+            return count
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
+    finally:
+        closeAll(conn,cur)
+
+
+#校验图片是否正确
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
 
 #地区信息写入数据
 def insert_area_info(administrative_id, area_info, governance_situation, year):
@@ -1264,5 +1501,6 @@ def select_admini_name():
 #     # a = update_info(up_dict={"administrative_id":"7020","administrative_name":"lichen"},where_dict={"administrative_id":"7019","administrative_name":"李晨"})
 #     # a = select_info({"administrative_name":"李晨","year":"2020"})
 #     print(a)
+#     get_pages()
 
 
