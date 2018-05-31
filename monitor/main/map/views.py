@@ -90,7 +90,6 @@ def get_popularity_info():
         id = data["id"]
         year = data["year"]
         user_dict = get_egional_electors(int(id),int(year))
-        print (user_dict,"--------------------")
         if user_dict!=0:
             if len(user_dict)>0:
                 end_time = datetime.datetime.now().strftime("%Y-%m-%d")

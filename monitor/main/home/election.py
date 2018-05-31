@@ -49,7 +49,6 @@ def get_fb_aver_link(dict_name, start_time, end_time):
                     likes += int(item["_source"]["likes"])
             dict[dict_name[id]] = int(likes / (len(result)))
             sum += int(likes / (len(result)))
-        print
         count = 1
         flat = 1
         result_dict = {}

@@ -31,7 +31,6 @@ def get_egional_electors(id,year):
     try:
         sql = "select candidate_id,username,`year` from administrative_area as area,candidate where  area.administrative_id=candidate.administrative_id and area.administrative_id=%s and candidate.`year`=%s"
         count = cur.execute(sql,(id,year))
-        print("count：",count)
         if count < 1:
             app.logger.error("当前省选举结果有问题，请与管理员联系前，输入的年份为："+str(year)+"输入id:"+str(id))
             return dict
