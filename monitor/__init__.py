@@ -32,6 +32,8 @@ app.config['DEBUG_TB_TEMPLATE_EDITOR_ENABLED'] = True
 app.config['DEBUG'] = True
 app.config['ADMINS'] = frozenset(['17789624306@163.com'])
 app.config['SECRET_KEY'] = '123456'
+app.config['UPLOAD_FOLDER'] = 'E:/idea/taiwanElection/monitor/main/system/'#当前工作目录
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024#图片上传最大限制
 #add Module
 from .main import  userModule
 from .main import mapModule
