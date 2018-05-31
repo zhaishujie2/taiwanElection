@@ -2,7 +2,10 @@
 from flask import request, session,jsonify
 from .draw_mysql import get_map_color,get_egional_electors
 from .news_show import taiwan_latest_news,taiwan_event_news
+from .election import get_popularity
 from monitor import app
+from monitor.util.utilclass import get_before_time
+import datetime
 from . import mod
 import json
 
@@ -76,3 +79,30 @@ def get_event_news():
             return jsonify({"message":result}),200
 
 
+@mod.route('/get_popularity/',methods=['POST'])
+def get_popularity_info():
+    data = request.form.get('data', '')
+    dict = {}
+    if data == '':
+        return jsonify({"message":"data is null"}),406
+    try:
+        data = json.loads(data)
+        id = data["id"]
+        year = data["year"]
+        user_dict = get_egional_electors(int(id),int(year))
+        if user_dict!=0:
+            if len(user_dict)>0:
+                end_time = datetime.datetime.now().strftime("%Y-%m-%d")
+                start_time = get_before_time(end_time,45)
+                result = get_popularity(start_time,end_time,user_dict)
+                if result!=0:
+                    return jsonify({"message":result}),200
+                else:
+                    return jsonify({"message":"Support Rate Forecasting Problems"}),406
+            else:
+                return jsonify({"message":"null"}),200
+        else:
+            return jsonify({"message":"传入的值在数据库中无法查出数据"}),406
+    except:
+        app.logger.error("传入area_id,year有误 id:"+id+"year:"+year)
+        return jsonify({"message":"传入area_id,year有误"}),406

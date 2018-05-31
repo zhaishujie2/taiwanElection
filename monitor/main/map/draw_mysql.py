@@ -25,21 +25,21 @@ def get_map_color(year):
 
 # 获取当前地区的选举人
 def get_egional_electors(id,year):
+    dict = {}
     conn = getconn()
     cur= conn.cursor()
     try:
         sql = "select candidate_id,username,`year` from administrative_area as area,candidate where  area.administrative_id=candidate.administrative_id and area.administrative_id=%s and candidate.`year`=%s"
         count = cur.execute(sql,(id,year))
+        if count < 1:
+            app.logger.error("当前省选举结果有问题，请与管理员联系前，输入的年份为："+str(year)+"输入id:"+str(id))
+            return dict
         result = cur.fetchmany(count)
-        dict = {}
-        if count <=1:
-            app.logger.error("当前省选举结果有问题，请与管理员联系前，输入的年份为："+year+"输入id:"+id)
-            return 0
         for item in result:
             dict[item[0]]=item[1]
         return dict
     except (Exception) as e:
         app.logger.error(e)
-        return "0"
+        return 0
     finally:
         closeAll(conn,cur)
