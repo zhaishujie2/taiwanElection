@@ -35,17 +35,19 @@ def record_session():
         year = data["year"]
         user_dict = get_egional_electors(int(id),int(year))
         if user_dict!=0:
-            session["electors"] = user_dict
-            session["year"] = year
-            session["area_id"] = id
-            user = {}
-            for key,value in user_dict.items():
-                user[value] = key
-            dict["electors"] = user
-            dict["year"] = year
-            dict["area_id"] = id
-
-            return jsonify({"message":dict}),200
+            if len(user_dict)>0:
+                session["electors"] = user_dict
+                session["year"] = year
+                session["area_id"] = id
+                user = {}
+                for key,value in user_dict.items():
+                    user[value] = key
+                dict["electors"] = user
+                dict["year"] = year
+                dict["area_id"] = id
+                return jsonify({"message":dict}),200
+            else:
+                return jsonify({"message":"传入的值在数据库中无法查出数据"}),406
         else:
             return jsonify({"message":"传入的值在数据库中无法查出数据"}),406
     except:
