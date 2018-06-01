@@ -1,12 +1,13 @@
 # coding=utf-8
 from flask import request, session, jsonify
-from monitor import app
 from . import mod
 import json
 from .information_statistics import get_information_facebook_statistics_count, get_information_news_statistics_count, \
     get_information_twitter_statistics_count, get_facebook_pages, get_all_facebook_pages, get_facebook_data, \
     get_all_facebook_data, get_news_pages, get_news_data, get_all_news_pages, get_all_news_data, get_twitter_pages, \
-    get_twitter_data, get_all_twitter_pages, get_all_twitter_data,get_all_forum_data,get_information_forum_statistics_count,get_all_forum_pages,get_forum_data,get_forum_pages,get_information_all_statistics_count
+    get_twitter_data, get_all_twitter_pages, get_all_twitter_data, get_all_forum_data, \
+    get_information_forum_statistics_count, get_all_forum_pages, get_forum_data, get_forum_pages, \
+    get_information_all_statistics_count
 from .character_analysis import get_candidates
 
 
@@ -86,6 +87,7 @@ def get_twitter_statistics():
             return jsonify({"message": "The time field is in the wrong format"}), 200
         else:
             return jsonify({"message": result}), 200
+
 
 @mod.route('/get_forum_statistics/', methods=['POST'])
 def get_forum_statistics():
@@ -295,9 +297,6 @@ def news_data():
             return jsonify({"message": result}), 200
 
 
-
-
-
 @mod.route('/news_all_pages/', methods=['POST'])
 def get_all_news_count():
     data = request.form.get('data', '')
@@ -459,6 +458,7 @@ def twitter_data_all():
         else:
             return jsonify({"message": result}), 200
 
+
 @mod.route('/forum_pages/', methods=['POST'])
 def get_forum_count():
     data = request.form.get('data', '')
@@ -567,14 +567,14 @@ def forum_data_all():
 
 @mod.route('/get_candidates/')
 def candidates():
-    dict_name={}
+    dict_name = {}
     try:
         dict_name = session["electors"]
     except:
         return jsonify({"message": "session  is null"}), 401
     print(dict_name)
     result = get_candidates(dict_name)
-    if result ==0:
+    if result == 0:
         return jsonify({"message": "Calculation error"}), 406
     else:
         return jsonify({"message": result}), 200

@@ -8,9 +8,9 @@ from elasticsearch import Elasticsearch
 es = Elasticsearch(es_host, timeout=600)
 
 
-def get_popularity( start_time, end_time,dict_name):
+def get_popularity(start_time, end_time, dict_name):
     try:
-        start_time,end_time = get_time(start_time,end_time)
+        start_time, end_time = get_time(start_time, end_time)
         fb = get_fb_aver_link(dict_name, start_time, end_time)
         tw = get_tw_count(dict_name, start_time, end_time)
         news = get_news_count(dict_name, start_time, end_time)
@@ -29,6 +29,7 @@ def get_popularity( start_time, end_time,dict_name):
         return dict
     except:
         return 0
+
 
 def get_fb_aver_link(dict_name, start_time, end_time):
     try:
@@ -186,5 +187,3 @@ def get_ptt_popularity(dict_name, start_time, end_time):
         return result_dict
     except:
         return 0
-
-

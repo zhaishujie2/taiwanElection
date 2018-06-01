@@ -18,8 +18,8 @@ def get_party(message):
             houxuanren_cur = houxuanren_conn.cursor()
             member_conn = getconn()
             member_cur = member_conn.cursor()
-            houxuanren_cur.execute(houxuanren_sql,(name_id))
-            member_cur.execute(member_sql,(name_id))
+            houxuanren_cur.execute(houxuanren_sql, (name_id))
+            member_cur.execute(member_sql, (name_id))
             members = member_cur.fetchall()
             party = houxuanren_cur.fetchone()
             for member in members:
@@ -45,7 +45,7 @@ def get_party(message):
 # 获取每一个人的详细信息加上every条件后可以返回所有
 def get_everyinformation(type, content):
     try:
-        if type == '1' :
+        if type == '1':
             result_list = []
             id = content.get('id')
             one_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id` FROM `candidate_personnel_information` WHERE  `candidate_id` = %s"""
@@ -54,7 +54,7 @@ def get_everyinformation(type, content):
             cur = conn.cursor()
             every = content.get('every')
             if every == '0':
-                cur.execute(one_leader_sql,(id))
+                cur.execute(one_leader_sql, (id))
             elif every == '1':
                 cur.execute(all_leader_sql)
             # result = cur.fetchmany()
@@ -112,9 +112,9 @@ def get_everyinformation(type, content):
             every = content.get('every')
             count = ''
             if every == '0':
-                count = cur.execute(member_sql,(id))
+                count = cur.execute(member_sql, (id))
             elif every == '1':
-                cur.execute(all_member_sql,(candidate_id))
+                cur.execute(all_member_sql, (candidate_id))
             if count != 0:
                 result = cur.fetchall()
 
@@ -184,8 +184,9 @@ def get_gov_area(id, year):
     finally:
         closeAll(conn, cur)
 
-#获取历届选举人情况
-def get_all_candidate_infos(region,year):
+
+# 获取历届选举人情况
+def get_all_candidate_infos(region, year):
     try:
         conn = getconn()
         cur = conn.cursor()
@@ -198,15 +199,15 @@ def get_all_candidate_infos(region,year):
             dict_dict[str(item[0])] = item[1]
         dict_list.append(dict_dict)
         select_id_sql = """SELECT `regional_consolidation` FROM `administrative_area` WHERE `administrative_id` = %s"""
-        cur.execute(select_id_sql,(region))
+        cur.execute(select_id_sql, (region))
         id_item = cur.fetchone()
         if id_item[0] != None and id_item[0] != '':
             select_sql = """SELECT `administrative_id`,`elector`,`election_score`,`election_parties`,`period`,`year` FROM `previous_elections` WHERE year < %s AND  (`administrative_id` = %s OR `administrative_id` = %s) GROUP BY `administrative_id`,`year`,`elector`,`election_parties`,`period` ORDER BY `period` ASC,administrative_id DESC,election_score DESC """
             try:
-                cur.execute(select_sql,(year,region,id_item[0]))
+                cur.execute(select_sql, (year, region, id_item[0]))
             except Exception as erro:
                 app.logger.error(erro)
-                closeAll(conn,cur)
+                closeAll(conn, cur)
                 return 0
             other_results = cur.fetchall()
             infos_list = []
@@ -219,16 +220,16 @@ def get_all_candidate_infos(region,year):
                 infos_dict['period'] = item[4]
                 infos_dict['year'] = item[5]
                 infos_list.append(infos_dict)
-            closeAll(conn,cur)
-            end_list = [{"elections":infos_list,"area":dict_list}]
+            closeAll(conn, cur)
+            end_list = [{"elections": infos_list, "area": dict_list}]
             return end_list
         else:
             select_sql = """SELECT `administrative_id`,`elector`,`election_score`,`election_parties`,`period`,`year` FROM `previous_elections` WHERE year < %s AND  `administrative_id` = %s GROUP BY `administrative_id`,`year`,`elector`,`election_parties`,`period` ORDER BY `period` ASC,administrative_id DESC,election_score DESC """
             try:
-                cur.execute(select_sql,(year,region))
+                cur.execute(select_sql, (year, region))
             except Exception as erro:
                 app.logger.error(erro)
-                closeAll(conn,cur)
+                closeAll(conn, cur)
                 return 0
             results = cur.fetchall()
             infos_list = []
@@ -241,16 +242,9 @@ def get_all_candidate_infos(region,year):
                 infos_dict['period'] = item[4]
                 infos_dict['year'] = item[5]
                 infos_list.append(infos_dict)
-            closeAll(conn,cur)
-            end_list = [{"elections":infos_list,"area":dict_list}]
+            closeAll(conn, cur)
+            end_list = [{"elections": infos_list, "area": dict_list}]
             return end_list
     except Exception as erro:
         app.logger.error(erro)
         return 0
-# if __name__ == '__main__':
-# print (get_gov_area(7017,2018))
-# message = {"1": "卢秀燕", "2": "林佳龙"}
-# get_party(message)
-#     # content = {"id":"1"}
-#     content = {"id":"1","name":"小白","department":"13局","job":"部长"}
-#     get_everyinformation('2',content)

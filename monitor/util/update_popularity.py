@@ -1,46 +1,47 @@
 # coding=utf-8
 import sys
+
 sys.path.append('/data/taiwan/taiwanElection')
 from monitor.util.config import fb_weight, tw_weight, news_weight, ptt_weight, es_host, es_facebook_index, \
-    es_facebook_type, es_news_index, es_news_type, es_twitter_index, es_twitter_type, es_forum_type, es_forum_index,year
-from monitor.util.utilclass import get_time,get_before_time,get_date
-from monitor.util.mysql_util import getconn,closeAll
+    es_facebook_type, es_news_index, es_news_type, es_twitter_index, es_twitter_type, es_forum_type, es_forum_index, \
+    year
+from monitor.util.utilclass import get_time, get_before_time, get_date
+from monitor.util.mysql_util import getconn, closeAll
 from elasticsearch import Elasticsearch
 import datetime
+
 es = Elasticsearch(es_host, timeout=600)
 
 
-def update_popularity_demo(start_time,end_time):
+def update_popularity_demo(start_time, end_time):
     conn = getconn()
-    cur= conn.cursor()
+    cur = conn.cursor()
     try:
         sql = "SELECT administrative_id from candidate where `year`=%s GROUP BY administrative_id"
-        count = cur.execute(sql,year)
+        count = cur.execute(sql, year)
         result = cur.fetchmany(count)
         for item in result:
             sql = "SELECT * from candidate where administrative_id=%s and `year`=%s"
-            count = cur.execute(sql,(item[0],year))
+            count = cur.execute(sql, (item[0], year))
             data = cur.fetchmany(count)
             dict = {}
             for person in data:
                 dict[person[0]] = person[2]
-            popularity_dict =  (get_popularity(start_time,end_time,dict))
-            for  key,value in dict.items():
+            popularity_dict = (get_popularity(start_time, end_time, dict))
+            for key, value in dict.items():
                 sql = "UPDATE popularity SET popularity_score=%s WHERE candidate_id=%s AND create_data=%s"
-                print (popularity_dict[value]*100)
-                cur.execute(sql,(popularity_dict[value]*100,key,end_time))
+                print(popularity_dict[value] * 100)
+                cur.execute(sql, (popularity_dict[value] * 100, key, end_time))
                 conn.commit()
     except:
         return 0
     finally:
-        closeAll(conn,cur)
+        closeAll(conn, cur)
 
 
-
-
-def get_popularity( start_time, end_time,dict_name):
+def get_popularity(start_time, end_time, dict_name):
     try:
-        start_time,end_time = get_time(start_time,end_time)
+        start_time, end_time = get_time(start_time, end_time)
         fb = get_fb_aver_link(dict_name, start_time, end_time)
         tw = get_tw_count(dict_name, start_time, end_time)
         news = get_news_count(dict_name, start_time, end_time)
@@ -59,6 +60,7 @@ def get_popularity( start_time, end_time,dict_name):
         return dict
     except:
         return 0
+
 
 def get_fb_aver_link(dict_name, start_time, end_time):
     try:
@@ -218,13 +220,13 @@ def get_ptt_popularity(dict_name, start_time, end_time):
     except:
         return 0
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     # end_time = datetime.datetime.now().strftime("%Y-%m-%d")
     # list = get_date("2018-2-15",end_time)
     # for item in list:
     #     start_time = get_before_time(item,45)
     #     insert_popularity_demo(start_time,item)
     end_time = datetime.datetime.now().strftime("%Y-%m-%d")
-    start_time = get_before_time(end_time,45)
-    print(update_popularity_demo(start_time,end_time))
+    start_time = get_before_time(end_time, 45)
+    print(update_popularity_demo(start_time, end_time))

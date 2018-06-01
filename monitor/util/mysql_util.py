@@ -3,7 +3,7 @@ import hashlib
 
 import pymysql
 
-from .config import mysql_charset,mysql_db,mysql_host,mysql_passwd,mysql_port,mysql_user
+from .config import mysql_charset, mysql_db, mysql_host, mysql_passwd, mysql_port, mysql_user
 
 
 def getconn():
@@ -23,8 +23,8 @@ def md5(str):
     m.update(str.encode("utf8"))
     return m.hexdigest()
 
+
 def closeAll(conn, cur):
     conn.commit()
     cur.close()
     conn.close()
-

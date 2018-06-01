@@ -1,15 +1,17 @@
 # coding=utf-8
 import datetime
-from monitor.util.config import es_host,es_facebook_index,es_facebook_type,es_news_index,es_news_type,es_twitter_index,es_twitter_type,es_forum_index,es_forum_type
+from monitor.util.config import es_host, es_facebook_index, es_facebook_type, es_news_index, es_news_type, \
+    es_twitter_index, es_twitter_type, es_forum_index, es_forum_type
 from elasticsearch import Elasticsearch
 from monitor.util.utilclass import get_date, get_time
 
 es = Elasticsearch(es_host, timeout=600)
 
-def get_information_facebook_statistics_count(start_time, end_time,dict_name):
+
+def get_information_facebook_statistics_count(start_time, end_time, dict_name):
     start_timestamps, end_timestamps = get_time(start_time, end_time)
     data_list = get_date(start_time, end_time)
-    if start_timestamps==0 or end_timestamps == 0 or dict_name == 0:
+    if start_timestamps == 0 or end_timestamps == 0 or dict_name == 0:
         return None
     statistics = {}
     dict = {}
@@ -18,14 +20,15 @@ def get_information_facebook_statistics_count(start_time, end_time,dict_name):
         count_list = []
         name = dict_name[item]
         query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
-                                         {"term": {"facebook_name": name}}], "must_not": [], "should": []}}, "from": 0,
-             "size": 10000, "sort": [], "aggs": {}}
+                                             {"term": {"facebook_name": name}}], "must_not": [], "should": []}},
+                 "from": 0,
+                 "size": 10000, "sort": [], "aggs": {}}
         result = es.search(index=es_facebook_index, doc_type=es_facebook_type, body=query)['hits']['hits']
         for item in data_list:
-            data_dict[item]=0
+            data_dict[item] = 0
         for item in result:
-            item_data= item["_source"]["time"].split(" ")[0]
-            data_dict[item_data] = data_dict[item_data]+1
+            item_data = item["_source"]["time"].split(" ")[0]
+            data_dict[item_data] = data_dict[item_data] + 1
         for key in data_dict.keys():
             count_list.append(data_dict[key])
         dict[name] = count_list
@@ -33,10 +36,11 @@ def get_information_facebook_statistics_count(start_time, end_time,dict_name):
     statistics["date"] = data_list
     return statistics
 
-def get_information_news_statistics_count(start_time, end_time,dict_name):
+
+def get_information_news_statistics_count(start_time, end_time, dict_name):
     start_timestamps, end_timestamps = get_time(start_time, end_time)
     data_list = get_date(start_time, end_time)
-    if start_timestamps==0 or end_timestamps == 0 or dict_name == 0:
+    if start_timestamps == 0 or end_timestamps == 0 or dict_name == 0:
         return None
     statistics = {}
     dict = {}
@@ -49,10 +53,10 @@ def get_information_news_statistics_count(start_time, end_time,dict_name):
                  "size": 10000, "sort": [], "aggs": {}}
         result = es.search(index=es_news_index, doc_type=es_news_type, body=query)['hits']['hits']
         for item in data_list:
-            data_dict[item]=0
+            data_dict[item] = 0
         for item in result:
-            item_data= item["_source"]["time"].split(" ")[0]
-            data_dict[item_data] = data_dict[item_data]+1
+            item_data = item["_source"]["time"].split(" ")[0]
+            data_dict[item_data] = data_dict[item_data] + 1
         for key in data_dict.keys():
             count_list.append(data_dict[key])
         dict[name] = count_list
@@ -61,10 +65,10 @@ def get_information_news_statistics_count(start_time, end_time,dict_name):
     return statistics
 
 
-def get_information_twitter_statistics_count(start_time, end_time,dict_name):
+def get_information_twitter_statistics_count(start_time, end_time, dict_name):
     start_timestamps, end_timestamps = get_time(start_time, end_time)
     data_list = get_date(start_time, end_time)
-    if start_timestamps==0 or end_timestamps == 0 or dict_name == 0:
+    if start_timestamps == 0 or end_timestamps == 0 or dict_name == 0:
         return None
     statistics = {}
     dict = {}
@@ -73,14 +77,15 @@ def get_information_twitter_statistics_count(start_time, end_time,dict_name):
         data_dict = {}
         name = dict_name[item]
         query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
-                                             {"term": {"twitter_search": name}}], "must_not": [], "should": []}}, "from": 0,
+                                             {"term": {"twitter_search": name}}], "must_not": [], "should": []}},
+                 "from": 0,
                  "size": 10000, "sort": [], "aggs": {}}
         result = es.search(index=es_twitter_index, doc_type=es_twitter_type, body=query)['hits']['hits']
         for item in data_list:
-            data_dict[item]=0
+            data_dict[item] = 0
         for item in result:
-            item_data= item["_source"]["time"].split(" ")[0]
-            data_dict[item_data] = data_dict[item_data]+1
+            item_data = item["_source"]["time"].split(" ")[0]
+            data_dict[item_data] = data_dict[item_data] + 1
         for key in data_dict.keys():
             count_list.append(data_dict[key])
         dict[name] = count_list
@@ -89,10 +94,10 @@ def get_information_twitter_statistics_count(start_time, end_time,dict_name):
     return statistics
 
 
-def get_information_forum_statistics_count(start_time, end_time,dict_name):
+def get_information_forum_statistics_count(start_time, end_time, dict_name):
     start_timestamps, end_timestamps = get_time(start_time, end_time)
     data_list = get_date(start_time, end_time)
-    if start_timestamps==0 or end_timestamps == 0 or dict_name == 0:
+    if start_timestamps == 0 or end_timestamps == 0 or dict_name == 0:
         return None
     statistics = {}
     dict = {}
@@ -105,10 +110,10 @@ def get_information_forum_statistics_count(start_time, end_time,dict_name):
                  "size": 10000, "sort": [], "aggs": {}}
         result = es.search(index=es_forum_index, doc_type=es_forum_type, body=query)['hits']['hits']
         for item in data_list:
-            data_dict[item]=0
+            data_dict[item] = 0
         for item in result:
-            item_data= item["_source"]["time"].split(" ")[0]
-            data_dict[item_data] = data_dict[item_data]+1
+            item_data = item["_source"]["time"].split(" ")[0]
+            data_dict[item_data] = data_dict[item_data] + 1
         for key in data_dict.keys():
             count_list.append(data_dict[key])
         dict[name] = count_list
@@ -116,33 +121,33 @@ def get_information_forum_statistics_count(start_time, end_time,dict_name):
     statistics["date"] = data_list
     return statistics
 
-def get_information_all_statistics_count(start_time, end_time,dict_name):
+
+def get_information_all_statistics_count(start_time, end_time, dict_name):
     try:
         data_list = get_date(start_time, end_time)
-        dict ={}
+        dict = {}
         result = {}
-        forum_result = get_information_forum_statistics_count(start_time, end_time,dict_name)["person"]
-        facebook_result = get_information_facebook_statistics_count(start_time, end_time,dict_name)["person"]
-        twitter_result = get_information_twitter_statistics_count(start_time, end_time,dict_name)["person"]
-        news_result = get_information_news_statistics_count(start_time, end_time,dict_name)["person"]
+        forum_result = get_information_forum_statistics_count(start_time, end_time, dict_name)["person"]
+        facebook_result = get_information_facebook_statistics_count(start_time, end_time, dict_name)["person"]
+        twitter_result = get_information_twitter_statistics_count(start_time, end_time, dict_name)["person"]
+        news_result = get_information_news_statistics_count(start_time, end_time, dict_name)["person"]
         for item in dict_name.keys():
             list = []
-            for i in range(0,len(data_list)):
-                list.append(int(forum_result[dict_name[item]][i])+int(facebook_result[dict_name[item]][i])+int(twitter_result[dict_name[item]][i])+int(news_result[dict_name[item]][i]))
-            dict[dict_name[item]] =list
+            for i in range(0, len(data_list)):
+                list.append(int(forum_result[dict_name[item]][i]) + int(facebook_result[dict_name[item]][i]) + int(
+                    twitter_result[dict_name[item]][i]) + int(news_result[dict_name[item]][i]))
+            dict[dict_name[item]] = list
         result["xAxis"] = dict
-        result["series"] =data_list
+        result["series"] = data_list
         return result
     except:
         return 0
 
 
-
-
-#获取facebook 某时间段某个人的数据
-def get_facebook_pages(name,start_date,end_date):
-    start_timestamps, end_timestamps = get_time(start_date,end_date)
-    if start_timestamps==0 or end_timestamps == 0 :
+# 获取facebook 某时间段某个人的数据
+def get_facebook_pages(name, start_date, end_date):
+    start_timestamps, end_timestamps = get_time(start_date, end_date)
+    if start_timestamps == 0 or end_timestamps == 0:
         return None
     query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
                                          {"term": {"facebook_name": name}}], "must_not": [], "should": []}}, "from": 0,
@@ -150,13 +155,15 @@ def get_facebook_pages(name,start_date,end_date):
     result = es.search(index=es_facebook_index, doc_type=es_facebook_type, body=query)['hits']['hits']
     return len(result)
 
-def get_facebook_data(name,page_number,page_size,start_date,end_date):
-    start_from = (page_number-1)*page_size
+
+def get_facebook_data(name, page_number, page_size, start_date, end_date):
+    start_from = (page_number - 1) * page_size
     start_timestamps, end_timestamps = get_time(start_date, end_date)
-    if start_timestamps==0 or end_timestamps == 0 :
+    if start_timestamps == 0 or end_timestamps == 0:
         return None
     query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
-                                         {"term": {"facebook_name": name}}], "must_not": [], "should": []}}, "from": start_from,
+                                         {"term": {"facebook_name": name}}], "must_not": [], "should": []}},
+             "from": start_from,
              "size": page_size, "sort": [], "aggs": {}}
     result = es.search(index=es_facebook_index, doc_type=es_facebook_type, body=query)['hits']['hits']
     list = []
@@ -171,33 +178,37 @@ def get_facebook_data(name,page_number,page_size,start_date,end_date):
     return list
 
 
-#获取facebook某时间段所有的数据
-def get_all_facebook_pages(dict_name,start_date,end_date):
+# 获取facebook某时间段所有的数据
+def get_all_facebook_pages(dict_name, start_date, end_date):
     start_timestamps, end_timestamps = get_time(start_date, end_date)
-    if start_timestamps==0 or end_timestamps == 0 :
+    if start_timestamps == 0 or end_timestamps == 0:
         return None
     list = []
     for item in dict_name.keys():
         dict = {}
-        dict["term"] = {"facebook_name":dict_name[item]}
+        dict["term"] = {"facebook_name": dict_name[item]}
         list.append(dict)
-    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}}], "must_not": [], "should": list}}, "from": 0,
-                 "size": 10000, "sort": [], "aggs": {}}
+    query = {"query": {
+        "bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}}], "must_not": [],
+                 "should": list}}, "from": 0,
+             "size": 10000, "sort": [], "aggs": {}}
     result = es.search(index=es_facebook_index, doc_type=es_facebook_type, body=query)['hits']['hits']
     return (len(result))
 
 
-def get_all_facebook_data(dict_name,page_number,page_size,start_date,end_date):
-    start_from = (page_number-1)*page_size
+def get_all_facebook_data(dict_name, page_number, page_size, start_date, end_date):
+    start_from = (page_number - 1) * page_size
     start_timestamps, end_timestamps = get_time(start_date, end_date)
-    if start_timestamps==0 or end_timestamps == 0 :
+    if start_timestamps == 0 or end_timestamps == 0:
         return None
     list = []
     for item in dict_name.keys():
         dict = {}
-        dict["term"] = {"facebook_name":dict_name[item]}
+        dict["term"] = {"facebook_name": dict_name[item]}
         list.append(dict)
-    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}}], "must_not": [], "should": list}}, "from": start_from,
+    query = {"query": {
+        "bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}}], "must_not": [],
+                 "should": list}}, "from": start_from,
              "size": page_size, "sort": [], "aggs": {}}
     result = es.search(index=es_facebook_index, doc_type=es_facebook_type, body=query)['hits']['hits']
     list = []
@@ -211,10 +222,11 @@ def get_all_facebook_data(dict_name,page_number,page_size,start_date,end_date):
         list.append(dict)
     return list
 
-#获取news 某时间段天某个人的数据
-def get_news_pages(name,start_date,end_date):
-    start_timestamps, end_timestamps = get_time(start_date,end_date)
-    if start_timestamps==0 or end_timestamps == 0 :
+
+# 获取news 某时间段天某个人的数据
+def get_news_pages(name, start_date, end_date):
+    start_timestamps, end_timestamps = get_time(start_date, end_date)
+    if start_timestamps == 0 or end_timestamps == 0:
         return None
     query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
                                          {"term": {"keywords": name}}], "must_not": [], "should": []}}, "from": 0,
@@ -222,13 +234,15 @@ def get_news_pages(name,start_date,end_date):
     result = es.search(index=es_news_index, doc_type=es_news_type, body=query)['hits']['hits']
     return len(result)
 
-def get_news_data(name,page_number,page_size,start_date,end_date):
-    start_from = (page_number-1)*page_size
+
+def get_news_data(name, page_number, page_size, start_date, end_date):
+    start_from = (page_number - 1) * page_size
     start_timestamps, end_timestamps = get_time(start_date, end_date)
-    if start_timestamps==0 or end_timestamps == 0 :
+    if start_timestamps == 0 or end_timestamps == 0:
         return None
     query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
-                                         {"term": {"keywords": name}}], "must_not": [], "should": []}}, "from": start_from,
+                                         {"term": {"keywords": name}}], "must_not": [], "should": []}},
+             "from": start_from,
              "size": page_size, "sort": [], "aggs": {}}
     result = es.search(index=es_news_index, doc_type=es_news_type, body=query)['hits']['hits']
     list = []
@@ -246,33 +260,37 @@ def get_news_data(name,page_number,page_size,start_date,end_date):
     return list
 
 
-#获取news当天所有的数据
-def get_all_news_pages(dict_name,start_date,end_date):
+# 获取news当天所有的数据
+def get_all_news_pages(dict_name, start_date, end_date):
     start_timestamps, end_timestamps = get_time(start_date, end_date)
-    if start_timestamps==0 or end_timestamps == 0 :
+    if start_timestamps == 0 or end_timestamps == 0:
         return None
     list = []
     for item in dict_name.keys():
         dict = {}
-        dict["term"] = {"keywords":dict_name[item]}
+        dict["term"] = {"keywords": dict_name[item]}
         list.append(dict)
-    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}}], "must_not": [], "should": list}}, "from": 0,
+    query = {"query": {
+        "bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}}], "must_not": [],
+                 "should": list}}, "from": 0,
              "size": 10000, "sort": [], "aggs": {}}
     result = es.search(index=es_news_index, doc_type=es_news_type, body=query)['hits']['hits']
     return (len(result))
 
 
-def get_all_news_data(dict_name,page_number,page_size,start_date,end_date):
-    start_from = (page_number-1)*page_size
+def get_all_news_data(dict_name, page_number, page_size, start_date, end_date):
+    start_from = (page_number - 1) * page_size
     start_timestamps, end_timestamps = get_time(start_date, end_date)
-    if start_timestamps==0 or end_timestamps == 0 :
+    if start_timestamps == 0 or end_timestamps == 0:
         return None
     list = []
     for item in dict_name.keys():
         dict = {}
-        dict["term"] = {"keywords":dict_name[item]}
+        dict["term"] = {"keywords": dict_name[item]}
         list.append(dict)
-    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}}], "must_not": [], "should": list}}, "from": start_from,
+    query = {"query": {
+        "bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}}], "must_not": [],
+                 "should": list}}, "from": start_from,
              "size": page_size, "sort": [], "aggs": {}}
     result = es.search(index=es_news_index, doc_type=es_news_type, body=query)['hits']['hits']
     list = []
@@ -290,13 +308,10 @@ def get_all_news_data(dict_name,page_number,page_size,start_date,end_date):
     return list
 
 
-
-
-
-#获取twitter 某时间段天某个人的数据
-def get_twitter_pages(name,start_date,end_date):
-    start_timestamps, end_timestamps = get_time(start_date,end_date)
-    if start_timestamps==0 or end_timestamps == 0 :
+# 获取twitter 某时间段天某个人的数据
+def get_twitter_pages(name, start_date, end_date):
+    start_timestamps, end_timestamps = get_time(start_date, end_date)
+    if start_timestamps == 0 or end_timestamps == 0:
         return None
     query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
                                          {"term": {"twitter_search": name}}], "must_not": [], "should": []}}, "from": 0,
@@ -304,11 +319,13 @@ def get_twitter_pages(name,start_date,end_date):
     result = es.search(index=es_twitter_index, doc_type=es_twitter_type, body=query)['hits']['hits']
     return len(result)
 
-def get_twitter_data(name,page_number,page_size,start_date,end_date):
-    start_from = (page_number-1)*page_size
+
+def get_twitter_data(name, page_number, page_size, start_date, end_date):
+    start_from = (page_number - 1) * page_size
     start_timestamps, end_timestamps = get_time(start_date, end_date)
     query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
-                                         {"term": {"twitter_search": name}}], "must_not": [], "should": []}}, "from": start_from,
+                                         {"term": {"twitter_search": name}}], "must_not": [], "should": []}},
+             "from": start_from,
              "size": page_size, "sort": [], "aggs": {}}
     result = es.search(index=es_twitter_index, doc_type=es_twitter_type, body=query)['hits']['hits']
     list = []
@@ -324,33 +341,37 @@ def get_twitter_data(name,page_number,page_size,start_date,end_date):
     return list
 
 
-#获取twitter当天所有的数据
-def get_all_twitter_pages(dict_name,start_date,end_date):
+# 获取twitter当天所有的数据
+def get_all_twitter_pages(dict_name, start_date, end_date):
     start_timestamps, end_timestamps = get_time(start_date, end_date)
-    if start_timestamps==0 or end_timestamps == 0 :
+    if start_timestamps == 0 or end_timestamps == 0:
         return None
     list = []
     for item in dict_name.keys():
         dict = {}
-        dict["term"] = {"keywords":dict_name[item]}
+        dict["term"] = {"keywords": dict_name[item]}
         list.append(dict)
-    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}}], "must_not": [], "should": list}}, "from": 0,
+    query = {"query": {
+        "bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}}], "must_not": [],
+                 "should": list}}, "from": 0,
              "size": 10000, "sort": [], "aggs": {}}
     result = es.search(index=es_twitter_index, doc_type=es_twitter_type, body=query)['hits']['hits']
     return (len(result))
 
 
-def get_all_twitter_data(dict_name,page_number,page_size,start_date,end_date):
-    start_from = (page_number-1)*page_size
+def get_all_twitter_data(dict_name, page_number, page_size, start_date, end_date):
+    start_from = (page_number - 1) * page_size
     start_timestamps, end_timestamps = get_time(start_date, end_date)
-    if start_timestamps==0 or end_timestamps == 0 :
+    if start_timestamps == 0 or end_timestamps == 0:
         return None
     list = []
     for item in dict_name.keys():
         dict = {}
-        dict["term"] = {"keywords":dict_name[item]}
+        dict["term"] = {"keywords": dict_name[item]}
         list.append(dict)
-    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}}], "must_not": [], "should": list}}, "from": start_from,
+    query = {"query": {
+        "bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}}], "must_not": [],
+                 "should": list}}, "from": start_from,
              "size": page_size, "sort": [], "aggs": {}}
     result = es.search(index=es_twitter_index, doc_type=es_twitter_type, body=query)['hits']['hits']
     list = []
@@ -365,10 +386,11 @@ def get_all_twitter_data(dict_name,page_number,page_size,start_date,end_date):
         list.append(dict)
     return list
 
-#获取forum 某时间段天某个人的数据
-def get_forum_pages(name,start_date,end_date):
-    start_timestamps, end_timestamps = get_time(start_date,end_date)
-    if start_timestamps==0 or end_timestamps == 0 :
+
+# 获取forum 某时间段天某个人的数据
+def get_forum_pages(name, start_date, end_date):
+    start_timestamps, end_timestamps = get_time(start_date, end_date)
+    if start_timestamps == 0 or end_timestamps == 0:
         return None
     query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
                                          {"term": {"keywords": name}}], "must_not": [], "should": []}}, "from": 0,
@@ -376,11 +398,13 @@ def get_forum_pages(name,start_date,end_date):
     result = es.search(index=es_forum_index, doc_type=es_forum_type, body=query)['hits']['hits']
     return len(result)
 
-def get_forum_data(name,page_number,page_size,start_date,end_date):
-    start_from = (page_number-1)*page_size
+
+def get_forum_data(name, page_number, page_size, start_date, end_date):
+    start_from = (page_number - 1) * page_size
     start_timestamps, end_timestamps = get_time(start_date, end_date)
     query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
-                                         {"term": {"keywords": name}}], "must_not": [], "should": []}}, "from": start_from,
+                                         {"term": {"keywords": name}}], "must_not": [], "should": []}},
+             "from": start_from,
              "size": page_size, "sort": [], "aggs": {}}
     result = es.search(index=es_forum_index, doc_type=es_forum_type, body=query)['hits']['hits']
     list = []
@@ -402,34 +426,37 @@ def get_forum_data(name,page_number,page_size,start_date,end_date):
     return list
 
 
-#获取twitter当天所有的数据
-def get_all_forum_pages(dict_name,start_date,end_date):
+# 获取twitter当天所有的数据
+def get_all_forum_pages(dict_name, start_date, end_date):
     start_timestamps, end_timestamps = get_time(start_date, end_date)
-    if start_timestamps==0 or end_timestamps == 0 :
+    if start_timestamps == 0 or end_timestamps == 0:
         return None
     list = []
     for item in dict_name.keys():
         dict = {}
-        dict["term"] = {"keywords":dict_name[item]}
+        dict["term"] = {"keywords": dict_name[item]}
         list.append(dict)
-    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}}], "must_not": [], "should": list}}, "from": 0,
+    query = {"query": {
+        "bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}}], "must_not": [],
+                 "should": list}}, "from": 0,
              "size": 10000, "sort": [], "aggs": {}}
     result = es.search(index=es_forum_index, doc_type=es_forum_type, body=query)['hits']['hits']
     return (len(result))
 
 
-def get_all_forum_data(dict_name,page_number,page_size,start_date,end_date):
-    start_from = (page_number-1)*page_size
-    print (start_from)
+def get_all_forum_data(dict_name, page_number, page_size, start_date, end_date):
+    start_from = (page_number - 1) * page_size
     start_timestamps, end_timestamps = get_time(start_date, end_date)
-    if start_timestamps==0 or end_timestamps == 0 :
+    if start_timestamps == 0 or end_timestamps == 0:
         return None
     list = []
     for item in dict_name.keys():
         dict = {}
-        dict["term"] = {"keywords":dict_name[item]}
+        dict["term"] = {"keywords": dict_name[item]}
         list.append(dict)
-    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}}], "must_not": [], "should": list}}, "from": start_from,
+    query = {"query": {
+        "bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}}], "must_not": [],
+                 "should": list}}, "from": start_from,
              "size": page_size, "sort": [], "aggs": {}}
     result = es.search(index=es_forum_index, doc_type=es_forum_type, body=query)['hits']['hits']
     list = []
@@ -449,32 +476,3 @@ def get_all_forum_data(dict_name,page_number,page_size,start_date,end_date):
         dict["time"] = item["_source"]["time"].split(" ")[0]
         list.append(dict)
     return list
-
-
-
-if __name__ == '__main__':
-    dict = {}
-    dict[1]="卢秀燕"
-    dict[2]="林佳龙"
-    # result = get_all_forum_pages(dict,"2018-5-7","2018-5-7")
-    # result = get_all_forum_data(dict,1,1,"2018-5-7","2018-5-7")
-    # result = get_forum_pages("林佳龙","2018-5-7","2018-5-7")
-    # result = get_facebook_data(1,1,"林佳龙","2018-5-7","2018-5-7")
-    #
-    # result = get_all_news_pages(dict,"2018-5-7","2018-5-7")
-    # result = get_all_news_data(1,1,dict,"2018-5-7","2018-5-7")
-    # print (result)
-    #
-    # result = get_news_pages("林佳龙","2018-5-7","2018-5-7")
-    # result = get_news_data(1,1,"林佳龙","2018-5-7","2018-5-7")
-    # print (result)
-    #
-    # result = get_all_twitter_pages(dict,"2018-5-7","2018-5-7")
-    # result = get_all_twitter_data(1,1,dict,"2018-5-7","2018-5-7")
-    # print (result)
-    #
-    # result = get_twitter_pages("林佳龙","2018-5-7","2018-5-7")
-    # result = get_twitter_data(1,1,"林佳龙","2018-5-7","2018-5-7")
-    result = get_information_all_statistics_count("2018-5-8","2018-5-17",dict)
-    print (result)
-#哈哈哈
