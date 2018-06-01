@@ -31,7 +31,7 @@ def get_egional_electors(id, year):
     conn = getconn()
     cur = conn.cursor()
     try:
-        sql = "select candidate_id,username,`year` from administrative_area as area,candidate where  area.administrative_id=candidate.administrative_id and area.administrative_id=%s and candidate.`year`=%s"
+        sql = "select candidate_id,username from administrative_area as area,candidate where  area.administrative_id=candidate.administrative_id and area.administrative_id=%s and candidate.`year`=%s"
         count = cur.execute(sql, (id, year))
         if count < 1:
             app.logger.error("当前省选举结果有问题，请与管理员联系前，输入的年份为：" + str(year) + "输入id:" + str(id))
@@ -42,6 +42,23 @@ def get_egional_electors(id, year):
         return dict
     except (Exception) as e:
         app.logger.error(e)
+        return 0
+    finally:
+        closeAll(conn, cur)
+
+
+# 获取当前选举人图片
+def get_egional_images(id):
+    conn = getconn()
+    cur = conn.cursor()
+    try:
+        sql = "select image_name from candidate_personnel_information  where candidate_id =%s"
+        cur.execute(sql, id)
+        result = cur.fetchone()
+        if result[0] == "":
+            return 0
+        return result[0]
+    except (Exception) as e:
         return 0
     finally:
         closeAll(conn, cur)

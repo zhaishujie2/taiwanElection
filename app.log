@@ -1,11 +1,12 @@
-2018-05-22 10:14:30,031 - ERROR - information.py - get_popular_info - 111 - (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '2018-04-30'' <= `create_data`  AND `create_data` <= ''2018-05-15'' AND `candidat' at line 1")
-2018-05-25 10:40:55,956 - ERROR - show_party.py - get_all_candidate_infos - 174 - (1054, "Unknown column 'period' in 'field list'")
-2018-05-25 10:44:21,602 - ERROR - show_party.py - get_all_candidate_infos - 175 - (1054, "Unknown column 'period' in 'field list'")
-2018-05-25 10:44:39,962 - ERROR - show_party.py - get_all_candidate_infos - 176 - (1054, "Unknown column 'period' in 'field list'")
-2018-05-25 10:46:33,567 - ERROR - show_party.py - get_all_candidate_infos - 176 - (1054, "Unknown column 'period' in 'field list'")
-2018-05-25 10:47:15,298 - ERROR - show_party.py - get_all_candidate_infos - 176 - (1054, "Unknown column 'period' in 'field list'")
-2018-05-25 10:48:07,629 - ERROR - show_party.py - get_all_candidate_infos - 176 - (1054, "Unknown column 'period' in 'field list'")
-2018-05-25 10:48:50,838 - ERROR - show_party.py - get_all_candidate_infos - 176 - (1054, "Unknown column 'period' in 'field list'")
-2018-05-25 10:49:49,376 - ERROR - show_party.py - get_all_candidate_infos - 176 - (1054, "Unknown column 'period' in 'field list'")
-2018-05-25 10:53:35,084 - ERROR - show_party.py - get_all_candidate_infos - 176 - (1054, "Unknown column 'period' in 'field list'")
-2018-05-25 10:54:25,642 - ERROR - show_party.py - get_all_candidate_infos - 177 - (1054, "Unknown column 'period' in 'field list'")
+2018-05-31 10:25:36,014 - ERROR - draw_mysql.py - get_egional_electors - 43 - must be str, not int
+2018-05-31 10:28:01,037 - ERROR - draw_mysql.py - get_egional_electors - 44 - must be str, not int
+2018-05-31 10:28:27,347 - ERROR - draw_mysql.py - get_egional_electors - 43 - must be str, not int
+2018-05-31 10:28:59,419 - ERROR - draw_mysql.py - get_egional_electors - 36 - 当前省选举结果有问题，请与管理员联系前，输入的年份为：2018输入id:7018
+2018-05-31 10:32:40,246 - ERROR - draw_mysql.py - get_egional_electors - 36 - 当前省选举结果有问题，请与管理员联系前，输入的年份为：2018输入id:70120
+2018-05-31 10:32:45,110 - ERROR - draw_mysql.py - get_egional_electors - 36 - 当前省选举结果有问题，请与管理员联系前，输入的年份为：2018输入id:7010
+2018-06-01 13:36:50,591 - ERROR - draw_mysql.py - get_egional_images - 66 - (1054, "Unknown column 'images' in 'field list'")
+2018-06-01 13:37:41,050 - ERROR - draw_mysql.py - get_egional_images - 66 - (1054, "Unknown column 'images' in 'field list'")
+2018-06-01 13:38:16,461 - ERROR - draw_mysql.py - get_egional_images - 66 - (1054, "Unknown column 'images' in 'field list'")
+2018-06-01 13:39:25,178 - ERROR - draw_mysql.py - get_egional_images - 66 - (1054, "Unknown column 'images' in 'field list'")
+2018-06-01 13:45:28,706 - ERROR - draw_mysql.py - get_egional_images - 66 - (1054, "Unknown column 'images' in 'field list'")
+2018-06-01 13:46:08,045 - ERROR - draw_mysql.py - get_egional_images - 66 - (1054, "Unknown column 'images' in 'field list'")
