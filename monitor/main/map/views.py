@@ -1,6 +1,6 @@
 # coding=utf-8
 from flask import request, session, jsonify
-from .draw_mysql import get_map_color, get_egional_electors
+from .draw_mysql import get_map_color, get_egional_electors, get_egional_images
 from .news_show import taiwan_latest_news, taiwan_event_news
 from .election import get_popularity
 from monitor import app
@@ -28,13 +28,16 @@ def get_map():
 @mod.route('/record_session/', methods=['POST'])
 def record_session():
     data = request.form.get('data', '')
+    print(data)
     dict = {}
     if data == '':
         return jsonify({"message": "data is null"}), 406
-    try:
+    # try:
+    else:
         data = json.loads(data)
         id = data["id"]
         year = data["year"]
+        print(id, year)
         user_dict = get_egional_electors(int(id), int(year))
         if user_dict != 0:
             if len(user_dict) > 0:
@@ -43,7 +46,7 @@ def record_session():
                 session["area_id"] = id
                 user = {}
                 for key, value in user_dict.items():
-                    user[value] = key
+                    user[value] = get_egional_images(key)
                 dict["electors"] = user
                 dict["year"] = year
                 dict["area_id"] = id
@@ -52,9 +55,9 @@ def record_session():
                 return jsonify({"message": "传入的值在数据库中无法查出数据"}), 406
         else:
             return jsonify({"message": "传入的值在数据库中无法查出数据"}), 406
-    except:
-        app.logger.error("传入area_id,year有误 id:" + id + "year:" + year)
-        return jsonify({"message": "传入area_id,year有误"}), 406
+    # except:
+    #     app.logger.error("传入area_id,year有误 id:" ,id , "year:" , year)
+    #     return jsonify({"message": "传入area_id,year有误"}), 406
 
 
 @mod.route('/get_latest_news/')
@@ -110,5 +113,5 @@ def get_popularity_info():
         else:
             return jsonify({"message": "传入的值在数据库中无法查出数据"}), 406
     except:
-        app.logger.error("传入area_id,year有误 id:" + id + "year:" + year)
+        app.logger.error("传入area_id,year有误 id:", id, "year:", year)
         return jsonify({"message": "传入area_id,year有误"}), 406
