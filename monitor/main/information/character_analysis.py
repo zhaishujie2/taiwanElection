@@ -6,11 +6,11 @@ import time
 
 es = Elasticsearch(es_host, timeout=600)
 
+
 def get_candidates(dict_name):
     try:
         date = time.strftime("%Y-%m-%d")
-        print (date)
-        start_time, end_time = get_time(date,date)
+        start_time, end_time = get_time(date, date)
         sum = 0
         dict = {}
         face_dict = {}
@@ -28,11 +28,9 @@ def get_candidates(dict_name):
                      "from": 0,
                      "size": 9999}
             result = es.search(index=es_twitter_index, doc_type=es_twitter_type, body=query)['hits']['hits']
-            print (query)
             twitter_count = len(result)
-            print (twitter_count)
-            name_count = twitter_count+new_count
-            sum+=name_count
+            name_count = twitter_count + new_count
+            sum += name_count
             dict[name] = name_count
             query = {"query": {"bool": {"must": [{"term": {"facebook_name": name}},
                                                  {"range": {"timestamps": {"gt": start_time, "lt": end_time}}}]}},
@@ -41,31 +39,31 @@ def get_candidates(dict_name):
             result = es.search(index=es_facebook_index, doc_type=es_facebook_type, body=query)['hits']['hits']
             facebook_count = 0
             for item in result:
-                facebook_count+=int(item["_source"]["likes"])
-            face_sum+=facebook_count
+                facebook_count += int(item["_source"]["likes"])
+            face_sum += facebook_count
             face_dict[name] = facebook_count
-        if sum ==0:
+        if sum == 0:
             pass
         else:
             flag = len(dict)
             duty = 1.0
-            i=1
+            i = 1
             for item in dict.keys():
-                if i!=flag:
-                    score = round(float(dict[item])/sum,3)
+                if i != flag:
+                    score = round(float(dict[item]) / sum, 3)
                     duty -= score
                     dict[item] = score
                 else:
                     dict[item] = duty
-        if face_sum ==0:
+        if face_sum == 0:
             pass
         else:
             flag = len(face_dict)
             duty = 1
-            i=1
+            i = 1
             for item in face_dict.keys():
-                if i!=flag:
-                    score = round(float(face_dict[item])/face_sum,3)
+                if i != flag:
+                    score = round(float(face_dict[item]) / face_sum, 3)
                     duty -= score
                     face_dict[item] = score
                 else:
@@ -75,5 +73,4 @@ def get_candidates(dict_name):
         result_dict["activity"] = face_dict
         return result_dict
     except Exception as e:
-        print(e)
         return 0

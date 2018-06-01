@@ -226,5 +226,5 @@ if __name__ == '__main__':
     #     start_time = get_before_time(item,45)
     #     insert_popularity_demo(start_time,item)
     end_time = datetime.datetime.now().strftime("%Y-%m-%d")
-    start_time = get_before_time(end_time,45)
+    start_time = get_before_time(end_time, 45)
     insert_popularity_demo(start_time,end_time)

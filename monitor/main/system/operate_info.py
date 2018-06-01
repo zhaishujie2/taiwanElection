@@ -1,12 +1,14 @@
 # coding=utf-8
-from monitor.util.mysql_util import getconn,closeAll
+from monitor.util.mysql_util import getconn, closeAll
 from monitor import app
 import base64
 from flask import session
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
-#facebook写入数据
-def insert_info(auto_id,datas):
+
+
+# facebook写入数据
+def insert_info(auto_id, datas):
     conn = getconn()
     cur = conn.cursor()
 
@@ -22,11 +24,11 @@ def insert_info(auto_id,datas):
     try:
         # print(insert_sql)
         insert_re = ''
-        select_re = cur.execute(select_sql,(administrative_id,administrative_name,year,facebook_url))
+        select_re = cur.execute(select_sql, (administrative_id, administrative_name, year, facebook_url))
         if select_re != 0:
             return 406
         elif select_re == 0:
-            insert_re = cur.execute(insert_sql,(auto_id,administrative_id,administrative_name,year,facebook_url))
+            insert_re = cur.execute(insert_sql, (auto_id, administrative_id, administrative_name, year, facebook_url))
         # print(re)
         if insert_re < 1:
             return 0
@@ -36,16 +38,17 @@ def insert_info(auto_id,datas):
         app.logger.error(erro)
         return 0
     finally:
-        closeAll(conn,cur)
+        closeAll(conn, cur)
 
-#facebook删除数据
+
+# facebook删除数据
 def delete_info(data):
     conn = getconn()
     cur = conn.cursor()
     ids = data.get('candidate_id')
     try:
         delete_sql = """DELETE FROM `spider_infos` WHERE id = %s """
-        re = cur.execute(delete_sql,(ids))
+        re = cur.execute(delete_sql, (ids))
         if re < 1:
             conn.rollback()
             cur.close()
@@ -57,9 +60,10 @@ def delete_info(data):
         app.logger.error(erro)
         return 0
     finally:
-        closeAll(conn,cur)
+        closeAll(conn, cur)
 
-#facebook修改数据
+
+# facebook修改数据
 def update_info(datas):
     where_dict = datas.get('where_dict')
     up_dict = datas.get('up_dict')
@@ -76,23 +80,23 @@ def update_info(datas):
             up_sql = ''
             where_num = 0
             up_num = 0
-            for k,v in where_dict.items():
+            for k, v in where_dict.items():
                 where_num += 1
                 if where_num < len(where_dict):
-                    where_sql += "{} = '{}' AND ".format(k,v)
+                    where_sql += "{} = '{}' AND ".format(k, v)
                 else:
-                    where_sql += "{} = '{}'".format(k,v)
-            for k,v in up_dict.items():
+                    where_sql += "{} = '{}'".format(k, v)
+            for k, v in up_dict.items():
                 up_num += 1
                 if up_num < len(up_dict):
-                    up_sql += "{} = '{}', ".format(k,v)
+                    up_sql += "{} = '{}', ".format(k, v)
                 else:
-                    up_sql += "{} = '{}' ".format(k,v)
+                    up_sql += "{} = '{}' ".format(k, v)
 
-            update_sql = """UPDATE `spider_infos` SET """ + up_sql +' WHERE '+ where_sql
+            update_sql = """UPDATE `spider_infos` SET """ + up_sql + ' WHERE ' + where_sql
             # print(update_sql)
             re = cur.execute(update_sql)
-            if re < 1 :
+            if re < 1:
                 return 0
             else:
                 return 1
@@ -100,23 +104,24 @@ def update_info(datas):
             app.logger.error(erro)
             return 0
         finally:
-            closeAll(conn,cur)
+            closeAll(conn, cur)
 
-#facebook查询数据
+
+# facebook查询数据
 def select_info(datas):
     conn = getconn()
     cur = conn.cursor()
     try:
         where_sql = ''
         num = 0
-        for k,v in datas.items():
+        for k, v in datas.items():
             if k == 'username':
                 k = 'administrative_name'
             num += 1
             if num < len(datas):
-                where_sql += "{} = '{}'".format(k,v) + ' AND '
+                where_sql += "{} = '{}'".format(k, v) + ' AND '
             else:
-                where_sql += "{} = '{}'".format(k,v)
+                where_sql += "{} = '{}'".format(k, v)
 
         select_sql = """SELECT `administrative_id`,`administrative_name`,`year`,`facebook_url`,`id` FROM `spider_infos` WHERE  """ + where_sql
         re = cur.execute(select_sql)
@@ -138,9 +143,10 @@ def select_info(datas):
         app.logger.error(erro)
         return 0
     finally:
-        closeAll(conn,cur)
+        closeAll(conn, cur)
 
-#查询候选人是否存在
+
+# 查询候选人是否存在
 def get_is_candidate(data):
     administrative_id = data.get('administrative_id')
     username = data.get('username')
@@ -151,7 +157,7 @@ def get_is_candidate(data):
     region_number_select_sql = """SELECT `administrative_id` FROM `administrative_area`"""
     count = ''
     try:
-        count = cur.execute(select_sql,(administrative_id,username,year))
+        count = cur.execute(select_sql, (administrative_id, username, year))
         cur.execute(region_number_select_sql)
         region_number_re = cur.fetchall()
         region_number_list = []
@@ -164,25 +170,26 @@ def get_is_candidate(data):
         app.logger.errr(erro)
         return 0
     finally:
-        closeAll(conn,cur)
+        closeAll(conn, cur)
         return count
 
-#根据id查询单条数据
-def get_one_infos(info_type,data):
+
+# 根据id查询单条数据
+def get_one_infos(info_type, data):
     types = info_type
     ids = data.get('id')
     conn = getconn()
     cur = conn.cursor()
-    if types == '1':#查询Facebook
+    if types == '1':  # 查询Facebook
         facebook_select_sql = """SELECT `id`,`administrative_id`,`administrative_name`,`year`,`facebook_url` FROM `spider_infos` WHERE `id` = %s"""
         try:
-            cur.execute(facebook_select_sql,(ids))
+            cur.execute(facebook_select_sql, (ids))
             facebook_re = cur.fetchall()
         except Exception as erro:
             app.logger.error(erro)
             return 0
         finally:
-            closeAll(conn,cur)
+            closeAll(conn, cur)
         facebook_dict = {}
         facebook_list = []
         for item in facebook_re:
@@ -193,16 +200,16 @@ def get_one_infos(info_type,data):
             facebook_dict['facebook_url'] = item[4]
         facebook_list.append(facebook_dict)
         return facebook_list
-    elif types == '2':#查询地区信息
+    elif types == '2':  # 查询地区信息
         administrative_select_sql = """SELECT `info_id`,`administrative_id`,`area_info`,`governance_situation`,`year` FROM `administrative_infos` WHERE `info_id` = %s"""
         try:
-            cur.execute(administrative_select_sql,(ids))
+            cur.execute(administrative_select_sql, (ids))
             administrative_re = cur.fetchall()
         except Exception as erro:
             app.logger.error(erro)
             return 0
         finally:
-            closeAll(conn,cur)
+            closeAll(conn, cur)
         administrative_dict = {}
         administrative_list = []
         for item in administrative_re:
@@ -213,16 +220,16 @@ def get_one_infos(info_type,data):
             administrative_dict['year'] = item[4]
         administrative_list.append(administrative_dict)
         return administrative_list
-    elif types == '3':#查询候选人信息
-        candidate_select_sql ="""SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id` FROM `candidate_personnel_information` WHERE  `candidate_id` = %s"""
+    elif types == '3':  # 查询候选人信息
+        candidate_select_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id` FROM `candidate_personnel_information` WHERE  `candidate_id` = %s"""
         try:
-            cur.execute(candidate_select_sql,(ids))
+            cur.execute(candidate_select_sql, (ids))
             candidate_re = cur.fetchall()
         except Exception as erro:
             app.logger.error(erro)
             return 0
         finally:
-            closeAll(conn,cur)
+            closeAll(conn, cur)
         candidate_list = []
         information = {}
         candidate_dict = {}
@@ -254,16 +261,16 @@ def get_one_infos(info_type,data):
             candidate_dict['information'] = information
         candidate_list.append(candidate_dict)
         return candidate_list
-    elif types == '4':#查询团队成员信息
-        member_select_sql ="""SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`id` FROM `personnel_information` WHERE `id` = %s"""
+    elif types == '4':  # 查询团队成员信息
+        member_select_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`id` FROM `personnel_information` WHERE `id` = %s"""
         try:
-            cur.execute(member_select_sql,(ids))
+            cur.execute(member_select_sql, (ids))
             member_re = cur.fetchall()
         except Exception as erro:
             app.logger.error(erro)
             return 0
         finally:
-            closeAll(conn,cur)
+            closeAll(conn, cur)
         member_dict = {}
         information = {}
         member_list = []
@@ -297,23 +304,23 @@ def get_one_infos(info_type,data):
         return member_list
 
 
-#地区代码
+# 地区代码
 def get_region_dict(data):
     name = data.get('name')
-    id  = data.get('id')
+    id = data.get('id')
     every = data.get('every')
-    conn= getconn()
+    conn = getconn()
     cur = conn.cursor()
     if len(data) == 1 and name != None:
         select_sql = """SELECT `administrative_id` FROM `administrative_area` WHERE `administrative_name` = %s"""
         try:
-            cur.execute(select_sql,(name))
+            cur.execute(select_sql, (name))
             name_re = cur.fetchone()
         except Exception as erro:
             app.logger.error(erro)
             return 0
         finally:
-            closeAll(conn,cur)
+            closeAll(conn, cur)
         if name_re != '' or name_re != None:
             return name_re[0]
         else:
@@ -321,13 +328,13 @@ def get_region_dict(data):
     elif len(data) == 1 and id != None:
         select_sql = """SELECT `administrative_name` FROM `administrative_area` WHERE `administrative_id` = %s"""
         try:
-            cur.execute(select_sql,(id))
+            cur.execute(select_sql, (id))
             id_re = cur.fetchone()
         except Exception as erro:
             app.logger.error(erro)
             return 0
         finally:
-            closeAll(conn,cur)
+            closeAll(conn, cur)
         if id_re != '' or id_re != None:
             return id_re[0]
         else:
@@ -341,7 +348,7 @@ def get_region_dict(data):
             app.logger.error(erro)
             return 0
         finally:
-            closeAll(conn,cur)
+            closeAll(conn, cur)
         result_list = []
         if all_re != '' or all_re != None:
             for item in all_re:
@@ -354,8 +361,8 @@ def get_region_dict(data):
             return 0
 
 
-#删除候选人信息或者团队人员信息
-def delete_people_information(type,content):
+# 删除候选人信息或者团队人员信息
+def delete_people_information(type, content):
     conn = getconn()
     cur = conn.cursor()
     candidate_id = ''
@@ -371,51 +378,51 @@ def delete_people_information(type,content):
             if spider_re == 1:
                 delete_candidate_personnel_information_sql = """DELETE FROM `candidate_personnel_information` WHERE `candidate_id` = %s """
                 delete_candidate_sql = """DELETE FROM `candidate` WHERE `candidate_id` = %s """
-                information_re = cur.execute(delete_candidate_personnel_information_sql,(candidate_id))
+                information_re = cur.execute(delete_candidate_personnel_information_sql, (candidate_id))
                 if information_re < 1:
                     conn.rollback()
                     cur.close()
                     conn.close()
                     return 0
                 else:
-                    candidate_re = cur.execute(delete_candidate_sql,(candidate_id))
+                    candidate_re = cur.execute(delete_candidate_sql, (candidate_id))
                     if candidate_re < 1:
                         conn.rollback()
                         cur.close()
                         conn.close()
                         return 0
-                    closeAll(conn,cur)
+                    closeAll(conn, cur)
                     return 1
         elif info_type == '2':
             delete_sql = """DELETE FROM `personnel_information` WHERE `id` = %s """
-            re = cur.execute(delete_sql,(candidate_id))
+            re = cur.execute(delete_sql, (candidate_id))
             if re < 1:
                 conn.rollback()
                 cur.close()
                 conn.close()
                 return 0
             else:
-                closeAll(conn,cur)
+                closeAll(conn, cur)
                 return 1
     except Exception as erro:
         app.logger.error(erro)
         return 0
 
 
-#查询关联表和Facebook信息是否存在
-def select_candidate_facebook(info_type,content):
+# 查询关联表和Facebook信息是否存在
+def select_candidate_facebook(info_type, content):
     try:
         if info_type == '1':
             conn = getconn()
             cur = conn.cursor()
-            must_keys = ['administrative_id','username','year','facebook_url']
+            must_keys = ['administrative_id', 'username', 'year', 'facebook_url']
             lost_key = []
             num = 0
             for key in must_keys:
                 if content.get(key) == None or content.get(key) == '':
                     lost_key.append(key)
                     num += 1
-                    if num >=len(must_keys):
+                    if num >= len(must_keys):
                         break
             if len(lost_key) != 0:
                 return "输入缺失{}数据".format(lost_key)
@@ -423,11 +430,11 @@ def select_candidate_facebook(info_type,content):
                 administrative_re = get_is_candidate(content)
                 # print(count)
                 if administrative_re == 407:
-                    closeAll(conn,cur)
+                    closeAll(conn, cur)
                     app.logger.error("所输入地区代码错误")
                     return 407
                 elif administrative_re != 0 and administrative_re != 407:
-                    closeAll(conn,cur)
+                    closeAll(conn, cur)
                     app.logger.error("所输入候选人已存在")
                     return 406
                 elif administrative_re == 0:
@@ -447,20 +454,20 @@ def select_candidate_facebook(info_type,content):
         return 0
 
 
-#写入关联表和Facebook信息
-def insert_candidate_facebook(info_type,content):
+# 写入关联表和Facebook信息
+def insert_candidate_facebook(info_type, content):
     try:
         if info_type == '1':
             conn = getconn()
             cur = conn.cursor()
-            must_keys = ['administrative_id','username','year','facebook_url']
+            must_keys = ['administrative_id', 'username', 'year', 'facebook_url']
             lost_key = []
             num = 0
             for key in must_keys:
                 if content.get(key) == None or content.get(key) == '':
                     lost_key.append(key)
                     num += 1
-                    if num >=len(must_keys):
+                    if num >= len(must_keys):
                         break
             if len(lost_key) != 0:
                 return "输入缺失{}数据".format(lost_key)
@@ -473,39 +480,39 @@ def insert_candidate_facebook(info_type,content):
                 year = content.get('year')
                 insert_sql = """INSERT INTO `candidate` (`administrative_id`,`username`,`year`) VALUES (%s,%s,%s)"""
                 try:
-                    hxr_re = cur.execute(insert_sql,(administrative_id,username,year))
-                    auto_id = conn.insert_id()#返回最新写入的id
+                    hxr_re = cur.execute(insert_sql, (administrative_id, username, year))
+                    auto_id = conn.insert_id()  # 返回最新写入的id
                 except Exception as erro:
-                    print(erro)
                     app.logger.error(erro)
                     return 0
                 if hxr_re == 0:
-                    app.logger.error("候选人信息未记录")
+                    app.logger.error("候选人信息写入不成功")
                     conn.rollback()
                     cur.close()
                     conn.close()
                     return 0
                 elif hxr_re == 1:
-                        insert_re = insert_info(auto_id,content)
-                        if insert_re == 1:
-                            app.logger.error("候选人信息写入")
-                            closeAll(conn,cur)
-                            # add_administrative_infos(outo_id,)
-                            return auto_id
-                        else:
-                            return 0
+                    insert_re = insert_info(auto_id, content)
+                    if insert_re == 1:
+                        app.logger.error("候选人信息写入成功")
+                        closeAll(conn, cur)
+                        # add_administrative_infos(outo_id,)
+                        return auto_id
+                    else:
+                        return 0
         elif info_type == '2':
             return 1
     except Exception as erro:
         app.logger.error(erro)
         return 0
 
-#写入候选人详细信息或者是团队成员信息
-def add_administrative_infos(auto_id,info_type,content):
+
+# 写入候选人详细信息或者是团队成员信息
+def add_administrative_infos(auto_id, info_type, content):
     try:
         conn = getconn()
         cur = conn.cursor()
-        if (info_type =='1' and auto_id != '') or auto_id != None:
+        if (info_type == '1' and auto_id != '') and auto_id != None:
             candidate_id = ''
             if auto_id != '' or auto_id != None:
                 candidate_id = auto_id
@@ -518,7 +525,7 @@ def add_administrative_infos(auto_id,info_type,content):
             else:
                 name = content.get('administrative_name')
             sex = ''
-            if content.get('sex')!= '' or content.get('sex') != None :
+            if content.get('sex') != '' or content.get('sex') != None:
                 sex = content.get('sex')
 
             name_en = ''
@@ -529,7 +536,7 @@ def add_administrative_infos(auto_id,info_type,content):
             if content.get('birthday') != '':
                 birthday = content.get('birthday'),
 
-            birthplace= ''
+            birthplace = ''
             if content.get('birthplace') != '':
                 birthplace = content.get('birthplace')
 
@@ -607,10 +614,14 @@ def add_administrative_infos(auto_id,info_type,content):
 
             insert_houxuanren_sql = """INSERT INTO `candidate_personnel_information` (`candidate_id`,`name`,`sex`,`name_en`,`birthday`, `birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`partisan`,`stain`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
             try:
-                hxr_infos_re = cur.execute(insert_houxuanren_sql,(candidate_id,name,sex,name_en,birthday, birthplace,taiwan_id,passport,personal_webpage,personal_phone,work_phone,email,address,education,job,department,family,job_manager,political,society,competition,situation,partisan,stain))
+                hxr_infos_re = cur.execute(insert_houxuanren_sql, (
+                    candidate_id, name, sex, name_en, birthday, birthplace, taiwan_id, passport, personal_webpage,
+                    personal_phone, work_phone, email, address, education, job, department, family, job_manager,
+                    political,
+                    society, competition, situation, partisan, stain))
             # print(re)
             except Exception as erro:
-                app.logger.erro('写入候选人信息错误')
+                app.logger.error('写入候选人信息错误')
                 conn.rollback()
                 cur.close()
                 conn.close()
@@ -618,25 +629,15 @@ def add_administrative_infos(auto_id,info_type,content):
                 return 0
             if hxr_infos_re != 0:
                 app.logger.error("写入候选人信息成功")
-                closeAll(conn,cur)
-                return 1
+                closeAll(conn, cur)
+                return auto_id
             elif hxr_infos_re == 0:
-                app.logger.erro('写入候选人信息错误')
+                app.logger.error('写入候选人信息错误')
                 conn.rollback()
                 cur.close()
                 conn.close()
                 return 0
-        elif (info_type =='2' and auto_id != '') or auto_id != None:
-            # message = session["electors"]
-            # key_list = []
-            # for key in message.keys():
-            #     key_list.append(key)
-            # candidate_id = ''
-            # if (content.get('candidate_id') != '' and content.get('candidate_id') != None) and content.get('candidate_id') in key_list:
-            #     candidate_id = content.get('candidate_id')
-            # else:
-            #     app.logger.error("输入所属团队领导人标识")
-            #     return 0
+        elif (info_type == '2' and auto_id != '') and auto_id != None:
             candidate_id = ''
             if content.get('candidate_id') != '' and content.get('candidate_id') != None:
                 candidate_id = content.get('candidate_id')
@@ -648,7 +649,7 @@ def add_administrative_infos(auto_id,info_type,content):
                 name = content.get('name')
 
             sex = ''
-            if  content.get('sex')!= '' and content.get('sex') != None:
+            if content.get('sex') != '' and content.get('sex') != None:
                 sex = content.get('sex')
 
             name_en = ''
@@ -656,10 +657,10 @@ def add_administrative_infos(auto_id,info_type,content):
                 name_en = content.get('name_en')
 
             birthday = ''
-            if content.get('birthday') != '' :
+            if content.get('birthday') != '':
                 birthday = content.get('birthday')
 
-            birthplace= ''
+            birthplace = ''
             if content.get('birthplace') != '' and content.get('birthplace') != None:
                 birthplace = content.get('birthplace')
 
@@ -672,7 +673,7 @@ def add_administrative_infos(auto_id,info_type,content):
                 passport = content.get('passport')
 
             personal_webpage = ''
-            if content.get('personal_webpage') != ''and content.get('personal_webpage') != None:
+            if content.get('personal_webpage') != '' and content.get('personal_webpage') != None:
                 personal_webpage = content.get('personal_webpage')
 
             personal_phone = ''
@@ -741,21 +742,28 @@ def add_administrative_infos(auto_id,info_type,content):
                 select_sql = """SELECT * FROM  `personnel_information` WHERE `candidate_id` = %s AND `name` = %s AND `sex` = %s AND `name_en` = %s AND `birthday` = %s AND  `birthplace` = %s AND `taiwan_id` = %s AND `passport` = %s AND `personal_webpage` = %s AND `personal_phone` = %s AND `work_phone` = %s AND `email` = %s AND `address` = %s AND `education` = %s AND `job` = %s AND `department` = %s AND `family` = %s AND `job_manager` = %s AND `political` = %s AND `society` = %s AND `competition` = %s AND `situation` = %s AND `partisan` = %s AND `stain` = %s"""
             else:
                 select_sql = """SELECT * FROM  `personnel_information` WHERE `candidate_id` = %s AND `name` = %s AND `sex` = %s AND `name_en` = %s AND `birthday` IS %s AND  `birthplace` = %s AND `taiwan_id` = %s AND `passport` = %s AND `personal_webpage` = %s AND `personal_phone` = %s AND `work_phone` = %s AND `email` = %s AND `address` = %s AND `education` = %s AND `job` = %s AND `department` = %s AND `family` = %s AND `job_manager` = %s AND `political` = %s AND `society` = %s AND `competition` = %s AND `situation` = %s AND `partisan` = %s AND `stain` = %s"""
-            member_re = cur.execute(select_sql,(candidate_id,name,sex,name_en,birthday, birthplace,taiwan_id,passport,personal_webpage,personal_phone,work_phone,email,address,education,job,department,family,job_manager,political,society,competition,situation,partisan,stain))
+            member_re = cur.execute(select_sql, (
+                candidate_id, name, sex, name_en, birthday, birthplace, taiwan_id, passport, personal_webpage,
+                personal_phone, work_phone, email, address, education, job, department, family, job_manager, political,
+                society, competition, situation, partisan, stain))
             if member_re != 0:
                 app.logger.error("该成员信息已存在")
                 return 406
             elif member_re == 0:
                 insert_sql = """INSERT INTO `personnel_information` (`candidate_id`,`name`,`sex`,`name_en`,`birthday`, `birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`partisan`,`stain`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-                re = cur.execute(insert_sql,(candidate_id,name,sex,name_en,birthday, birthplace,taiwan_id,passport,personal_webpage,personal_phone,work_phone,email,address,education,job,department,family,job_manager,political,society,competition,situation,partisan,stain))
+                re = cur.execute(insert_sql, (
+                    candidate_id, name, sex, name_en, birthday, birthplace, taiwan_id, passport, personal_webpage,
+                    personal_phone, work_phone, email, address, education, job, department, family, job_manager,
+                    political,
+                    society, competition, situation, partisan, stain))
                 # print(re)
                 if re != 0:
                     app.logger.error("成员信息写入成功")
-                    closeAll(conn,cur)
+                    closeAll(conn, cur)
                     return 1
                 elif re == 0:
                     app.logger.error("成员信息未记录")
-                    closeAll(conn,cur)
+                    closeAll(conn, cur)
                     return 0
     except Exception as erro:
         conn.rollback()
@@ -764,8 +772,9 @@ def add_administrative_infos(auto_id,info_type,content):
         app.logger.error(erro)
         return 0
 
-#更新候选人信息和团队人员信息
-def update_people_information(info_type,content):
+
+# 更新候选人信息和团队人员信息
+def update_people_information(info_type, content):
     try:
         where_dict = content.get('where_dict')
         up_dict = content.get('up_dict')
@@ -783,24 +792,24 @@ def update_people_information(info_type,content):
             up_sql = ''
             where_num = 0
             up_num = 0
-            for k,v in where_dict.items():
+            for k, v in where_dict.items():
                 where_num += 1
                 if where_num < len(where_dict):
-                    where_sql += "{} = '{}' AND ".format(k,v)
+                    where_sql += "{} = '{}' AND ".format(k, v)
                 else:
-                    where_sql += "{} = '{}'".format(k,v)
-            for k,v in up_dict.items():
+                    where_sql += "{} = '{}'".format(k, v)
+            for k, v in up_dict.items():
                 up_num += 1
                 if up_num < len(up_dict):
-                    up_sql += "{} = '{}', ".format(k,v)
+                    up_sql += "{} = '{}', ".format(k, v)
                 else:
-                    up_sql += "{} = '{}' ".format(k,v)
+                    up_sql += "{} = '{}' ".format(k, v)
 
-            update_sql = """UPDATE `candidate_personnel_information` SET """ + up_sql +' WHERE '+ where_sql
+            update_sql = """UPDATE `candidate_personnel_information` SET """ + up_sql + ' WHERE ' + where_sql
             # print(update_sql)
             try:
                 re = cur.execute(update_sql)
-                if re < 1 :
+                if re < 1:
                     app.logger.error("候选人信息未更新")
                     return 0
                 else:
@@ -810,7 +819,7 @@ def update_people_information(info_type,content):
                 app.logger.error(erro)
                 return 0
             finally:
-                closeAll(conn,cur)
+                closeAll(conn, cur)
         elif info_type == '2':
             conn = getconn()
             cur = conn.cursor()
@@ -821,17 +830,17 @@ def update_people_information(info_type,content):
                 ids = where_dict.get('id')
             else:
                 ids = where_dict.get('candidate_id')
-            for k,v in up_dict.items():
+            for k, v in up_dict.items():
                 up_num += 1
                 if up_num < len(up_dict):
-                    up_sql += "{} = '{}', ".format(k,v)
+                    up_sql += "{} = '{}', ".format(k, v)
                 else:
-                    up_sql += "{} = '{}' ".format(k,v)
+                    up_sql += "{} = '{}' ".format(k, v)
 
-            update_sql = """UPDATE `personnel_information` SET """ + up_sql +' WHERE  `id` = %s'
+            update_sql = """UPDATE `personnel_information` SET """ + up_sql + ' WHERE  `id` = %s'
             try:
-                re = cur.execute(update_sql,(ids))
-                if re < 1 :
+                re = cur.execute(update_sql, (ids))
+                if re < 1:
                     app.logger.error("团队成员信息未更新")
                     return 0
                 else:
@@ -841,15 +850,17 @@ def update_people_information(info_type,content):
                 app.logger.error(erro)
                 return 0
             finally:
-                closeAll(conn,cur)
+                closeAll(conn, cur)
     except Exception as erro:
         app.logger.error(erro)
         return 0
 
+
 # 获取每一个人的详细信息加上every条件后可以返回所有
 def get_everyinformation(type, content):
     try:
-        if type == '1' :
+        select_admini_name()
+        if type == '1':
             result_list = []
             id = content.get('id')
             one_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`year`,`administrative_id` FROM (SELECT * FROM `candidate_personnel_information` WHERE `candidate_id` = %s )a ,(SELECT `year`,`candidate_id` as ids,`administrative_id` FROM `candidate` WHERE `candidate_id` = %s)b WHERE a.candidate_id = b.ids """
@@ -858,16 +869,14 @@ def get_everyinformation(type, content):
             cur = conn.cursor()
             every = content.get('every')
             if every == '0':
-                cur.execute(one_leader_sql,(id,id))
+                cur.execute(one_leader_sql, (id, id))
             elif every == '1':
                 cur.execute(all_leader_sql)
             result = cur.fetchall()
             for item in result:
                 leader_infos_dict = {}
                 information = {}
-                administrative_id = item[25]
-                region = get_region_dict({"id":administrative_id})
-                leader_infos_dict['administrative_id'] = region
+                leader_infos_dict['administrative_id'] = admini_id_name[item[25]]
                 leader_infos_dict['year'] = item[24]
                 leader_infos_dict['auto_id'] = item[23]
                 leader_infos_dict['name'] = item[22]
@@ -899,17 +908,6 @@ def get_everyinformation(type, content):
             return result_list
 
         elif type == '2':
-            # message = session["electors"]
-            # key_list = []
-            # for key in message.keys():
-            #     key_list.append(key)
-            id = ''
-            # if (content.get('candidate_id') != '' and content.get('candidate_id') != None) and content.get('candidate_id') in key_list:
-            # if (content.get('candidate_id') != '' and content.get('candidate_id') != None):
-            #     candidate_id = content.get('candidate_id')
-            # else:
-            #     app.logger.error("输入所属团队领导人标识")
-            #     return 0
             candidate_id = content.get('candidate_id')
             if content.get('id') == None:
                 id = content.get('candidate_id')
@@ -918,13 +916,11 @@ def get_everyinformation(type, content):
             every = content.get('every')
             member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id`,`year`,`administrative_id` FROM(SELECT * FROM `personnel_information` WHERE `id` = %s)a, (SELECT `year`,`candidate_id` as ids,`administrative_id` FROM `candidate` WHERE `candidate_id` = (SELECT `candidate_id` FROM `personnel_information` WHERE `id` = %s ))b WHERE a.candidate_id = b.ids """
             all_member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id`,`year`,`administrative_id` FROM (SELECT * FROM `personnel_information` WHERE `candidate_id` = %s)a,(SELECT `year`,`candidate_id` as ids,`administrative_id`  FROM `candidate` WHERE `candidate_id` =%s)b  WHERE a.candidate_id = b.ids """
-            # member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id` FROM `personnel_information` WHERE `id` = %s """
-            # all_member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id` FROM `personnel_information` WHERE `candidate_id` = %s"""
             count = ''
             if every == '0':
-                count = cur.execute(member_sql,(id,id))
+                count = cur.execute(member_sql, (id, id))
             elif every == '1':
-                cur.execute(all_member_sql,(candidate_id,candidate_id))
+                cur.execute(all_member_sql, (candidate_id, candidate_id))
             if count != 0:
                 result = cur.fetchall()
 
@@ -932,9 +928,7 @@ def get_everyinformation(type, content):
                 for item in result:
                     member_dict = {}
                     information = {}
-                    administrative_id = item[26]
-                    region = get_region_dict({"id":administrative_id})
-                    member_dict['administrative_id'] = region
+                    member_dict['administrative_id'] = admini_id_name[item[26]]
                     member_dict['year'] = item[25]
                     member_dict['candidate_id'] = item[24]
                     member_dict['name'] = item[23]
@@ -977,8 +971,8 @@ def get_everyinformation(type, content):
         return 0
 
 
-#根据地区返回该地区的所有年份
-def get_all_years(info_type,data):
+# 根据地区返回该地区的所有年份
+def get_all_years(info_type, data):
     conn = getconn()
     cur = conn.cursor()
 
@@ -986,7 +980,7 @@ def get_all_years(info_type,data):
         try:
             administrative_id = data.get('administrative_id')
             years_select_sql = """SELECT `year` FROM `candidate` WHERE `administrative_id` = %s GROUP BY `year`"""
-            re = cur.execute(years_select_sql,(administrative_id))
+            re = cur.execute(years_select_sql, (administrative_id))
             if re < 1:
                 return 0
             else:
@@ -1003,13 +997,13 @@ def get_all_years(info_type,data):
             app.logger.error(erro)
             return 0
         finally:
-            closeAll(conn,cur)
+            closeAll(conn, cur)
     elif info_type == 'candidates':
         try:
             year = data.get('year')
             administrative_id = data.get('administrative_id')
             candidates_select_sql = """SELECT `candidate_id`,`username` FROM `candidate` WHERE `year` = %s AND `administrative_id` = %s"""
-            re = cur.execute(candidates_select_sql,(year,administrative_id))
+            re = cur.execute(candidates_select_sql, (year, administrative_id))
             if re < 1:
                 return 0
             else:
@@ -1025,24 +1019,10 @@ def get_all_years(info_type,data):
             app.logger.error(erro)
             return 0
         finally:
-            closeAll(conn,cur)
+            closeAll(conn, cur)
 
-#写入图片
-def insert_img(img,img_id):
-    try:
-        print(1)
-        strs = img.encode('utf-8').split(',')[1]
-        img_end = strs.replace(' ','+')
-        data = base64.b64decode(img_end)
-        # with open('/usr/share/nginx/html/customs/newsImg/'+img_id+'.jpg','wb') as f:
-        with open('/C:/Users/lichen/Desktop/aa/'+img_id+'.jpg','wb') as f:
-            f.write(data)
-            f.flush
-        return 1
-    except:
-        return 0
 
-#做分页
+# 做分页
 def get_pages():
     conn = getconn()
     cur = conn.cursor()
@@ -1057,16 +1037,37 @@ def get_pages():
         app.logger.error(erro)
         return 0
     finally:
-        closeAll(conn,cur)
+        closeAll(conn, cur)
 
 
-#校验图片是否正确
+# 校验图片是否正确
 def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
-#地区信息写入数据
+# 获取侯选人或者是团队人员的id
+def get_new_id(info_type):
+    conn = getconn()
+    cur = conn.cursor()
+    try:
+        if info_type == '1':
+            leader_id_sql = """SELECT `candidate_id` FROM `candidate` ORDER BY  `candidate_id` DESC  LIMIT 1"""
+            cur.execute(leader_id_sql)
+            re_id = cur.fetchone()
+            return re_id[0]
+        elif info_type == '2':
+            leader_id_sql = """SELECT `candidate_id`,`id` FROM `personnel_information` ORDER BY  `id` DESC  LIMIT 1"""
+            cur.execute(leader_id_sql)
+            re_id = cur.fetchone()
+            return re_id[0], re_id[1]
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
+    finally:
+        closeAll(conn, cur)
+
+
+# 地区信息写入数据
 def insert_area_info(administrative_id, area_info, governance_situation, year):
     conn = getconn()
     cur = conn.cursor()
@@ -1091,14 +1092,14 @@ def insert_area_info(administrative_id, area_info, governance_situation, year):
         closeAll(conn, cur)
 
 
-#地区信息删除数据
+# 地区信息删除数据
 def delete_area_info(data):
     conn = getconn()
     cur = conn.cursor()
     info_id = data.get('info_id')
     try:
         delete_sql = """DELETE FROM `administrative_infos` WHERE info_id = %s """
-        re = cur.execute(delete_sql,(info_id))
+        re = cur.execute(delete_sql, (info_id))
         if re < 1:
             return 0
         else:
@@ -1112,7 +1113,6 @@ def delete_area_info(data):
 
 # 地区信息更改数据
 def update_info_area(datas):
-
     where_dict = datas.get('where_dict')
     up_dict = datas.get('up_dict')
     if len(where_dict) == 0 or len(up_dict) == 0:
@@ -1128,23 +1128,22 @@ def update_info_area(datas):
             up_sql = ''
             where_num = 0
             up_num = 0
-            print(where_dict.items())
-            for k,v in where_dict.items():
+            for k, v in where_dict.items():
                 where_num += 1
                 if where_num < len(where_dict):
-                    where_sql += "{} = '{}' AND ".format(k,v)
+                    where_sql += "{} = '{}' AND ".format(k, v)
                 else:
-                    where_sql += "{} = '{}'".format(k,v)
-            for k,v in up_dict.items():
+                    where_sql += "{} = '{}'".format(k, v)
+            for k, v in up_dict.items():
                 up_num += 1
                 if up_num < len(up_dict):
-                    up_sql += "{} = '{}', ".format(k,v)
+                    up_sql += "{} = '{}', ".format(k, v)
                 else:
-                    up_sql += "{} = '{}' ".format(k,v)
+                    up_sql += "{} = '{}' ".format(k, v)
 
-            update_sql = """UPDATE `administrative_infos` SET """ + up_sql +' WHERE '+ where_sql
+            update_sql = """UPDATE `administrative_infos` SET """ + up_sql + ' WHERE ' + where_sql
             re = cur.execute(update_sql)
-            if re < 1 :
+            if re < 1:
                 return 0
             else:
                 return 1
@@ -1155,7 +1154,7 @@ def update_info_area(datas):
             closeAll(conn, cur)
 
 
-#地区信息查询所有数据
+# 地区信息查询所有数据
 def select_area_info():
     conn = getconn()
     cur = conn.cursor()
@@ -1170,7 +1169,6 @@ def select_area_info():
             result = cur.fetchall()
             lists = []
             for item in result:
-                # pro_name = select_pro_by_id(item[1])
                 dict = {}
                 for k, v in admini_id_name.items():
                     if item[1] == k:
@@ -1190,7 +1188,7 @@ def select_area_info():
         closeAll(conn, cur)
 
 
-#地区信息查询一条数据
+# 地区信息查询一条数据
 def select_area_info_one(data):
     conn = getconn()
     cur = conn.cursor()
@@ -1216,7 +1214,6 @@ def select_area_info_one(data):
             dict['area_info'] = item[2]
             dict['governance_situation'] = item[3]
             dict['year'] = item[4]
-            # print(dict)
             return dict
     except Exception as erro:
         app.logger.error(erro)
@@ -1225,7 +1222,7 @@ def select_area_info_one(data):
         closeAll(conn, cur)
 
 
-#分页查询地区信息数据
+# 分页查询地区信息数据
 def select_area_info_page(page, count):
     conn = getconn()
     cur = conn.cursor()
@@ -1236,7 +1233,7 @@ def select_area_info_page(page, count):
             page_t = 0
         else:
             page_t = (int(page) - 1) * int(count)
-        re = cur.execute(select_info,(int(page_t),int(count)))
+        re = cur.execute(select_info, (int(page_t), int(count)))
         if re < 1:
             return 0
         else:
@@ -1264,7 +1261,7 @@ def select_area_info_page(page, count):
         closeAll(conn, cur)
 
 
-#历届选举信息写入数据
+# 历届选举信息写入数据
 def insert_election_info(administrative_id, elector, election_score, election_parties, period, year):
     conn = getconn()
     cur = conn.cursor()
@@ -1272,14 +1269,14 @@ def insert_election_info(administrative_id, elector, election_score, election_pa
     insert_sql = """INSERT INTO `previous_elections` (`administrative_id`,`elector`,`election_score`,`election_parties`,`period`,`year`) VALUES (%s,%s,%s,%s,%s,%s)"""
     select_sql = """SELECT `id`  FROM `previous_elections` WHERE `administrative_id` = %s AND `elector`= %s AND `election_score`= %s AND `election_parties`= %s AND `period`= %s AND `year`= %s"""
     try:
-        # print(insert_sql)
         insert_re = ''
-        select_re = cur.execute(select_sql, (administrative_id, elector, election_score, election_parties, period, year))
+        select_re = cur.execute(select_sql,
+                                (administrative_id, elector, election_score, election_parties, period, year))
         if select_re != 0:
             return 406
         elif select_re == 0:
-            insert_re = cur.execute(insert_sql, (administrative_id, elector, election_score, election_parties, period, year))
-        # print(re)
+            insert_re = cur.execute(insert_sql,
+                                    (administrative_id, elector, election_score, election_parties, period, year))
         if insert_re < 1:
             return 0
         else:
@@ -1291,14 +1288,14 @@ def insert_election_info(administrative_id, elector, election_score, election_pa
         closeAll(conn, cur)
 
 
-#历届选举信息删除数据
+# 历届选举信息删除数据
 def delete_election_info(data):
     conn = getconn()
     cur = conn.cursor()
     id = data.get('id')
     try:
         delete_sql = """DELETE FROM `previous_elections` WHERE id = %s """
-        re = cur.execute(delete_sql,(id))
+        re = cur.execute(delete_sql, (id))
         if re < 1:
             return 0
         else:
@@ -1312,7 +1309,6 @@ def delete_election_info(data):
 
 # 更改历届选举信息数据
 def update_election_info(datas):
-
     where_dict = datas.get('where_dict')
     up_dict = datas.get('up_dict')
     if len(where_dict) == 0 or len(up_dict) == 0:
@@ -1328,21 +1324,19 @@ def update_election_info(datas):
             up_sql = ''
             where_num = 0
             up_num = 0
-            for k,v in where_dict.items():
+            for k, v in where_dict.items():
                 where_num += 1
                 if where_num < len(where_dict):
-                    where_sql += "{} = '{}' AND ".format(k,v)
+                    where_sql += "{} = '{}' AND ".format(k, v)
                 else:
-                    where_sql += "{} = '{}'".format(k,v)
-            for k,v in up_dict.items():
+                    where_sql += "{} = '{}'".format(k, v)
+            for k, v in up_dict.items():
                 up_num += 1
                 if up_num < len(up_dict):
-                    up_sql += "{} = '{}', ".format(k,v)
+                    up_sql += "{} = '{}', ".format(k, v)
                 else:
-                    up_sql += "{} = '{}' ".format(k,v)
-
-            update_sql = """UPDATE `previous_elections` SET """ + up_sql +' WHERE '+ where_sql
-            # print(update_sql)
+                    up_sql += "{} = '{}' ".format(k, v)
+            update_sql = """UPDATE `previous_elections` SET """ + up_sql + ' WHERE ' + where_sql
             re = cur.execute(update_sql)
             if re < 1:
                 return 0
@@ -1374,7 +1368,6 @@ def select_election_all():
                 for k, v in admini_id_name.items():
                     if item[1] == k:
                         dict['administrative_name'] = admini_id_name[item[1]]
-                        # print(admini_id_name[k])
                 dict['id'] = item[0]
                 dict['administrative_id'] = item[1]
                 dict['elector'] = item[2]
@@ -1389,10 +1382,10 @@ def select_election_all():
         app.logger.error(erro)
         return 0
     finally:
-        closeAll(conn,cur)
+        closeAll(conn, cur)
 
 
-#历届选举信息根据id查询单条数据
+# 历届选举信息根据id查询单条数据
 def select_election_info_one(data):
     conn = getconn()
     cur = conn.cursor()
@@ -1424,10 +1417,10 @@ def select_election_info_one(data):
         app.logger.error(erro)
         return 0
     finally:
-        closeAll(conn,cur)
+        closeAll(conn, cur)
 
 
-#分页查询历届选举信息情况数据
+# 分页查询历届选举信息情况数据
 def select_election_info_page(page, count):
     conn = getconn()
     cur = conn.cursor()
@@ -1445,7 +1438,7 @@ def select_election_info_page(page, count):
             page_t = 0
         else:
             page_t = (int(page) - 1) * int(count)
-        re = cur.execute(select_info,(int(page_t),int(count)))
+        re = cur.execute(select_info, (int(page_t), int(count)))
         if re < 1:
             return 0
         else:
@@ -1477,8 +1470,9 @@ def select_election_info_page(page, count):
 
 
 admini_id_name = {}
-def select_admini_name():
 
+
+def select_admini_name():
     conn = getconn()
     cur = conn.cursor()
 
@@ -1494,13 +1488,3 @@ def select_admini_name():
         return 0
     finally:
         closeAll(conn, cur)
-# if __name__ == '__main__':
-#     # a = insert_info('7017','李晨','2018','www.facebook.com')
-#     a = delete_info(11)#{"administrative_id":"7019","administrative_name":"李晨"}
-#     # a = select_info({"administrative_id":"7017","administrative_name":"李晨","year":"2018","facebook_url":"www.baidu.com"})
-#     # a = update_info(up_dict={"administrative_id":"7020","administrative_name":"lichen"},where_dict={"administrative_id":"7019","administrative_name":"李晨"})
-#     # a = select_info({"administrative_name":"李晨","year":"2020"})
-#     print(a)
-#     get_pages()
-
-

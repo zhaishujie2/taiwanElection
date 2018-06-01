@@ -9,7 +9,6 @@ es = Elasticsearch(es_host, timeout=600)
 def get_candidates(dict_name):
     try:
         date = time.strftime("%Y-%m-%d")
-        print (date)
         start_time, end_time = get_time(date,date)
         sum = 0
         dict = {}
@@ -28,9 +27,7 @@ def get_candidates(dict_name):
                      "from": 0,
                      "size": 9999}
             result = es.search(index=es_twitter_index, doc_type=es_twitter_type, body=query)['hits']['hits']
-            print (query)
             twitter_count = len(result)
-            print (twitter_count)
             name_count = twitter_count+new_count
             sum+=name_count
             dict[name] = name_count
