@@ -8,7 +8,7 @@ from monitor.main.system.operate_info import insert_info, delete_info, update_in
     allowed_file, \
     delete_area_info, insert_area_info, update_info_area, select_area_info, select_area_info_one, select_area_info_page, \
     insert_election_info, delete_election_info, update_election_info, select_election_all, select_election_info_one, \
-    select_election_info_page, get_new_id, select_election_code_one, select_area_code_one
+    select_election_info_page, get_new_id, select_election_code_one, select_area_code_one, update_image_name
 import json, os
 
 
@@ -296,15 +296,23 @@ def upload_file():
         if info_type == '1':
             leader = get_new_id(info_type)
             if file and allowed_file(file.filename):
-                file.save(
-                    os.path.join(app.config['UPLOAD_FOLDER'], str(leader) + '.' + file.filename.rsplit('.', 1)[1]))
-                return jsonify({"message": 1}), 201
+                image_name = str(leader) + '.' + file.filename.rsplit('.', 1)[1]
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'],image_name ))
+                update_image_re = update_image_name(info_type=info_type,image_name=image_name,ids=leader)
+                if update_image_re == 1:
+                    return jsonify({"message": 1}), 201
+                else:
+                    return  jsonify({"message":"图片名称未存储成功"}),400
         if info_type == '2':
             leader, member = get_new_id(info_type)
+            image_name = str(leader) + '_' + str(member) + '.' + file.filename.rsplit('.', 1)[1]
             if file and allowed_file(file.filename):
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'],
-                                       str(leader) + '_' + str(member) + '.' + file.filename.rsplit('.', 1)[1]))
-                return jsonify({"message": 1}), 201
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'],image_name))
+                update_image_re = update_image_name(info_type=info_type,image_name=image_name,ids=member)
+                if update_image_re == 1:
+                    return jsonify({"message": 1}), 201
+                else:
+                    return  jsonify({"message":"图片名称未存储成功"}),400
     except Exception as erro:
         app.logger.error(erro)
         return str(0)

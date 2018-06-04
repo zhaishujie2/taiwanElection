@@ -392,7 +392,7 @@ def delete_people_information(type, content):
                         closeAll(conn, cur)
                         return 0
                     else:
-                        delete_re = delete_people_image(candidate_id)
+                        delete_re = delete_people_image(info_type='1',image_name=candidate_id)
                         if delete_re == 1:
                             closeAll(conn, cur)
                             return 1
@@ -410,7 +410,7 @@ def delete_people_information(type, content):
                 conn.close()
                 return 0
             else:
-                delete_re = delete_people_image(candidate_id)
+                delete_re = delete_people_image(info_type='2',image_name=candidate_id)
                 if delete_re == 1:
                     closeAll(conn, cur)
                     return 1
@@ -424,18 +424,34 @@ def delete_people_information(type, content):
         return 0
 
 #删除图片
-def delete_people_image(image_name):
-    image_path = app.config['UPLOAD_FOLDER']
-    if (os.path.splitext(image_path+image_name)):
+def delete_people_image(info_type,image_name):
+    try:
+        image_path = app.config['UPLOAD_FOLDER']
         names = os.listdir(image_path)
-        for name in names:
-            name.rfind(image_name)
-            print(name)
-        # os.remove(image_path+image_name)
-        return 1
-    else:
+        if info_type == '1':
+            for name in names:
+                exits = name.rfind(image_name)
+                if exits == 0:
+                    os.remove(image_path + name)
+                    return 1
+            app.logger.error('无此侯选人图片')
+            return 0
+        elif info_type == '2':
+            candidate_id,member_id = get_new_id(image_name)
+            member_name = str(candidate_id)+'_'+str(member_id)
+            for name in names:
+                exits = name.rfind(member_name)
+                if exits == 0:
+                    os.remove(image_path + name)
+                    return 1
+            app.logger.error('无此团队成员图片')
+            return 0
+    except Exception as erro:
+        app.logger.error(erro)
         return 0
-# 查询关联表和Facebook信息是否存在
+
+
+#查询关联表和Facebook信息是否存在
 def select_candidate_facebook(info_type, content):
     try:
         if info_type == '1':
@@ -535,6 +551,8 @@ def insert_candidate_facebook(info_type, content):
 
 # 写入候选人详细信息或者是团队成员信息
 def add_administrative_infos(auto_id, info_type, content):
+    conn = ''
+    cur = ''
     try:
         conn = getconn()
         cur = conn.cursor()
@@ -798,6 +816,36 @@ def add_administrative_infos(auto_id, info_type, content):
         app.logger.error(erro)
         return 0
 
+#写入图片名称
+def update_image_name(info_type,image_name,ids):
+    if image_name == '' or image_name == None:
+        app.logger.error('图片名称为空')
+        return 0
+    if ids == '' or ids == None:
+        app.logger.error('图片id为空')
+        return 0
+    if info_type == '1':
+        update_sql = """UPDATE `candidate_personnel_information` SET `image_name` = %s WHERE `candidate_id` = %s"""
+        conn = getconn()
+        cur = conn.cursor()
+        update_re = cur.execute(update_sql,(image_name,ids))
+        if update_re == 1:
+            app.logger.error('侯选人图片名称写入成功')
+            return 1
+        else:
+            app.logger.error('侯选人图片名称写入错误')
+            return 0
+    elif info_type == '2':
+        update_sql = """UPDATE `personnel_information` SET `image_name` = %s WHERE `id` = %s"""
+        conn = getconn()
+        cur = conn.cursor()
+        update_re = cur.execute(update_sql,(image_name,ids))
+        if update_re == 1:
+            app.logger.error('团队成员图片名称写入成功')
+            return 1
+        else:
+            app.logger.error('团队成员图片名称写入错误')
+            return 0
 
 # 更新候选人信息和团队人员信息
 def update_people_information(info_type, content):
@@ -1075,19 +1123,34 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
-# 获取侯选人或者是团队人员的id
+# 获取最新写入的侯选人或者是团队人员的id
 def get_new_id(info_type):
     conn = getconn()
     cur = conn.cursor()
     try:
         if info_type == '1':
             leader_id_sql = """SELECT `candidate_id` FROM `candidate` ORDER BY  `candidate_id` DESC  LIMIT 1"""
-            cur.execute(leader_id_sql)
+            leader_re = cur.execute(leader_id_sql)
+            if leader_re == 0:
+                app.logger.error('无此候选人信息')
+                return 0
             re_id = cur.fetchone()
+            closeAll(conn,cur)
             return re_id[0]
         elif info_type == '2':
-            leader_id_sql = """SELECT `candidate_id`,`id` FROM `personnel_information` ORDER BY  `id` DESC  LIMIT 1"""
-            cur.execute(leader_id_sql)
+            leader_member_id_sql = """SELECT `candidate_id`,`id` FROM `personnel_information` ORDER BY  `id` DESC  LIMIT 1"""
+            member_re = cur.execute(leader_member_id_sql)
+            if member_re == 0:
+                app.logger.error('无此团队成员信息')
+                return 0
+            re_id = cur.fetchone()
+            return re_id[0], re_id[1]
+        else:
+            delete_member_id_sql = """SELECT `candidate_id`,`id` FROM `personnel_information` WHERE `id` = %s"""
+            delete_re = cur.execute(delete_member_id_sql,(info_type))
+            if delete_re == 0:
+                app.logger.error('无次团队成员信息')
+                return 0
             re_id = cur.fetchone()
             return re_id[0], re_id[1]
     except Exception as erro:
@@ -1589,5 +1652,5 @@ def select_election_code_one(data):
         closeAll(conn, cur)
 
 if __name__ == '__main__':
-    a = delete_people_image('1111')
+    a = delete_people_image(info_type='2',image_name='35')
     print(a)
