@@ -426,8 +426,12 @@ def delete_people_information(type, content):
 #删除图片
 def delete_people_image(image_name):
     image_path = app.config['UPLOAD_FOLDER']
-    if (os.path.exists(image_path+image_name)):
-        os.remove(image_path+image_name)
+    if (os.path.splitext(image_path+image_name)):
+        names = os.listdir(image_path)
+        for name in names:
+            name.rfind(image_name)
+            print(name)
+        # os.remove(image_path+image_name)
         return 1
     else:
         return 0
@@ -1515,7 +1519,75 @@ def select_admini_name():
     finally:
         closeAll(conn, cur)
 
+#根据地区编号查询地区信息一条数据
+def select_area_code_one(data):
+    conn = getconn()
+    cur = conn.cursor()
 
+    administrative_id = data['administrative_id']
+    try:
+        select_sql = """SELECT `info_id`,`administrative_id` ,`area_info` ,`governance_situation` ,`year`  FROM `administrative_infos` WHERE `administrative_id` = %s """
+        re = cur.execute(select_sql, (administrative_id))
+        if re < 1:
+            return 0
+        else:
+            select_admini_name()
+            item = cur.fetchone()
+            # pro_name = select_pro_by_id(item[1])
+            dict = {}
+            for k, v in admini_id_name.items():
+                if item[1] == k:
+                    dict['administrative_name'] = admini_id_name[item[1]]
+            dict['info_id'] = item[0]
+            dict['administrative_id'] = item[1]
+            # dict['administrative_name'] = pro_name
+            dict['area_info'] = item[2]
+            dict['governance_situation'] = item[3]
+            dict['year'] = item[4]
+            # print(dict)
+            return dict
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
+    finally:
+        closeAll(conn, cur)
+
+
+
+#历届选举信息根据地区编号查询单条数据
+def select_election_code_one(data):
+    conn = getconn()
+    cur = conn.cursor()
+
+    administrative_id = data['administrative_id']
+    try:
+        select_sql = """SELECT `id`,`administrative_id` ,`elector` ,`election_score` ,`election_parties` ,`period` ,`year` FROM `previous_elections` WHERE `administrative_id` = %s """
+        re = cur.execute(select_sql, (administrative_id))
+        if re < 1:
+            return 0
+        else:
+            select_admini_name()
+            item = cur.fetchone()
+            dict = {}
+            for k, v in admini_id_name.items():
+                if item[1] == k:
+                    dict['administrative_name'] = admini_id_name[item[1]]
+            dict['id'] = item[0]
+            dict['administrative_id'] = item[1]
+            # dict['administrative_name'] = pro_name
+            dict['elector'] = item[2]
+            dict['election_score'] = item[3]
+            dict['election_parties'] = item[4]
+            dict['period'] = item[5]
+            dict['year'] = item[6]
+
+            return dict
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
+    finally:
+        closeAll(conn, cur)
 
 if __name__ == '__main__':
-    delete_people_image('xiuxiu.png')
+    a = delete_people_image('1111')
+    print(a)
