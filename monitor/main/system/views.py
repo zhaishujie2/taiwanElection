@@ -8,7 +8,7 @@ from monitor.main.system.operate_info import insert_info, delete_info, update_in
     allowed_file, \
     delete_area_info, insert_area_info, update_info_area, select_area_info, select_area_info_one, select_area_info_page, \
     insert_election_info, delete_election_info, update_election_info, select_election_all, select_election_info_one, \
-    select_election_info_page, get_new_id
+    select_election_info_page, get_new_id, select_election_code_one, select_area_code_one
 import json, os
 
 
@@ -538,6 +538,41 @@ def select_election_page():
             return jsonify({"message": message}), 200
         else:
             return jsonify({"message": "type input is null"}), 406
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(0)
+
+# 地区信息根据地区编号查询一条数据
+@mod.route('/select_area_code/', methods=['POST'])
+def select_area_code():
+    try:
+        datas = request.form.get('data', '')
+        if datas == '':
+            return jsonify({"message": "type input is null"}), 406
+        else:
+            message = select_area_code_one(json.loads(datas))
+            if message:
+                return jsonify({"message": message}), 200
+            else:
+                return jsonify({"message": "The data field is in the wrong"}), 400
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(0)
+
+# 根据地区编号搜索一条选举信息
+@mod.route('/select_election_code/', methods=['POST'])
+def select_election_code():
+    try:
+        datas = request.form.get('data','')
+        if datas == '':
+            return jsonify({"message": "type input is null"}), 406
+        else:
+            message = select_election_code_one(json.loads(datas))
+            if message:
+                return jsonify({"message": message}), 200
+            else:
+                return jsonify({"message": "The data field is in the wrong"}), 400
+
     except Exception as erro:
         app.logger.error(erro)
         return str(0)
