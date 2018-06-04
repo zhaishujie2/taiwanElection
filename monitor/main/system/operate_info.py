@@ -1,8 +1,7 @@
 # coding=utf-8
 from monitor.util.mysql_util import getconn, closeAll
 from monitor import app
-import base64
-from flask import session
+import os,sys
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
@@ -390,9 +389,18 @@ def delete_people_information(type, content):
                         conn.rollback()
                         cur.close()
                         conn.close()
+                        closeAll(conn, cur)
                         return 0
-                    closeAll(conn, cur)
-                    return 1
+                    else:
+                        delete_re = delete_people_image(candidate_id)
+                        if delete_re == 1:
+                            closeAll(conn, cur)
+                            return 1
+                        elif delete_re != 1:
+                            conn.rollback()
+                            cur.close()
+                            conn.close()
+                            return 0
         elif info_type == '2':
             delete_sql = """DELETE FROM `personnel_information` WHERE `id` = %s """
             re = cur.execute(delete_sql, (candidate_id))
@@ -402,13 +410,27 @@ def delete_people_information(type, content):
                 conn.close()
                 return 0
             else:
-                closeAll(conn, cur)
-                return 1
+                delete_re = delete_people_image(candidate_id)
+                if delete_re == 1:
+                    closeAll(conn, cur)
+                    return 1
+                elif delete_re != 1:
+                    conn.rollback()
+                    cur.close()
+                    conn.close()
+                    return 0
     except Exception as erro:
         app.logger.error(erro)
         return 0
 
-
+#删除图片
+def delete_people_image(image_name):
+    image_path = app.config['UPLOAD_FOLDER']
+    if (os.path.exists(image_path+image_name)):
+        os.remove(image_path+image_name)
+        return 1
+    else:
+        return 0
 # 查询关联表和Facebook信息是否存在
 def select_candidate_facebook(info_type, content):
     try:
@@ -865,6 +887,7 @@ def get_everyinformation(type, content):
             id = content.get('id')
             one_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`year`,`administrative_id` FROM (SELECT * FROM `candidate_personnel_information` WHERE `candidate_id` = %s )a ,(SELECT `year`,`candidate_id` as ids,`administrative_id` FROM `candidate` WHERE `candidate_id` = %s)b WHERE a.candidate_id = b.ids """
             all_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`year`,`administrative_id` FROM(SELECT * FROM `candidate_personnel_information` )a ,(SELECT `year`,`candidate_id` as ids,`administrative_id`  FROM `candidate` )b WHERE a.candidate_id = b.ids ORDER BY `year` DESC """
+            area_all_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`year`,`administrative_id` FROM(SELECT * FROM `candidate_personnel_information` )a ,(SELECT `year`,`candidate_id` as ids,`administrative_id`  FROM `candidate` )b WHERE a.candidate_id = b.ids AND `administrative_id` = %s ORDER BY `year` DESC """
             conn = getconn()
             cur = conn.cursor()
             every = content.get('every')
@@ -872,6 +895,8 @@ def get_everyinformation(type, content):
                 cur.execute(one_leader_sql, (id, id))
             elif every == '1':
                 cur.execute(all_leader_sql)
+            else:
+                cur.execute(area_all_leader_sql,(every))
             result = cur.fetchall()
             for item in result:
                 leader_infos_dict = {}
@@ -908,6 +933,7 @@ def get_everyinformation(type, content):
             return result_list
 
         elif type == '2':
+            id = ''
             candidate_id = content.get('candidate_id')
             if content.get('id') == None:
                 id = content.get('candidate_id')
@@ -982,7 +1008,7 @@ def get_all_years(info_type, data):
             years_select_sql = """SELECT `year` FROM `candidate` WHERE `administrative_id` = %s GROUP BY `year`"""
             re = cur.execute(years_select_sql, (administrative_id))
             if re < 1:
-                return 0
+                return []
             else:
                 result = cur.fetchall()
                 result_lists = []
@@ -1488,3 +1514,8 @@ def select_admini_name():
         return 0
     finally:
         closeAll(conn, cur)
+
+
+
+if __name__ == '__main__':
+    delete_people_image('xiuxiu.png')
