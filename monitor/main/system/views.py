@@ -8,7 +8,7 @@ from monitor.main.system.operate_info import insert_info, delete_info, update_in
     allowed_file, \
     delete_area_info, insert_area_info, update_info_area, select_area_info, select_area_info_one, select_area_info_page, \
     insert_election_info, delete_election_info, update_election_info, select_election_all, select_election_info_one, \
-    select_election_info_page, get_new_id, select_election_code_one, select_area_code_one, update_image_name
+    select_election_info_page, get_new_id, select_election_code_info, select_area_code_info, update_image_name
 import json, os
 
 
@@ -289,20 +289,27 @@ def uploaded_file(filename):
 @mod.route('/image/', methods=['POST'])
 def upload_file():
     try:
+        print('图片')
         info_type = request.form.get('type', '')
         file = request.files['file']
         if file == '' or file == None:
             return jsonify({"message": "data input is null"}), 406
         if info_type == '1':
+            print(1)
             leader = get_new_id(info_type)
-            if file and allowed_file(file.filename):
-                image_name = str(leader) + '.' + file.filename.rsplit('.', 1)[1]
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'],image_name ))
-                update_image_re = update_image_name(info_type=info_type,image_name=image_name,ids=leader)
-                if update_image_re == 1:
-                    return jsonify({"message": 1}), 201
-                else:
-                    return  jsonify({"message":"图片名称未存储成功"}),400
+            print('leader:'+leader)
+            print(file)
+            if leader != 0:
+                if file and allowed_file(file.filename):
+                    print(2)
+                    image_name = str(leader) + '.' + file.filename.rsplit('.', 1)[1]
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'],image_name ))
+                    update_image_re = update_image_name(info_type=info_type,image_name=image_name,ids=leader)
+                    print('存名字')
+                    if update_image_re == 1:
+                        return jsonify({"message": 1}), 201
+                    else:
+                        return  jsonify({"message":"图片名称未存储成功"}),400
         if info_type == '2':
             leader, member = get_new_id(info_type)
             image_name = str(leader) + '_' + str(member) + '.' + file.filename.rsplit('.', 1)[1]
@@ -319,7 +326,7 @@ def upload_file():
 
 
 # 地区信息写入数据
-@mod.route('/insert_area/', methods=['POST'])
+@mod.route('/insert_area/',methods=['POST'])
 def insert_area():
     try:
         datas = request.form.get('data', '')
@@ -341,6 +348,7 @@ def insert_area():
     except Exception as erro:
         app.logger.error(erro)
         return str(0)
+
 
 
 # 地区信息删除数据
@@ -383,14 +391,14 @@ def update_area():
 
 
 # 地区信息搜索所有数据
-@mod.route('/select_area/', methods=['GET'])
+@mod.route('/select_area/',methods=['GET'])
 def select_area():
     try:
-        message = select_area_info()
+        message, count = select_area_info()
         if message:
-            return jsonify({"message": message}), 200
+            return jsonify({"message": message, "count": count}), 200
         else:
-            return jsonify({"message": "The data field is in the wrong"}), 400
+            return jsonify({"message": "The data field is in the wrong", "count": count}), 400
     except Exception as erro:
         app.logger.error(erro)
         return str(0)
@@ -500,14 +508,14 @@ def update_election():
 
 
 # 搜索全部历届选举信息
-@mod.route('/select_election/', methods=['GET'])
+@mod.route('/select_election/',methods=['GET'])
 def select_election():
     try:
-        message = select_election_all()
+        message, count = select_election_all()
         if message:
-            return jsonify({"message": message}), 200
+            return jsonify({"message": message, "count": count}), 200
         else:
-            return jsonify({"message": "The data field is in the wrong"}), 400
+            return jsonify({"message": "The data field is in the wrong", "count": count}), 400
     except Exception as erro:
         app.logger.error(erro)
         return str(0)
@@ -550,36 +558,47 @@ def select_election_page():
         app.logger.error(erro)
         return str(0)
 
-# 地区信息根据地区编号查询一条数据
+# 根据地区信息编码查询数据
 @mod.route('/select_area_code/', methods=['POST'])
 def select_area_code():
     try:
-        datas = request.form.get('data', '')
-        if datas == '':
-            return jsonify({"message": "type input is null"}), 406
-        else:
-            message = select_area_code_one(json.loads(datas))
+        datas = request.form.get('data','')
+        datas_info = json.loads(datas)
+        administrative_id = datas_info['administrative_id']
+        page = datas_info['page']
+        count_info = datas_info['count']
+
+        if administrative_id and page and count_info:
+            message, count = select_area_code_info(administrative_id, page, count_info)
             if message:
-                return jsonify({"message": message}), 200
+                return jsonify({"message": message, "count": count}), 200
             else:
-                return jsonify({"message": "The data field is in the wrong"}), 400
+                return jsonify({"message": "The data field is in the wrong", "count": count}, ), 400
+        else:
+            return jsonify({"message": "type input is null"}), 406
+
     except Exception as erro:
         app.logger.error(erro)
         return str(0)
 
-# 根据地区编号搜索一条选举信息
+# 根据地区编号搜索选举信息
 @mod.route('/select_election_code/', methods=['POST'])
 def select_election_code():
     try:
-        datas = request.form.get('data','')
-        if datas == '':
-            return jsonify({"message": "type input is null"}), 406
-        else:
-            message = select_election_code_one(json.loads(datas))
+        datas = request.form.get('data', '')
+        datas_info = json.loads(datas)
+        administrative_id = datas_info['administrative_id']
+        page = datas_info['page']
+        count_info = datas_info['count']
+
+        if administrative_id and page and count_info:
+            message, count = select_election_code_info(administrative_id, page, count_info)
             if message:
-                return jsonify({"message": message}), 200
+                return jsonify({"message": message, "count": count}), 200
             else:
                 return jsonify({"message": "The data field is in the wrong"}), 400
+        else:
+            return jsonify({"message": "type input is null"}), 406
 
     except Exception as erro:
         app.logger.error(erro)

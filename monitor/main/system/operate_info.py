@@ -180,7 +180,8 @@ def get_one_infos(info_type, data):
     conn = getconn()
     cur = conn.cursor()
     if types == '1':  # 查询Facebook
-        facebook_select_sql = """SELECT `id`,`administrative_id`,`administrative_name`,`year`,`facebook_url` FROM `spider_infos` WHERE `id` = %s"""
+        # facebook_select_sql = """SELECT `id`,`administrative_id`,`administrative_name`,`year`,`facebook_url` FROM `spider_infos` WHERE `id` = %s"""
+        facebook_select_sql = """SELECT `id`,`administrative_id`,`administrative_name`,`year`,`facebook_url`,`image_name` FROM(SELECT * FROM `spider_infos` )a ,(SELECT `candidate_id` as ids,`image_name`  FROM `candidate_personnel_information` )b WHERE a.id = b.ids  AND `id` = %s"""
         try:
             cur.execute(facebook_select_sql, (ids))
             facebook_re = cur.fetchall()
@@ -197,6 +198,7 @@ def get_one_infos(info_type, data):
             facebook_dict['administrative_name'] = item[2]
             facebook_dict['year'] = item[3]
             facebook_dict['facebook_url'] = item[4]
+            facebook_dict['image_name'] = item[5]
         facebook_list.append(facebook_dict)
         return facebook_list
     elif types == '2':  # 查询地区信息
@@ -220,7 +222,7 @@ def get_one_infos(info_type, data):
         administrative_list.append(administrative_dict)
         return administrative_list
     elif types == '3':  # 查询候选人信息
-        candidate_select_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id` FROM `candidate_personnel_information` WHERE  `candidate_id` = %s"""
+        candidate_select_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`image_name` FROM `candidate_personnel_information` WHERE  `candidate_id` = %s"""
         try:
             cur.execute(candidate_select_sql, (ids))
             candidate_re = cur.fetchall()
@@ -233,6 +235,7 @@ def get_one_infos(info_type, data):
         information = {}
         candidate_dict = {}
         for item in candidate_re:
+            candidate_dict['image_name'] = item[24]
             candidate_dict['candidate_id'] = item[23]
             candidate_dict['name'] = item[22]
             candidate_dict['job'] = item[0]
@@ -261,7 +264,7 @@ def get_one_infos(info_type, data):
         candidate_list.append(candidate_dict)
         return candidate_list
     elif types == '4':  # 查询团队成员信息
-        member_select_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`id` FROM `personnel_information` WHERE `id` = %s"""
+        member_select_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`id`,`image_name` FROM `personnel_information` WHERE `id` = %s"""
         try:
             cur.execute(member_select_sql, (ids))
             member_re = cur.fetchall()
@@ -274,6 +277,7 @@ def get_one_infos(info_type, data):
         information = {}
         member_list = []
         for item in member_re:
+            member_dict['image_name'] = item[24]
             member_dict['id'] = item[23]
             member_dict['name'] = item[22]
             member_dict['job'] = item[0]
@@ -373,8 +377,15 @@ def delete_people_information(type, content):
     info_type = content.get('type')
     try:
         if info_type == '1':
-            spider_re = delete_info(content)
-            if spider_re == 1:
+            # spider_re = delete_info(content)
+            delete_sql = """DELETE FROM `spider_infos` WHERE id = %s """
+            spider_re = cur.execute(delete_sql,(candidate_id))
+            if spider_re < 1:
+                conn.rollback()
+                cur.close()
+                conn.close()
+                return 0
+            elif spider_re == 1:
                 delete_candidate_personnel_information_sql = """DELETE FROM `candidate_personnel_information` WHERE `candidate_id` = %s """
                 delete_candidate_sql = """DELETE FROM `candidate` WHERE `candidate_id` = %s """
                 information_re = cur.execute(delete_candidate_personnel_information_sql, (candidate_id))
@@ -389,10 +400,9 @@ def delete_people_information(type, content):
                         conn.rollback()
                         cur.close()
                         conn.close()
-                        closeAll(conn, cur)
                         return 0
                     else:
-                        delete_re = delete_people_image(info_type='1',image_name=candidate_id)
+                        delete_re = delete_people_image(info_type='1',image_name=str(candidate_id))
                         if delete_re == 1:
                             closeAll(conn, cur)
                             return 1
@@ -410,7 +420,7 @@ def delete_people_information(type, content):
                 conn.close()
                 return 0
             else:
-                delete_re = delete_people_image(info_type='2',image_name=candidate_id)
+                delete_re = delete_people_image(info_type='2',image_name=str(candidate_id))
                 if delete_re == 1:
                     closeAll(conn, cur)
                     return 1
@@ -937,9 +947,9 @@ def get_everyinformation(type, content):
         if type == '1':
             result_list = []
             id = content.get('id')
-            one_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`year`,`administrative_id` FROM (SELECT * FROM `candidate_personnel_information` WHERE `candidate_id` = %s )a ,(SELECT `year`,`candidate_id` as ids,`administrative_id` FROM `candidate` WHERE `candidate_id` = %s)b WHERE a.candidate_id = b.ids """
-            all_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`year`,`administrative_id` FROM(SELECT * FROM `candidate_personnel_information` )a ,(SELECT `year`,`candidate_id` as ids,`administrative_id`  FROM `candidate` )b WHERE a.candidate_id = b.ids ORDER BY `year` DESC """
-            area_all_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`year`,`administrative_id` FROM(SELECT * FROM `candidate_personnel_information` )a ,(SELECT `year`,`candidate_id` as ids,`administrative_id`  FROM `candidate` )b WHERE a.candidate_id = b.ids AND `administrative_id` = %s ORDER BY `year` DESC """
+            one_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`year`,`administrative_id`,`image_name` FROM (SELECT * FROM `candidate_personnel_information` WHERE `candidate_id` = %s )a ,(SELECT `year`,`candidate_id` as ids,`administrative_id` FROM `candidate` WHERE `candidate_id` = %s)b WHERE a.candidate_id = b.ids """
+            all_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`year`,`administrative_id`,`image_name` FROM(SELECT * FROM `candidate_personnel_information` )a ,(SELECT `year`,`candidate_id` as ids,`administrative_id`  FROM `candidate` )b WHERE a.candidate_id = b.ids ORDER BY `year` DESC """
+            area_all_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`year`,`administrative_id`,`image_name` FROM(SELECT * FROM `candidate_personnel_information` )a ,(SELECT `year`,`candidate_id` as ids,`administrative_id`  FROM `candidate` )b WHERE a.candidate_id = b.ids AND `administrative_id` = %s ORDER BY `year` DESC """
             conn = getconn()
             cur = conn.cursor()
             every = content.get('every')
@@ -953,6 +963,7 @@ def get_everyinformation(type, content):
             for item in result:
                 leader_infos_dict = {}
                 information = {}
+                leader_infos_dict['image_name'] = item[26]
                 leader_infos_dict['administrative_id'] = admini_id_name[item[25]]
                 leader_infos_dict['year'] = item[24]
                 leader_infos_dict['auto_id'] = item[23]
@@ -992,8 +1003,8 @@ def get_everyinformation(type, content):
             conn = getconn()
             cur = conn.cursor()
             every = content.get('every')
-            member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id`,`year`,`administrative_id` FROM(SELECT * FROM `personnel_information` WHERE `id` = %s)a, (SELECT `year`,`candidate_id` as ids,`administrative_id` FROM `candidate` WHERE `candidate_id` = (SELECT `candidate_id` FROM `personnel_information` WHERE `id` = %s ))b WHERE a.candidate_id = b.ids """
-            all_member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id`,`year`,`administrative_id` FROM (SELECT * FROM `personnel_information` WHERE `candidate_id` = %s)a,(SELECT `year`,`candidate_id` as ids,`administrative_id`  FROM `candidate` WHERE `candidate_id` =%s)b  WHERE a.candidate_id = b.ids """
+            member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id`,`year`,`administrative_id`,`image_name` FROM(SELECT * FROM `personnel_information` WHERE `id` = %s)a, (SELECT `year`,`candidate_id` as ids,`administrative_id` FROM `candidate` WHERE `candidate_id` = (SELECT `candidate_id` FROM `personnel_information` WHERE `id` = %s ))b WHERE a.candidate_id = b.ids """
+            all_member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id`,`year`,`administrative_id`,`image_name` FROM (SELECT * FROM `personnel_information` WHERE `candidate_id` = %s)a,(SELECT `year`,`candidate_id` as ids,`administrative_id`  FROM `candidate` WHERE `candidate_id` =%s)b  WHERE a.candidate_id = b.ids """
             count = ''
             if every == '0':
                 count = cur.execute(member_sql, (id, id))
@@ -1006,6 +1017,7 @@ def get_everyinformation(type, content):
                 for item in result:
                     member_dict = {}
                     information = {}
+                    member_dict['image_name'] = item[27]
                     member_dict['administrative_id'] = admini_id_name[item[26]]
                     member_dict['year'] = item[25]
                     member_dict['candidate_id'] = item[24]
@@ -1120,6 +1132,7 @@ def get_pages():
 
 # 校验图片是否正确
 def allowed_file(filename):
+    print('.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS)
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
@@ -1130,6 +1143,7 @@ def get_new_id(info_type):
     try:
         if info_type == '1':
             leader_id_sql = """SELECT `candidate_id` FROM `candidate` ORDER BY  `candidate_id` DESC  LIMIT 1"""
+            print(leader_id_sql)
             leader_re = cur.execute(leader_id_sql)
             if leader_re == 0:
                 app.logger.error('无此候选人信息')
@@ -1160,16 +1174,16 @@ def get_new_id(info_type):
         closeAll(conn, cur)
 
 
-# 地区信息写入数据
+#地区信息写入数据
 def insert_area_info(administrative_id, area_info, governance_situation, year):
     conn = getconn()
     cur = conn.cursor()
 
     insert_sql = """INSERT INTO `administrative_infos` (`administrative_id`,`area_info`,`governance_situation`,`year`) VALUES (%s,%s,%s,%s)"""
-    select_sql = """SELECT `info_id`  FROM `administrative_infos` WHERE `administrative_id` = %s AND `area_info`= %s AND `governance_situation`= %s AND `year`= %s"""
+    select_sql = """SELECT `info_id`  FROM `administrative_infos` WHERE `administrative_id` = %s  AND `year`= %s"""
     try:
         insert_re = ''
-        select_re = cur.execute(select_sql, (administrative_id, area_info, governance_situation, year))
+        select_re = cur.execute(select_sql, (administrative_id, year))
         if select_re != 0:
             return 406
         elif select_re == 0:
@@ -1183,6 +1197,7 @@ def insert_area_info(administrative_id, area_info, governance_situation, year):
         return 0
     finally:
         closeAll(conn, cur)
+
 
 
 # 地区信息删除数据
@@ -1247,7 +1262,7 @@ def update_info_area(datas):
             closeAll(conn, cur)
 
 
-# 地区信息查询所有数据
+#地区信息查询所有数据
 def select_area_info():
     conn = getconn()
     cur = conn.cursor()
@@ -1256,12 +1271,15 @@ def select_area_info():
         select_sql = """SELECT `info_id`,`administrative_id` ,`area_info` ,`governance_situation` ,`year`  FROM `administrative_infos` """
         re = cur.execute(select_sql)
         if re < 1:
-            return 0
+            return 0, 0
         else:
+            count = re
+            # print(count)
             select_admini_name()
             result = cur.fetchall()
             lists = []
             for item in result:
+                # pro_name = select_pro_by_id(item[1])
                 dict = {}
                 for k, v in admini_id_name.items():
                     if item[1] == k:
@@ -1273,7 +1291,7 @@ def select_area_info():
                 dict['governance_situation'] = item[3]
                 dict['year'] = item[4]
                 lists.append(dict)
-            return lists
+            return lists, count
     except Exception as erro:
         app.logger.error(erro)
         return 0
@@ -1451,8 +1469,9 @@ def select_election_all():
         select_sql = """SELECT `id`,`administrative_id` ,`elector` ,`election_score` ,`election_parties` ,`period` ,`year` FROM `previous_elections` """
         re = cur.execute(select_sql)
         if re < 1:
-            return 0
+            return 0, 0
         else:
+            count = re
             # select_admini_name()
             result = cur.fetchall()
             lists = []
@@ -1461,6 +1480,7 @@ def select_election_all():
                 for k, v in admini_id_name.items():
                     if item[1] == k:
                         dict['administrative_name'] = admini_id_name[item[1]]
+                        # print(admini_id_name[k])
                 dict['id'] = item[0]
                 dict['administrative_id'] = item[1]
                 dict['elector'] = item[2]
@@ -1470,12 +1490,12 @@ def select_election_all():
                 dict['year'] = item[6]
 
                 lists.append(dict)
-            return lists
+            return lists, count
     except Exception as erro:
         app.logger.error(erro)
         return 0
     finally:
-        closeAll(conn, cur)
+        closeAll(conn,cur)
 
 
 # 历届选举信息根据id查询单条数据
@@ -1582,33 +1602,44 @@ def select_admini_name():
     finally:
         closeAll(conn, cur)
 
-#根据地区编号查询地区信息一条数据
-def select_area_code_one(data):
+#根据地区编号查询地区信息数据
+def select_area_code_info(administrative_id, page, count_info):
     conn = getconn()
     cur = conn.cursor()
-
-    administrative_id = data['administrative_id']
+    administrative_id = administrative_id
     try:
-        select_sql = """SELECT `info_id`,`administrative_id` ,`area_info` ,`governance_situation` ,`year`  FROM `administrative_infos` WHERE `administrative_id` = %s """
-        re = cur.execute(select_sql, (administrative_id))
-        if re < 1:
-            return 0
+        select_info = '''SELECT `info_id`,`administrative_id` ,`area_info` ,`governance_situation` ,`year` FROM `administrative_infos` WHERE `administrative_id` = %s LIMIT %s, %s;'''
+        select_count = '''SELECT `info_id`,`administrative_id` ,`area_info` ,`governance_situation` ,`year` FROM `administrative_infos` WHERE `administrative_id` = %s '''
+
+        count_info = count_info
+        print(count_info)
+        if int(page) == 1 or int(page) == 0:
+            page_t = 0
         else:
+            page_t = (int(page) - 1) * int(count_info)
+        re2 = cur.execute(select_count, (administrative_id))
+        re = cur.execute(select_info, (administrative_id, int(page_t), int(count_info)))
+        if re < 1:
+            return 0, 0
+        else:
+            count = re2
             select_admini_name()
-            item = cur.fetchone()
-            # pro_name = select_pro_by_id(item[1])
-            dict = {}
-            for k, v in admini_id_name.items():
-                if item[1] == k:
-                    dict['administrative_name'] = admini_id_name[item[1]]
-            dict['info_id'] = item[0]
-            dict['administrative_id'] = item[1]
-            # dict['administrative_name'] = pro_name
-            dict['area_info'] = item[2]
-            dict['governance_situation'] = item[3]
-            dict['year'] = item[4]
-            # print(dict)
-            return dict
+            result = cur.fetchall()
+            lists = []
+            for item in result:
+                dict = {}
+                for k, v in admini_id_name.items():
+                    if item[1] == k:
+                        dict['administrative_name'] = admini_id_name[item[1]]
+                # pro_name = select_pro_by_id(item[1])
+                dict['info_id'] = item[0]
+                dict['administrative_id'] = item[1]
+                dict['area_info'] = item[2]
+                dict['governance_situation'] = item[3]
+                dict['year'] = item[4]
+
+                lists.append(dict)
+            return lists, count
     except Exception as erro:
         app.logger.error(erro)
         return 0
@@ -1617,34 +1648,45 @@ def select_area_code_one(data):
 
 
 
-#历届选举信息根据地区编号查询单条数据
-def select_election_code_one(data):
+#历届选举信息根据地区编号查询数据
+def select_election_code_info(administrative_id, page, count_info):
     conn = getconn()
     cur = conn.cursor()
+    administrative_id = administrative_id
 
-    administrative_id = data['administrative_id']
     try:
-        select_sql = """SELECT `id`,`administrative_id` ,`elector` ,`election_score` ,`election_parties` ,`period` ,`year` FROM `previous_elections` WHERE `administrative_id` = %s """
-        re = cur.execute(select_sql, (administrative_id))
-        if re < 1:
-            return 0
-        else:
-            select_admini_name()
-            item = cur.fetchone()
-            dict = {}
-            for k, v in admini_id_name.items():
-                if item[1] == k:
-                    dict['administrative_name'] = admini_id_name[item[1]]
-            dict['id'] = item[0]
-            dict['administrative_id'] = item[1]
-            # dict['administrative_name'] = pro_name
-            dict['elector'] = item[2]
-            dict['election_score'] = item[3]
-            dict['election_parties'] = item[4]
-            dict['period'] = item[5]
-            dict['year'] = item[6]
+        select_info = '''SELECT `id`,`administrative_id`,`elector`,`election_score`,`election_parties`,`period`,`year` FROM `previous_elections` WHERE `administrative_id` = %s LIMIT %s, %s;'''
+        select_count = '''SELECT `id`,`administrative_id`,`elector`,`election_score`,`election_parties`,`period`,`year` FROM `previous_elections` WHERE `administrative_id` = %s '''
 
-            return dict
+        count_info = count_info
+        if int(page) == 1 or int(page) == 0:
+            page_t = 0
+        else:
+            page_t = (int(page) - 1) * int(count_info)
+        re2 = cur.execute(select_count, (administrative_id))
+        re = cur.execute(select_info, (administrative_id, int(page_t), int(count_info)))
+        if re < 1:
+            return 0, 0
+        else:
+            count = re2
+            select_admini_name()
+            result = cur.fetchall()
+            lists = []
+            for item in result:
+                dict = {}
+                for k, v in admini_id_name.items():
+                    if item[1] == k:
+                        dict['administrative_name'] = admini_id_name[item[1]]
+                dict['id'] = item[0]
+                dict['administrative_id'] = item[1]
+                # dict['administrative_name'] = pro_name
+                dict['elector'] = item[2]
+                dict['election_score'] = item[3]
+                dict['election_parties'] = item[4]
+                dict['period'] = item[5]
+                dict['year'] = item[6]
+                lists.append(dict)
+            return lists, count
     except Exception as erro:
         app.logger.error(erro)
         return 0
@@ -1652,5 +1694,7 @@ def select_election_code_one(data):
         closeAll(conn, cur)
 
 if __name__ == '__main__':
-    a = delete_people_image(info_type='2',image_name='35')
-    print(a)
+    # a = delete_people_image(info_type='2',image_name='35')
+    # print(a)
+    a = ('0','1')
+    print(a[0])
