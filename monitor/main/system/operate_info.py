@@ -21,14 +21,12 @@ def insert_info(auto_id, datas):
     insert_sql = """INSERT INTO `spider_infos` (`id`,`administrative_id`,`administrative_name`,`year`,`facebook_url`) VALUES (%s,%s,%s,%s,%s)"""
     select_sql = """SELECT `id`  FROM `spider_infos` WHERE `administrative_id` = %s AND `administrative_name`= %s AND `year`= %s AND `facebook_url`= %s"""
     try:
-        # print(insert_sql)
         insert_re = ''
         select_re = cur.execute(select_sql, (administrative_id, administrative_name, year, facebook_url))
         if select_re != 0:
             return 406
         elif select_re == 0:
             insert_re = cur.execute(insert_sql, (auto_id, administrative_id, administrative_name, year, facebook_url))
-        # print(re)
         if insert_re < 1:
             return 0
         else:
@@ -93,7 +91,6 @@ def update_info(datas):
                     up_sql += "{} = '{}' ".format(k, v)
 
             update_sql = """UPDATE `spider_infos` SET """ + up_sql + ' WHERE ' + where_sql
-            # print(update_sql)
             re = cur.execute(update_sql)
             if re < 1:
                 return 0
@@ -112,16 +109,11 @@ def select_info(datas):
     cur = conn.cursor()
     try:
         where_sql = ''
-        num = 0
-        for k, v in datas.items():
-            if k == 'username':
-                k = 'administrative_name'
-            num += 1
-            if num < len(datas):
-                where_sql += "{} = '{}'".format(k, v) + ' AND '
-            else:
+        if len(datas) == 0:
+            where_sql = '1 = 1 '
+        else:
+            for k, v in datas.items():
                 where_sql += "{} = '{}'".format(k, v)
-
         select_sql = """SELECT `administrative_id`,`administrative_name`,`year`,`facebook_url`,`id` FROM `spider_infos` WHERE  """ + where_sql
         re = cur.execute(select_sql)
         if re < 1:
@@ -480,7 +472,6 @@ def select_candidate_facebook(info_type, content):
                 return "输入缺失{}数据".format(lost_key)
             elif len(lost_key) == 0:
                 administrative_re = get_is_candidate(content)
-                # print(count)
                 if administrative_re == 407:
                     closeAll(conn, cur)
                     app.logger.error("所输入地区代码错误")
@@ -673,7 +664,6 @@ def add_administrative_infos(auto_id, info_type, content):
                     personal_phone, work_phone, email, address, education, job, department, family, job_manager,
                     political,
                     society, competition, situation, partisan, stain))
-            # print(re)
             except Exception as erro:
                 app.logger.error('写入候选人信息错误')
                 conn.rollback()
@@ -810,7 +800,6 @@ def add_administrative_infos(auto_id, info_type, content):
                     personal_phone, work_phone, email, address, education, job, department, family, job_manager,
                     political,
                     society, competition, situation, partisan, stain))
-                # print(re)
                 if re != 0:
                     app.logger.error("成员信息写入成功")
                     closeAll(conn, cur)
@@ -890,7 +879,6 @@ def update_people_information(info_type, content):
                     up_sql += "{} = '{}' ".format(k, v)
 
             update_sql = """UPDATE `candidate_personnel_information` SET """ + up_sql + ' WHERE ' + where_sql
-            # print(update_sql)
             try:
                 re = cur.execute(update_sql)
                 if re < 1:
@@ -1132,7 +1120,6 @@ def get_pages():
 
 # 校验图片是否正确
 def allowed_file(filename):
-    print('.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS)
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
@@ -1143,13 +1130,11 @@ def get_new_id(info_type):
     try:
         if info_type == '1':
             leader_id_sql = """SELECT `candidate_id` FROM `candidate` ORDER BY  `candidate_id` DESC  LIMIT 1"""
-            print(leader_id_sql)
             leader_re = cur.execute(leader_id_sql)
             if leader_re == 0:
                 app.logger.error('无此候选人信息')
                 return 0
             re_id = cur.fetchone()
-            closeAll(conn,cur)
             return re_id[0]
         elif info_type == '2':
             leader_member_id_sql = """SELECT `candidate_id`,`id` FROM `personnel_information` ORDER BY  `id` DESC  LIMIT 1"""
@@ -1197,7 +1182,6 @@ def insert_area_info(administrative_id, area_info, governance_situation, year):
         return 0
     finally:
         closeAll(conn, cur)
-
 
 
 # 地区信息删除数据
@@ -1274,12 +1258,10 @@ def select_area_info():
             return 0, 0
         else:
             count = re
-            # print(count)
             select_admini_name()
             result = cur.fetchall()
             lists = []
             for item in result:
-                # pro_name = select_pro_by_id(item[1])
                 dict = {}
                 for k, v in admini_id_name.items():
                     if item[1] == k:
@@ -1480,7 +1462,6 @@ def select_election_all():
                 for k, v in admini_id_name.items():
                     if item[1] == k:
                         dict['administrative_name'] = admini_id_name[item[1]]
-                        # print(admini_id_name[k])
                 dict['id'] = item[0]
                 dict['administrative_id'] = item[1]
                 dict['elector'] = item[2]
@@ -1612,7 +1593,6 @@ def select_area_code_info(administrative_id, page, count_info):
         select_count = '''SELECT `info_id`,`administrative_id` ,`area_info` ,`governance_situation` ,`year` FROM `administrative_infos` WHERE `administrative_id` = %s '''
 
         count_info = count_info
-        print(count_info)
         if int(page) == 1 or int(page) == 0:
             page_t = 0
         else:
@@ -1692,9 +1672,3 @@ def select_election_code_info(administrative_id, page, count_info):
         return 0
     finally:
         closeAll(conn, cur)
-
-if __name__ == '__main__':
-    # a = delete_people_image(info_type='2',image_name='35')
-    # print(a)
-    a = ('0','1')
-    print(a[0])

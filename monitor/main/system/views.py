@@ -289,27 +289,20 @@ def uploaded_file(filename):
 @mod.route('/image/', methods=['POST'])
 def upload_file():
     try:
-        print('图片')
         info_type = request.form.get('type', '')
         file = request.files['file']
         if file == '' or file == None:
             return jsonify({"message": "data input is null"}), 406
         if info_type == '1':
-            print(1)
             leader = get_new_id(info_type)
-            print('leader:'+leader)
-            print(file)
-            if leader != 0:
-                if file and allowed_file(file.filename):
-                    print(2)
-                    image_name = str(leader) + '.' + file.filename.rsplit('.', 1)[1]
-                    file.save(os.path.join(app.config['UPLOAD_FOLDER'],image_name ))
-                    update_image_re = update_image_name(info_type=info_type,image_name=image_name,ids=leader)
-                    print('存名字')
-                    if update_image_re == 1:
-                        return jsonify({"message": 1}), 201
-                    else:
-                        return  jsonify({"message":"图片名称未存储成功"}),400
+            if file and allowed_file(file.filename):
+                image_name = str(leader) + '.' + file.filename.rsplit('.', 1)[1]
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'],image_name ))
+                update_image_re = update_image_name(info_type=info_type,image_name=image_name,ids=leader)
+                if update_image_re == 1:
+                    return jsonify({"message": 1}), 201
+                else:
+                    return  jsonify({"message":"图片名称未存储成功"}),400
         if info_type == '2':
             leader, member = get_new_id(info_type)
             image_name = str(leader) + '_' + str(member) + '.' + file.filename.rsplit('.', 1)[1]
