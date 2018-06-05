@@ -13,7 +13,7 @@ def get_party(message):
             leader_dict = OrderedDict()
             member_list = []
             houxuanren_sql = """SELECT `partisan` FROM candidate_personnel_information WHERE `candidate_id`= %s"""
-            member_sql = """SELECT `name`,`job`,`department`,`id` FROM personnel_information WHERE `candidate_id` = %s"""
+            member_sql = """SELECT `name`,`job`,`department`,`id`,`image_name` FROM personnel_information WHERE `candidate_id` = %s"""
             houxuanren_conn = getconn()
             houxuanren_cur = houxuanren_conn.cursor()
             member_conn = getconn()
@@ -28,6 +28,7 @@ def get_party(message):
                 member_dict['job'] = member[1]
                 member_dict['department'] = member[2]
                 member_dict['id'] = member[3]
+                member_dict['image_name'] = member[4]
                 member_list.append(member_dict)
             leader_dict['name'] = name
             leader_dict['id'] = name_id
@@ -92,17 +93,6 @@ def get_everyinformation(type, content):
             return result_list
 
         elif type == '2':
-            # message = session["electors"]
-            # key_list = []
-            # for key in message.keys():
-            #     key_list.append(key)
-            id = ''
-            # if (content.get('candidate_id') != '' and content.get('candidate_id') != None) and content.get('candidate_id') in key_list:
-            # if (content.get('candidate_id') != '' and content.get('candidate_id') != None):
-            #     candidate_id = content.get('candidate_id')
-            # else:
-            #     app.logger.error("输入所属团队领导人标识")
-            #     return 0
             candidate_id = content.get('candidate_id')
             id = content.get('id')
             conn = getconn()
