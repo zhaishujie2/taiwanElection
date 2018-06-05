@@ -147,18 +147,15 @@ def region_dict():
 @mod.route('/pages/', methods=['POST'])
 def pages():
     try:
-        result = get_pages()
+        data = request.form.get('data','')
+        datas = json.loads(data)
+        result = get_pages(datas)
         if result == 0:
             return jsonify({"message": "The data is wrong "}), 400
         return jsonify({"message": result}), 200
     except Exception as erro:
         app.logger.error(erro)
         return str(0)
-
-
-# 地区信息
-def area_infos():
-    pass
 
 
 # 增加候选人信息
@@ -181,7 +178,7 @@ def add_information():
                     insert_re = insert_candidate_facebook(info_type, data)
                     if "数据" not in str(insert_re) and insert_re != 0:
                         add_re = add_administrative_infos(insert_re, info_type, data)
-                        if add_re == '' or add_re == None:
+                        if add_re == '' or add_re == 0 or add_re == None:
                             return jsonify({"message": "The data field is in the wrong"}), 400
                         else:
                             return jsonify({"message": add_re}), 200
