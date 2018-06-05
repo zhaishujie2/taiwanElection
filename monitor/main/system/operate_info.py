@@ -925,9 +925,13 @@ def update_image_name(info_type,image_name,ids):
         update_re = cur.execute(update_sql,(image_name,ids))
         if update_re == 1:
             app.logger.error('侯选人图片名称写入成功')
+            closeAll(conn,cur)
             return 1
         else:
             app.logger.error('侯选人图片名称写入错误')
+            conn.rollback()
+            cur.close()
+            conn.close()
             return 0
     elif info_type == '2':
         update_sql = """UPDATE `personnel_information` SET `image_name` = %s WHERE `id` = %s"""
@@ -936,9 +940,13 @@ def update_image_name(info_type,image_name,ids):
         update_re = cur.execute(update_sql,(image_name,ids))
         if update_re == 1:
             app.logger.error('团队成员图片名称写入成功')
+            closeAll(conn,cur)
             return 1
         else:
             app.logger.error('团队成员图片名称写入错误')
+            conn.rollback()
+            cur.close()
+            conn.close()
             return 0
 
 
