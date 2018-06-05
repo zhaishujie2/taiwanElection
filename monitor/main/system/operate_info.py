@@ -66,9 +66,11 @@ def update_info(datas):
     up_dict = datas.get('up_dict')
     if len(where_dict) == 0 or len(up_dict) == 0:
         if len(where_dict) == 0:
-            return "更新条件不能为空"
+            app.logger.error( "更新条件不能为空")
+            return 0
         if len(up_dict) == 0:
-            return "更新内容不能为空"
+            app.logger.error( "更新内容不能为空")
+            return 0
     else:
         conn = getconn()
         cur = conn.cursor()
@@ -77,6 +79,8 @@ def update_info(datas):
             up_sql = ''
             where_num = 0
             up_num = 0
+            facebook_url = up_dict.get('facebook_url')
+            name = up_dict.get('administrative_name')
             for k, v in where_dict.items():
                 where_num += 1
                 if where_num < len(where_dict):
@@ -90,24 +94,73 @@ def update_info(datas):
                 else:
                     up_sql += "{} = '{}' ".format(k, v)
 
-            update_sql = """UPDATE `spider_infos` SET """ + up_sql + ' WHERE ' + where_sql
-            re = cur.execute(update_sql)
-            if re < 1:
+            update_spider_sql = """UPDATE `spider_infos` SET """ + up_sql + ' WHERE ' + where_sql
+            spider_re = cur.execute(update_spider_sql)
+            if spider_re < 1:
+                app.logger.error('facebook信息未更新成功')
+                conn.rollback()
+                cur.close()
+                conn.close()
                 return 0
             else:
-                return 1
+                print(facebook_url)
+                print(facebook_url != None)
+                print(facebook_url != None or facebook_url != '')
+                print(len(up_dict) == 1 and (facebook_url != None or facebook_url != ''))
+                if len(up_dict) == 1 and (facebook_url != None or facebook_url != ''):
+                    app.logger.error('关联更新数据未在侯选人信息与详细信息中')
+                    closeAll(conn,cur)
+                    return 1
+                else:
+                    candidate_id = where_dict.get('id')
+                    administrative_id = up_dict.get('administrative_id')
+                    if administrative_id == None:
+                        administrative_id = ''
+                    username = up_dict.get('administrative_name')
+                    if username == None:
+                        username = ''
+                    year = up_dict.get('year')
+                    if year == None:
+                        year = ''
+                    update_candidate_sql = """UPDATE `candidate` SET `administrative_id` = %s AND `username`=%s AND  `year`= %s WHERE `candidate_id`= %s"""
+                    candidate_re = cur.execute(update_candidate_sql,(administrative_id,username,year,candidate_id))
+                    if candidate_re < 1:
+                        app.logger.error('侯选人信息未更新成功')
+                        conn.rollback()
+                        cur.close()
+                        conn.close()
+                        return 0
+                    elif name != None or name != '':
+                        candidate_id = where_dict.get('id')
+                        # name = up_dict.get('administrative_name')
+                        # if name == None:
+                        #     name = ''
+                        update_candidate_information_sql = """UPDATE `candidate_personnel_information` SET `name`=%s WHERE `candidate_id` = %s"""
+                        update_candidate_information_re = cur.execute(update_candidate_information_sql,(name,candidate_id))
+                        if update_candidate_information_re < 1:
+                            app.logger.error('侯选人详细信息未更新成功')
+                            conn.rollback()
+                            cur.close()
+                            conn.close()
+                            return 0
+                        else:
+                            app.logger.error('多表信息更新完成')
+                            closeAll(conn,cur)
+                            return 1
+                    else:
+                        app.logger.error('更新侯选人信息完成，关联更新数据未在侯选人详细信息中')
+                        closeAll(conn,cur)
+                        return 1
         except Exception as erro:
             app.logger.error(erro)
             return 0
-        finally:
-            closeAll(conn, cur)
 
 
 # facebook查询数据
 def select_info(datas):
     conn = getconn()
     cur = conn.cursor()
-    administrative_id =  ''
+    administrative_id =  datas.get('administrative_id')
     page_number = datas.get('page_number')
     page_size = datas.get('page_size')
     start = (int(page_number) - 1) * int(page_size)
@@ -116,18 +169,18 @@ def select_info(datas):
         if len(datas) == 2:
             where_sql = '1 = 1 '
         else:
-            administrative_id = datas.get('administrative_id')
-        select_sql = """SELECT `administrative_id`,`administrative_name`,`year`,`facebook_url`,`id` FROM `spider_infos` WHERE  `administrative_id` = %s""" + where_sql+""" LIMIT %s,%s"""
+            where_sql += "`administrative_id` = %s"
+        select_sql = """SELECT `administrative_id`,`administrative_name`,`year`,`facebook_url`,`id` FROM `spider_infos` WHERE  """ + where_sql+""" LIMIT %s,%s"""
         if len(datas) == 2:
             re = cur.execute(select_sql,(start,int( page_size)))
             if re < 1:
-                app.logger.error('facebook所有信息')
+                app.logger.error('无facebook所有信息')
                 return 0
         else:
             re = cur.execute(select_sql,(administrative_id,start,int( page_size)))
-            print(select_sql,start,page_size)
+            print(select_sql,administrative_id,start,page_size)
             if re < 1:
-                app.logger.error('某一地区facebook所有信息')
+                app.logger.error('无某一地区facebook所有信息')
                 return 0
         result = cur.fetchall()
         lists = []
