@@ -104,22 +104,41 @@ def update_info(datas):
                 return 0
             else:
                 if len(up_dict) == 1 and facebook_url != None:
-                    app.logger.error('关联更新数据未在侯选人信息与详细信息中')
+                    app.logger.error('facebook数据更新成功，关联更新数据未在侯选人信息与详细信息中')
                     closeAll(conn,cur)
                     return 1
                 else:
+                    candidate_re = ''
                     candidate_id = where_dict.get('id')
-                    administrative_id = up_dict.get('administrative_id')
-                    if administrative_id == None:
-                        administrative_id = ''
                     username = up_dict.get('administrative_name')
-                    if username == None:
-                        username = ''
-                    year = up_dict.get('year')
-                    if year == None:
-                        year = ''
-                    update_candidate_sql = """UPDATE `candidate` SET `administrative_id` = %s AND `username`=%s AND  `year`= %s WHERE `candidate_id`= %s"""
-                    candidate_re = cur.execute(update_candidate_sql,(administrative_id,username,year,candidate_id))
+                    cadidate_dict = up_dict
+                    if username != None:
+                        candidate_sql = ''
+                        candidata_num = 0
+                        if cadidate_dict.get('facebook_url') != None:
+                            cadidate_dict.pop('facebook_url')
+                            cadidate_dict.pop('administrative_name')
+                        else:
+                            cadidate_dict.pop('administrative_name')
+                        for k, v in cadidate_dict.items():
+                            candidata_num += 1
+                            if candidata_num <= len(cadidate_dict):
+                                candidate_sql += "{} = '{}', ".format(k, v)
+                            else:
+                                candidate_sql += "{} = '{}' ".format(k, v)
+                        update_candidate_sql = """UPDATE `candidate` SET """+ candidate_sql +"""`username` = %s  WHERE `candidate_id`= %s"""
+                        candidate_re = cur.execute(update_candidate_sql,(username,candidate_id))
+                    else:
+                        candidate_sql = ''
+                        candidata_num = 0
+                        for k, v in cadidate_dict.items():
+                            candidata_num += 1
+                            if candidata_num < len(cadidate_dict):
+                                candidate_sql += "{} = '{}', ".format(k, v)
+                            else:
+                                candidate_sql += "{} = '{}' ".format(k, v)
+                        update_candidate_sql = """UPDATE `candidate` SET """+ candidate_sql +"""  WHERE `candidate_id`= %s"""
+                        candidate_re = cur.execute(update_candidate_sql,(candidate_id))
                     if candidate_re < 1:
                         app.logger.error('侯选人信息未更新成功')
                         conn.rollback()
@@ -128,9 +147,6 @@ def update_info(datas):
                         return 0
                     elif name != None and name != '':
                         candidate_id = where_dict.get('id')
-                        # name = up_dict.get('administrative_name')
-                        # if name == None:
-                        #     name = ''
                         update_candidate_information_sql = """UPDATE `candidate_personnel_information` SET `name`=%s WHERE `candidate_id` = %s"""
                         update_candidate_information_re = cur.execute(update_candidate_information_sql,(name,candidate_id))
                         if update_candidate_information_re < 1:
@@ -927,11 +943,9 @@ def update_image_name(info_type,image_name,ids):
             app.logger.error('侯选人图片名称写入成功')
             closeAll(conn,cur)
             return 1
-        else:
-            app.logger.error('侯选人图片名称写入错误')
-            conn.rollback()
-            cur.close()
-            conn.close()
+        elif update_re == 0:
+            app.logger.error('侯选人图片名称未发生变化')
+            closeAll(conn,cur)
             return 0
     elif info_type == '2':
         update_sql = """UPDATE `personnel_information` SET `image_name` = %s WHERE `id` = %s"""
@@ -942,11 +956,9 @@ def update_image_name(info_type,image_name,ids):
             app.logger.error('团队成员图片名称写入成功')
             closeAll(conn,cur)
             return 1
-        else:
-            app.logger.error('团队成员图片名称写入错误')
-            conn.rollback()
-            cur.close()
-            conn.close()
+        elif update_re == 0:
+            app.logger.error('团队成员图片名称未发生变化')
+            closeAll(conn,cur)
             return 0
 
 
@@ -969,6 +981,7 @@ def update_people_information(info_type, content):
             up_sql = ''
             where_num = 0
             up_num = 0
+            name = up_dict.get('name')
             for k, v in where_dict.items():
                 where_num += 1
                 if where_num < len(where_dict):
@@ -986,16 +999,42 @@ def update_people_information(info_type, content):
             try:
                 re = cur.execute(update_sql)
                 if re < 1:
+                    conn.rollback()
+                    cur.close()
+                    conn.close()
                     app.logger.error("候选人信息未更新")
                     return 0
                 else:
                     app.logger.error("候选人信息更新成功")
+                    if name != None:
+                        ids = where_dict.get('candidate_id')
+                        update_spider_sql = """UPDATE `spider_infos` SET `administrative_name` = %s WHERE `id` = %s"""
+                        spider_re = cur.execute(update_spider_sql,(name,ids))
+                        if spider_re < 1:
+                            conn.rollback()
+                            cur.close()
+                            conn.close()
+                            app.logger.error('facebook信息未更新')
+                            return 0
+                        else:
+                            ids = where_dict.get('candidate_id')
+                            update_candidate_sql = """UPDATE `candidate` SET `username` = %s WHERE `candidate_id` = %s"""
+                            candidate_re = cur.execute(update_candidate_sql,(name,ids))
+                            if candidate_re < 1:
+                                conn.rollback()
+                                cur.close()
+                                conn.close()
+                                app.logger.error('侯选人信息信息未更新')
+                                return 0
+                            else:
+                                closeAll(conn,cur)
+                                app.logger.error('多表更新成功')
+                                return 1
+                    closeAll(conn,cur)
                     return 1
             except Exception as erro:
                 app.logger.error(erro)
                 return 0
-            finally:
-                closeAll(conn, cur)
         elif info_type == '2':
             conn = getconn()
             cur = conn.cursor()
@@ -1299,9 +1338,9 @@ def get_new_id(info_type):
             re_id = cur.fetchone()
             return re_id[0], re_id[1]
         else:
-            delete_member_id_sql = """SELECT `candidate_id`,`id` FROM `personnel_information` WHERE `id` = %s"""
-            delete_re = cur.execute(delete_member_id_sql,(info_type))
-            if delete_re == 0:
+            selete_member_id_sql = """SELECT `candidate_id`,`id` FROM `personnel_information` WHERE `id` = %s"""
+            selete_re = cur.execute(selete_member_id_sql,(info_type))
+            if selete_re == 0:
                 app.logger.error('无次团队成员信息')
                 return 0
             re_id = cur.fetchone()
