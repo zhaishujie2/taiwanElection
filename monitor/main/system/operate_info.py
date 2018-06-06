@@ -150,11 +150,12 @@ def update_info(datas):
                         update_candidate_information_sql = """UPDATE `candidate_personnel_information` SET `name`=%s WHERE `candidate_id` = %s"""
                         update_candidate_information_re = cur.execute(update_candidate_information_sql,(name,candidate_id))
                         if update_candidate_information_re < 1:
-                            app.logger.error('侯选人详细信息未更新成功')
-                            conn.rollback()
-                            cur.close()
-                            conn.close()
-                            return 0
+                            app.logger.error('侯选人详细信息未更新成功后者是数据未发生变化')
+                            # conn.rollback()
+                            # cur.close()
+                            # conn.close()
+                            closeAll(conn,cur)
+                            return 1
                         else:
                             app.logger.error('多表信息更新完成')
                             closeAll(conn,cur)
