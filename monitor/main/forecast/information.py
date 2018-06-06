@@ -178,7 +178,11 @@ def get_year_support_info(year, dict_name):
     cur = conn.cursor()
     try:
         year = str(year) + "%"
-        sql = "SELECT support_time FROM poll_support WHERE  support_time LIKE %s  group by support_time ORDER BY support_time ASC "
+        where_name = ""
+        for id, name in dict_name.items():
+            where_name+=("candidate_id="+str(id) +" or ")
+        where_name = where_name[:-3]
+        sql = "SELECT support_time FROM poll_support WHERE "+where_name+"and support_time LIKE %s  group by support_time ORDER BY support_time ASC "
         xAxis_count = cur.execute(sql, year)
         xAxis_data = cur.fetchmany(xAxis_count)
         xAxis_dict = {}
