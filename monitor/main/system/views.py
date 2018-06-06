@@ -287,6 +287,9 @@ def uploaded_file(filename):
 def upload_file():
     try:
         info_type = request.form.get('type', '')
+        member = request.form.get('id','')
+        leader = request.form.get('candidate_id','')
+        # leader = request.form.get('id','')
         file = request.files['file']
         if file == '' or file == None:
             return jsonify({"message": "data input is null"}), 406
@@ -306,6 +309,24 @@ def upload_file():
             if file and allowed_file(file.filename):
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'],image_name))
                 update_image_re = update_image_name(info_type=info_type,image_name=image_name,ids=member)
+                if update_image_re == 1:
+                    return jsonify({"message": 1}), 201
+                else:
+                    return  jsonify({"message":"图片名称未存储成功"}),400
+        if info_type == '3'and leader != None:#修改侯选人图片
+            image_name = str(leader) + '.' + file.filename.rsplit('.', 1)[1]
+            if file and allowed_file(file.filename):
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'],image_name))
+                update_image_re = update_image_name(info_type='1',image_name=image_name,ids=leader)
+                if update_image_re == 1:
+                    return jsonify({"message": 1}), 201
+                else:
+                    return  jsonify({"message":"图片名称未存储成功"}),400
+        if info_type == '4'and leader != None and member != None:#修改团队人员图片
+            image_name = str(leader) + '_' + str(member) + '.' + file.filename.rsplit('.', 1)[1]
+            if file and allowed_file(file.filename):
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'],image_name))
+                update_image_re = update_image_name(info_type='2',image_name=image_name,ids=member)
                 if update_image_re == 1:
                     return jsonify({"message": 1}), 201
                 else:
