@@ -350,7 +350,7 @@ def get_all_twitter_pages(dict_name, start_date, end_date):
     list = []
     for item in dict_name.keys():
         dict = {}
-        dict["term"] = {"keywords": dict_name[item]}
+        dict["term"] = {"twitter_search": dict_name[item]}
         list.append(dict)
     query = {"query": {
         "bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
@@ -368,7 +368,7 @@ def get_all_twitter_data(dict_name, page_number, page_size, start_date, end_date
     list = []
     for item in dict_name.keys():
         dict = {}
-        dict["term"] = {"keywords": dict_name[item]}
+        dict["term"] = {"twitter_search": dict_name[item]}
         list.append(dict)
     query = {"query": {
         "bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
