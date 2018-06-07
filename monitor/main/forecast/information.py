@@ -180,14 +180,14 @@ def get_year_support_info(year, dict_name):
         year = str(year) + "%"
         where_name = ""
         for id, name in dict_name.items():
-            where_name+=("candidate_id="+str(id) +" or ")
+            where_name += ("candidate_id=" + str(id) + " or ")
         where_name = where_name[:-3]
-        sql = "SELECT support_time FROM poll_support WHERE "+where_name+"and support_time LIKE %s  group by support_time ORDER BY support_time ASC "
+        sql = "SELECT support_time FROM poll_support WHERE " + where_name + "and support_time LIKE %s  group by support_time ORDER BY support_time ASC "
         xAxis_count = cur.execute(sql, year)
         xAxis_data = cur.fetchmany(xAxis_count)
         xAxis_dict = {}
         xAxis = []
-        series= []
+        series = []
         xAxis_flag = 0
         for item in xAxis_data:
             xAxis_dict[item[0]] = xAxis_flag
@@ -196,7 +196,7 @@ def get_year_support_info(year, dict_name):
         for id, name in dict_name.items():
             item_list = []
             sql = "SELECT total_support,support_time FROM poll_support WHERE candidate_id=%s and support_time LIKE %s ORDER BY support_time ASC"
-            item_count = cur.execute(sql, (id,year))
+            item_count = cur.execute(sql, (id, year))
             item_data = cur.fetchmany(item_count)
             if item_count == xAxis_count:
                 for item in item_data:
@@ -206,8 +206,106 @@ def get_year_support_info(year, dict_name):
                     item_list.append(0)
                 for item in item_data:
                     item_list[xAxis_dict[item[1]]] = item[0]
-            series.append({name:item_list})
-        return {"xAxis":xAxis,"series":series}
+            series.append({name: item_list})
+        return {"xAxis": xAxis, "series": series}
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
+    finally:
+        closeAll(conn, cur)
+
+
+# 获取流量数据汇总
+def get_flow_info(dict_name):
+    dict = {}
+    conn = getconn()
+    cur = conn.cursor()
+    try:
+        pv_today_count = 0
+        pv_7day_count = 0
+        pv_30day_count = 0
+        uv_today_count = 0
+        uv_7day_count = 0
+        uv_30day_count = 0
+        pv_today = 1
+        pv_7day = 1
+        pv_30day = 1
+        uv_today = 1
+        uv_7day = 1
+        uv_30day = 1
+        for id, name in dict_name.items():
+            item_dict = {}
+            sql = "SELECT * FROM flow WHERE candidate_id=%s ORDER BY `time` DESC LIMIT 1"
+            print(sql, id)
+            item_count = cur.execute(sql, id)
+            if item_count != 0:
+                item_data = cur.fetchone()
+                item_dict["pv_today"] = item_data[2]
+                item_dict["pv_7day"] = item_data[3]
+                item_dict["pv_30day"] = item_data[4]
+                item_dict["uv_today"] = item_data[6]
+                item_dict["uv_7day"] = item_data[7]
+                item_dict["uv_30day"] = item_data[8]
+                pv_today_count += int(item_data[2])
+                pv_7day_count += int(item_data[3])
+                pv_30day_count += int(item_data[4])
+                uv_today_count += int(item_data[6])
+                uv_7day_count += int(item_data[7])
+                uv_30day_count += int(item_data[8])
+                dict[name] = item_dict
+            else:
+                item_data = cur.fetchone()
+                item_dict["pv_today"] = 0
+                item_dict["pv_7day"] = 0
+                item_dict["pv_30day"] = 0
+                item_dict["uv_today"] = 0
+                item_dict["uv_7day"] = 0
+                item_dict["uv_30day"] = 0
+                dict[name] = item_dict
+        count = len(dict)
+        flag = 1
+        for name, item in dict.items():
+            if flag != count:
+                if pv_today_count == 0:
+                    dict[name]["pv_today"] = 0
+                else:
+                    dict[name]["pv_today"] = round(int(item["pv_today"]) / pv_today_count, 2)
+                    pv_today -= round(int(item["pv_today"]) / pv_today_count, 2)
+                if pv_7day_count == 0:
+                    dict[name]["pv_7day"] = 0
+                else:
+                    dict[name]["pv_7day"] = round(int(item["pv_7day"]) / pv_7day_count, 2)
+                    pv_7day -= round(int(item["pv_7day"]) / pv_7day_count, 2)
+
+                if pv_30day_count == 0:
+                    dict[name]["pv_30day"] = 0
+                else:
+                    dict[name]["pv_30day"] = round(int(item["pv_30day"]) / pv_30day_count, 2)
+                    pv_30day -= round(int(item["pv_30day"]) / pv_30day_count, 2)
+                if uv_today_count == 0:
+                    dict[name]["uv_today"] = 0
+                else:
+                    dict[name]["uv_today"] = round(int(item["uv_today"]) / uv_today_count, 2)
+                    uv_today -= round(int(item["uv_today"]) / uv_today_count, 2)
+                if uv_7day_count == 0:
+                    dict[name]["uv_7day"] = 0
+                else:
+                    dict[name]["uv_7day"] = round(int(item["uv_7day"]) / uv_7day_count, 2)
+                    uv_7day -= round(int(item["uv_7day"]) / uv_7day_count, 2)
+                if uv_30day_count == 0:
+                    dict[name]["uv_today"] = 0
+                else:
+                    dict[name]["uv_30day"] = round(int(item["uv_30day"]) / uv_30day_count, 2)
+                    uv_30day -= round(int(item["uv_30day"]) / uv_30day_count, 2)
+                count += 1
+            else:
+                dict[name]["pv_today"] = round(pv_today, 2)
+                dict[name]["pv_7day"] = round(pv_7day, 2)
+                dict[name]["pv_30day"] = round(pv_30day, 2)
+                dict[name]["uv_today"] = round(uv_today, 2)
+                dict[name]["uv_7day"] = round(uv_7day, 2)
+                dict[name]["uv_30day"] = round(uv_30day, 2)
+        return dict
     except Exception as erro:
         app.logger.error(erro)
         return 0
@@ -219,5 +317,5 @@ if __name__ == '__main__':
     dict = {}
     dict[1] = "卢秀燕"
     dict[2] = "林佳龙"
-    result = get_year_support_info(2018, dict)
+    result = get_flow_info(dict)
     print(result)
