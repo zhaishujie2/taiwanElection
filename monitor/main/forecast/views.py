@@ -3,7 +3,7 @@ from flask import request, session, jsonify
 from monitor import app
 from . import mod
 import json
-from .information import get_google_trend,get_facebook_trend,get_popular_info
+from .information import get_google_trend,get_facebook_trend,get_popular_info,get_current_support_info,get_year_support_info,get_flow_info
 
 
 @mod.route('/get_google_trend/', methods=['POST'])
@@ -83,3 +83,49 @@ def get_popular_trend_info():
             return jsonify({"message": "The time field is in the wrong format"}), 403
         else:
             return jsonify({"message": result}), 200
+
+@mod.route('/get_current_support/')
+def get_current_support():
+    dict_name = {}
+    year = 0
+    try:
+        dict_name = session["electors"]
+        year = session["year"]
+    except:
+        return jsonify({"message": "session  is null"}), 401
+    result = get_current_support_info(year, dict_name)
+    if result == 0:
+        return jsonify({"message": "The time field is in the wrong format"}), 403
+    else:
+        return jsonify({"message": result}), 200
+
+
+@mod.route('/get_year_support/')
+def get_year_support():
+    dict_name = {}
+    year = 0
+    try:
+        dict_name = session["electors"]
+        year = session["year"]
+    except:
+        return jsonify({"message": "session  is null"}), 401
+    result = get_year_support_info(year, dict_name)
+    if result == 0:
+        return jsonify({"message": "The time field is in the wrong format"}), 403
+    else:
+        return jsonify({"message": result}), 200
+
+
+@mod.route('/get_flow/')
+def get_flow_support():
+    dict_name = {}
+    year = 0
+    try:
+        dict_name = session["electors"]
+    except:
+        return jsonify({"message": "session  is null"}), 401
+    result = get_flow_info( dict_name)
+    if result == 0:
+        return jsonify({"message": "The time field is in the wrong format"}), 403
+    else:
+        return jsonify({"message": result}), 200

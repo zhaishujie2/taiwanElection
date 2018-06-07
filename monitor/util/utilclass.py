@@ -48,7 +48,10 @@ def get_before_time(tiem, day):
     start_time = d1 - datetime.timedelta(days=day)
     return start_time.strftime("%Y-%m-%d")
 
+#获得标准格式的日期
+def get_date_item11111(date_time):
+    return datetime.datetime.strptime(date_time, '%Y-%m-%d').strftime("%Y-%m-%d")
 
 if __name__ == '__main__':
-    list = get_time("2018-5-1", "2018-5-7")
+    list = get_date_item11111("2017-01-2")
     print(list)

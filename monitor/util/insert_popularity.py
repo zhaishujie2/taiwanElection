@@ -26,10 +26,17 @@ def insert_popularity_demo(start_time,end_time):
                 dict[person[0]] = person[2]
             popularity_dict =  (get_popularity(start_time,end_time,dict))
             for  key,value in dict.items():
-                sql = "INSERT INTO popularity (candidate_id,create_data,popularity_score)  VALUES (%s,%s,%s)"
-                print (popularity_dict[value]*100)
-                cur.execute(sql,(key,end_time,popularity_dict[value]*100))
-                conn.commit()
+                sql = "SELECT * FROM popularity WHERE  candidate_id=%s AND create_data=%s"
+                count = cur.execute(sql,(key,end_time))
+                print (key,end_time,count,popularity_dict[value])
+                if count <=0:
+                    sql = "INSERT INTO popularity (candidate_id,create_data,popularity_score)  VALUES (%s,%s,%s)"
+                    cur.execute(sql,(key,end_time,popularity_dict[value]*100))
+                    conn.commit()
+                else :
+                    sql = "UPDATE popularity SET popularity_score=%s WHERE candidate_id=%s AND create_data=%s "
+                    cur.execute(sql,(popularity_dict[value]*100,key,end_time))
+                    conn.commit()
     except:
         return 0
     finally:
@@ -220,11 +227,12 @@ def get_ptt_popularity(dict_name, start_time, end_time):
 
 if __name__ == '__main__':
 
-    # end_time = datetime.datetime.now().strftime("%Y-%m-%d")
-    # list = get_date("2018-2-15",end_time)
-    # for item in list:
-    #     start_time = get_before_time(item,45)
-    #     insert_popularity_demo(start_time,item)
     end_time = datetime.datetime.now().strftime("%Y-%m-%d")
-    start_time = get_before_time(end_time, 45)
-    insert_popularity_demo(start_time,end_time)
+    list = get_date("2018-2-15",end_time)
+    for item in list:
+        start_time = get_before_time(item,45)
+        print (start_time,item)
+        insert_popularity_demo(start_time,item)
+    # end_time = datetime.datetime.now().strftime("%Y-%m-%d")
+    # start_time = get_before_time(end_time, 45)
+    # insert_popularity_demo(start_time,end_time)
