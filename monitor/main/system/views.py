@@ -8,7 +8,8 @@ from monitor.main.system.operate_info import insert_info, delete_info, update_in
     allowed_file, \
     delete_area_info, insert_area_info, update_info_area, select_area_info, select_area_info_one, select_area_info_page, \
     insert_election_info, delete_election_info, update_election_info, select_election_all, select_election_info_one, \
-    select_election_info_page, get_new_id, select_election_code_info, select_area_code_info, update_image_name
+    select_election_info_page, get_new_id, select_election_code_info, select_area_code_info, update_image_name, \
+    select_support, delete_support, update_support, insert_support
 import json, os
 
 
@@ -611,6 +612,75 @@ def select_election_code():
         else:
             return jsonify({"message": "type input is null"}), 406
 
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(0)
+
+
+#获取民调数据
+@mod.route('/select_support/',methods=['POST'])
+def sele_support():
+    try:
+        datas = request.form.get('data', '')
+        if datas == '':
+            return jsonify({"message": "type input is null"}), 406
+        else:
+            message = select_support(json.loads(datas))
+            if message == None:
+                return jsonify({"message": "The data field is in the wrong"}), 400
+            else:
+                return jsonify({"message": message}), 200
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(0)
+
+#删除民调数据
+@mod.route('/delete_support/',methods=['POST'])
+def dele_support():
+    try:
+        datas = request.form.get('data', '')
+        if datas == '':
+            return jsonify({"message": "type input is null"}), 406
+        else:
+            message = delete_support(json.loads(datas))
+            if message == None:
+                return jsonify({"message": "The data field is in the wrong"}), 400
+            else:
+                return jsonify({"message": message}), 200
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(0)
+
+#修改民调数据
+@mod.route('/update_support/',methods=['POST'])
+def upda_support():
+    try:
+        datas = request.form.get('data', '')
+        if datas == '':
+            return jsonify({"message": "type input is null"}), 406
+        else:
+            message = update_support(json.loads(datas))
+            if message == None:
+                return jsonify({"message": "The data field is in the wrong"}), 400
+            else:
+                return jsonify({"message": message}), 200
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(0)
+
+#添加民调数据
+@mod.route('/insert_support/',methods=['POST'])
+def inse_support():
+    try:
+        datas = request.form.get('data', '')
+        if datas == '':
+            return jsonify({"message": "type input is null"}), 406
+        else:
+            message = insert_support(json.loads(datas))
+            if message == None:
+                return jsonify({"message": "The data field is in the wrong"}), 400
+            else:
+                return jsonify({"message": message}), 200
     except Exception as erro:
         app.logger.error(erro)
         return str(0)
