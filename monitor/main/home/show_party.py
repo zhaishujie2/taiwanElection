@@ -9,6 +9,11 @@ from flask import session
 def get_party(message):
     try:
         every_list = []
+        infos_dict = {}
+        houxuanren_conn = ''
+        houxuanren_cur = ''
+        member_conn = ''
+        member_cur = ''
         for name_id, name in message.items():
             leader_dict = OrderedDict()
             member_list = []
@@ -34,9 +39,19 @@ def get_party(message):
             leader_dict['id'] = name_id
             leader_dict['party'] = party[0]
             leader_dict['member'] = member_list
-            every_list.append(leader_dict)
-            closeAll(houxuanren_conn, houxuanren_cur)
-            closeAll(member_conn, member_cur)
+            if party[0] in infos_dict.keys():
+                list = infos_dict[party[0]]
+                list.append(leader_dict)
+                infos_dict[party[0]] = list
+            else:
+                leader_dict['name'] = name
+                leader_dict['id'] = name_id
+                leader_dict['party'] = party[0]
+                leader_dict['member'] = member_list
+                infos_dict[party[0]] = [leader_dict]
+        every_list.append(infos_dict)
+        closeAll(houxuanren_conn, houxuanren_cur)
+        closeAll(member_conn, member_cur)
         return every_list
     except Exception as erro:
         app.logger.error(erro)

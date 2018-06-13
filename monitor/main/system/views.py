@@ -8,7 +8,9 @@ from monitor.main.system.operate_info import insert_info, delete_info, update_in
     allowed_file, \
     delete_area_info, insert_area_info, update_info_area, select_area_info, select_area_info_one, select_area_info_page, \
     insert_election_info, delete_election_info, update_election_info, select_election_all, select_election_info_one, \
-    select_election_info_page, get_new_id, select_election_code_info, select_area_code_info, update_image_name
+    select_election_info_page, get_new_id, select_election_code_info, select_area_code_info, update_image_name, \
+    select_support, delete_support, update_support, insert_support, insert_partisan, update_partisan, delete_partisan, \
+    select_partisan
 import json, os
 
 
@@ -289,7 +291,6 @@ def upload_file():
         info_type = request.form.get('type', '')
         member = request.form.get('id','')
         leader = request.form.get('candidate_id','')
-        # leader = request.form.get('id','')
         file = request.files['file']
         if file == '' or file == None:
             return jsonify({"message": "data input is null"}), 406
@@ -302,7 +303,7 @@ def upload_file():
                 if update_image_re == 1:
                     return jsonify({"message": 1}), 201
                 else:
-                    return  jsonify({"message":"图片名称未存储成功"}),400
+                    return  jsonify({"message":"图片名称未存储成功"}),200
         if info_type == '2':
             leader, member = get_new_id(info_type)
             image_name = str(leader) + '_' + str(member) + '.' + file.filename.rsplit('.', 1)[1]
@@ -312,7 +313,7 @@ def upload_file():
                 if update_image_re == 1:
                     return jsonify({"message": 1}), 201
                 else:
-                    return  jsonify({"message":"图片名称未存储成功"}),400
+                    return  jsonify({"message":"图片名称未存储成功"}),200
         if info_type == '3'and leader != None:#修改侯选人图片
             image_name = str(leader) + '.' + file.filename.rsplit('.', 1)[1]
             if file and allowed_file(file.filename):
@@ -321,7 +322,7 @@ def upload_file():
                 if update_image_re == 1:
                     return jsonify({"message": 1}), 201
                 else:
-                    return  jsonify({"message":"图片名称未存储成功"}),400
+                    return  jsonify({"message":"图片名称未存储成功"}),200
         if info_type == '4'and leader != None and member != None:#修改团队人员图片
             image_name = str(leader) + '_' + str(member) + '.' + file.filename.rsplit('.', 1)[1]
             if file and allowed_file(file.filename):
@@ -330,7 +331,29 @@ def upload_file():
                 if update_image_re == 1:
                     return jsonify({"message": 1}), 201
                 else:
-                    return  jsonify({"message":"图片名称未存储成功"}),400
+                    return  jsonify({"message":"图片名称未存储成功"}),200
+        if info_type == '5':#存储党派图片
+            partisan_id = request.form.get('partisan_id','')
+            if partisan_id != None and partisan_id != '':
+                if file and allowed_file(file.filename):
+                    image_name = 'p_'+str(partisan_id) + '.' + file.filename.rsplit('.', 1)[1]
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'],image_name ))
+                    update_image_re = update_image_name(info_type=info_type,image_name=image_name,ids=partisan_id)
+                    if update_image_re == 1:
+                        return jsonify({"message": 1}), 201
+                    else:
+                        return  jsonify({"message":"图片名称未存储成功"}),200
+            else:
+                partisan = get_new_id(info_type)
+                if file and allowed_file(file.filename):
+                    image_name = 'p_'+str(partisan) + '.' + file.filename.rsplit('.', 1)[1]
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'],image_name ))
+                    update_image_re = update_image_name(info_type=info_type,image_name=image_name,ids=partisan)
+                    if update_image_re == 1:
+                        return jsonify({"message": 1}), 201
+                    else:
+                        return  jsonify({"message":"图片名称未存储成功"}),200
+
     except Exception as erro:
         app.logger.error(erro)
         return str(0)
@@ -611,6 +634,144 @@ def select_election_code():
         else:
             return jsonify({"message": "type input is null"}), 406
 
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(0)
+
+
+#获取民调数据
+@mod.route('/select_support/',methods=['POST'])
+def sele_support():
+    try:
+        datas = request.form.get('data', '')
+        if datas == '':
+            return jsonify({"message": "type input is null"}), 406
+        else:
+            message = select_support(json.loads(datas))
+            if message == None:
+                return jsonify({"message": "The data field is in the wrong"}), 400
+            else:
+                return jsonify({"message": message}), 200
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(0)
+
+#删除民调数据
+@mod.route('/delete_support/',methods=['POST'])
+def dele_support():
+    try:
+        datas = request.form.get('data', '')
+        if datas == '':
+            return jsonify({"message": "type input is null"}), 406
+        else:
+            message = delete_support(json.loads(datas))
+            if message == None:
+                return jsonify({"message": "The data field is in the wrong"}), 400
+            else:
+                return jsonify({"message": message}), 200
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(0)
+
+#修改民调数据
+@mod.route('/update_support/',methods=['POST'])
+def upda_support():
+    try:
+        datas = request.form.get('data', '')
+        if datas == '':
+            return jsonify({"message": "type input is null"}), 406
+        else:
+            message = update_support(json.loads(datas))
+            if message == None:
+                return jsonify({"message": "The data field is in the wrong"}), 400
+            else:
+                return jsonify({"message": message}), 200
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(0)
+
+#添加民调数据
+@mod.route('/insert_support/',methods=['POST'])
+def inse_support():
+    try:
+        datas = request.form.get('data', '')
+        if datas == '':
+            return jsonify({"message": "type input is null"}), 406
+        else:
+            message = insert_support(json.loads(datas))
+            if message == None:
+                return jsonify({"message": "The data field is in the wrong"}), 400
+            else:
+                return jsonify({"message": message}), 200
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(0)
+
+
+#获取党派数据
+@mod.route('/select_partisan/',methods=['POST'])
+def sele_partisan():
+    try:
+        datas = request.form.get('data', '')
+        if datas == '':
+            return jsonify({"message": "type input is null"}), 406
+        else:
+            message = select_partisan(json.loads(datas))
+            if message == None:
+                return jsonify({"message": "The data field is in the wrong"}), 400
+            else:
+                return jsonify({"message": message}), 200
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(0)
+
+#删除党派数据
+@mod.route('/delete_partisan/',methods=['POST'])
+def dele_partisan():
+    try:
+        datas = request.form.get('data', '')
+        if datas == '':
+            return jsonify({"message": "type input is null"}), 406
+        else:
+            message = delete_partisan(json.loads(datas))
+            if message == None:
+                return jsonify({"message": "The data field is in the wrong"}), 400
+            else:
+                return jsonify({"message": message}), 200
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(0)
+
+#修改党派数据
+@mod.route('/update_partisan/',methods=['POST'])
+def upda_partisan():
+    try:
+        datas = request.form.get('data', '')
+        if datas == '':
+            return jsonify({"message": "type input is null"}), 406
+        else:
+            message = update_partisan(json.loads(datas))
+            if message == None:
+                return jsonify({"message": "The data field is in the wrong"}), 400
+            else:
+                return jsonify({"message": message}), 200
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(0)
+
+#添加党派数据
+@mod.route('/insert_partisan/',methods=['POST'])
+def inse_partisan():
+    try:
+        datas = request.form.get('data', '')
+        if datas == '':
+            return jsonify({"message": "type input is null"}), 406
+        else:
+            message = insert_partisan(json.loads(datas))
+            if message == None:
+                return jsonify({"message": "The data field is in the wrong"}), 400
+            else:
+                return jsonify({"message": message}), 200
     except Exception as erro:
         app.logger.error(erro)
         return str(0)
