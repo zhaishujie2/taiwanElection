@@ -98,7 +98,7 @@ def update_info(datas):
             update_spider_sql = """UPDATE `spider_infos` SET """ + up_sql + ' WHERE ' + where_sql
             spider_re = cur.execute(update_spider_sql)
             if spider_re < 1:
-                app.logger.error('facebook信息未更新成功')
+                app.logger.error('facebook信息未发生变化或者未更新成功')
                 conn.rollback()
                 cur.close()
                 conn.close()
@@ -962,6 +962,19 @@ def update_image_name(info_type,image_name,ids):
             app.logger.error('团队成员图片名称未发生变化')
             closeAll(conn,cur)
             return 0
+    elif info_type == '5':
+        update_sql = """UPDATE `partisan` SET `partisan_image` = %s WHERE `id` = %s"""
+        conn = getconn()
+        cur = conn.cursor()
+        update_re = cur.execute(update_sql,(image_name,ids))
+        if update_re == 1:
+            app.logger.error('团队成员图片名称写入成功')
+            closeAll(conn,cur)
+            return 1
+        elif update_re == 0:
+            app.logger.error('团队成员图片名称未发生变化')
+            closeAll(conn,cur)
+            return 0
 
 
 # 更新候选人信息和团队人员信息
@@ -1315,6 +1328,14 @@ def get_pages(datas):
                 return 0
             else:
                 return suopport_all_count
+        elif info_type == '7':#党派数据所有数据
+            partisan_all_select_sql = """SELECT `id` FROM `partisan`"""
+            partisan_all_count = cur.execute(partisan_all_select_sql)
+            if partisan_all_count < 1:
+                app.logger.error('无所有党派信息')
+                return 0
+            else:
+                return partisan_all_count
     except Exception as erro:
         app.logger.error(erro)
         return 0
@@ -1348,6 +1369,14 @@ def get_new_id(info_type):
                 return 0
             re_id = cur.fetchone()
             return re_id[0], re_id[1]
+        elif info_type == '5':
+            partisan_id_sql = """SELECT `id` FROM `partisan` ORDER BY  `id` DESC  LIMIT 1"""
+            member_re = cur.execute(partisan_id_sql)
+            if member_re == 0:
+                app.logger.error('党派信息')
+                return 0
+            re_id = cur.fetchone()
+            return re_id[0]
         else:
             selete_member_id_sql = """SELECT `candidate_id`,`id` FROM `personnel_information` WHERE `id` = %s"""
             selete_re = cur.execute(selete_member_id_sql,(info_type))
@@ -2052,3 +2081,140 @@ def update_support(datas):
             app.logger.error(erro)
             return 0
 
+
+#添加党派数据
+def insert_partisan(datas):
+    conn = getconn()
+    cur = conn.cursor()
+    partisan = datas.get('partisan')
+
+    insert_support_sql = """INSERT INTO `partisan` (`partisan`) VALUES (%s)"""
+    select_support_sql = """SELECT `partisan`  FROM `partisan` WHERE `partisan` = %s """
+    try:
+        insert_re = ''
+        select_re = cur.execute(select_support_sql,(partisan))
+        if select_re != 0:
+            app.logger.error('党派数据已经存在')
+            return 406
+        elif select_re == 0:
+            insert_re = cur.execute(insert_support_sql,(partisan))
+        if insert_re < 1:
+            app.logger.error('党派数据未写入')
+            return 0
+        else:
+            app.logger.error('党派数据写入成功')
+            return 1
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
+    finally:
+        closeAll(conn, cur)
+
+
+#获取党派数据
+def select_partisan(datas):
+    conn = getconn()
+    cur = conn.cursor()
+    ids=  datas.get('id')
+    try:
+        partisan_all_select_sql = """SELECT `id`,`partisan`,`partisan_image` FROM `partisan` LIMIT %s,%s"""
+        partisan_one_select_sql = """SELECT `id`,`partisan`,`partisan_image` FROM `partisan` WHERE  `id` = %s"""
+        if ids == None:
+            page_number = datas.get('page_number')
+            page_size = datas.get('page_size')
+            start = (int(page_number) - 1) * int(page_size)
+            re = cur.execute(partisan_all_select_sql,(start,int( page_size)))
+            if re < 1:
+                app.logger.error('党派所有信息')
+                return 0
+        else:
+            re = cur.execute(partisan_one_select_sql,(ids))
+            if re < 1:
+                app.logger.error('无某一党派信息')
+                return 0
+        result = cur.fetchall()
+        lists = []
+        for item in result:
+            dict = {}
+            dict['id'] = item[0]
+            dict['partisan'] = item[1]
+            dict['partisan_image'] = item[2]
+            lists.append(dict)
+        return lists
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
+    finally:
+        closeAll(conn, cur)
+
+
+# 删除党派数据
+def delete_partisan(data):
+    conn = getconn()
+    cur = conn.cursor()
+    ids = data.get('id')
+    try:
+        delete_support_sql = """DELETE FROM `partisan` WHERE id = %s """
+        re = cur.execute(delete_support_sql, (ids))
+        if re < 1:
+            conn.rollback()
+            cur.close()
+            conn.close()
+            app.logger.error('该党派信息未删除')
+            return 0
+        else:
+            app.logger.error('该党派信息已删除')
+            return 1
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
+    finally:
+        closeAll(conn, cur)
+
+
+# 修改党派数据
+def update_partisan(datas):
+    where_dict = datas.get('where_dict')
+    up_dict = datas.get('up_dict')
+    if len(where_dict) == 0 or len(up_dict) == 0:
+        if len(where_dict) == 0:
+            app.logger.error( "更新条件不能为空")
+            return 0
+        if len(up_dict) == 0:
+            app.logger.error( "更新内容不能为空")
+            return 0
+    else:
+        conn = getconn()
+        cur = conn.cursor()
+        try:
+            where_sql = ''
+            up_sql = ''
+            where_num = 0
+            up_num = 0
+            for k, v in where_dict.items():
+                where_num += 1
+                if where_num < len(where_dict):
+                    where_sql += "{} = '{}' AND ".format(k, v)
+                else:
+                    where_sql += "{} = '{}'".format(k, v)
+            for k, v in up_dict.items():
+                up_num += 1
+                if up_num < len(up_dict):
+                    up_sql += "`{}` = '{}', ".format(k, v)
+                else:
+                    up_sql += "`{}` = '{}' ".format(k, v)
+            update_support_sql = """UPDATE `partisan` SET """ + up_sql + ' WHERE ' + where_sql
+            support_re = cur.execute(update_support_sql)
+            if support_re < 1:
+                app.logger.error('民调信息未更新成功')
+                conn.rollback()
+                cur.close()
+                conn.close()
+                return 0
+            else:
+                closeAll(conn,cur)
+                app.logger.error('民调信息更新成功')
+                return 1
+        except Exception as erro:
+            app.logger.error(erro)
+            return 0
