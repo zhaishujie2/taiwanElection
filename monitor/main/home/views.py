@@ -81,7 +81,7 @@ def get_popularity_statistics():
             return jsonify({"message": "start_time or end_time is error"}), 406
         result = get_popularity(start_time, end_time, dict_name)
         if result == 0:
-            return jsonify({"message": "The time field is in the wrong format"}), 200
+            return jsonify({"message": "The time field is in the wrong format"}), 402
         else:
             return jsonify({"message": result}), 200
 
