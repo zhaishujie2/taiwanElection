@@ -968,11 +968,11 @@ def update_image_name(info_type,image_name,ids):
         cur = conn.cursor()
         update_re = cur.execute(update_sql,(image_name,ids))
         if update_re == 1:
-            app.logger.error('团队成员图片名称写入成功')
+            app.logger.error('党派图片名称写入成功')
             closeAll(conn,cur)
             return 1
         elif update_re == 0:
-            app.logger.error('团队成员图片名称未发生变化')
+            app.logger.error('党派图片名称未发生变化')
             closeAll(conn,cur)
             return 0
 
