@@ -246,17 +246,17 @@ def get_ptt_popularity(dict_name, start_time, end_time):
 
 if __name__ == '__main__':
 
-    # end_time = datetime.datetime.now().strftime("%Y-%m-%d")
-    # list = get_date("2018-2-15",end_time)
-    # for item in list:
-    #     start_time = get_before_time(item,45)
-    #     print (start_time,item)
-    #     insert_popularity_demo(start_time,item)
-    # end_time = datetime.datetime.now().strftime("%Y-%m-%d")
-    # start_time = get_before_time(end_time, 45)
-    # insert_popularity_demo(start_time,end_time)
-    dict = {}
-    dict[47] = "林智坚"
-    dict[48] = "许明财"
-    result = get_popularity("2018-05-01","2018-06-19",dict)
-    print (result)
+    end_time = datetime.datetime.now().strftime("%Y-%m-%d")
+    list = get_date("2018-2-15",end_time)
+    for item in list:
+        start_time = get_before_time(item,45)
+        print (start_time,item)
+        insert_popularity_demo(start_time,item)
+    end_time = datetime.datetime.now().strftime("%Y-%m-%d")
+    start_time = get_before_time(end_time, 45)
+    insert_popularity_demo(start_time,end_time)
+    # dict = {}
+    # dict[47] = "林智坚"
+    # dict[48] = "许明财"
+    # result = get_popularity("2018-05-01","2018-06-19",dict)
+    # print (result)
