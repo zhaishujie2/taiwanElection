@@ -317,7 +317,12 @@ def upload_file():
         if info_type == '3'and leader != None:#修改侯选人图片
             image_name = str(leader) + '.' + file.filename.rsplit('.', 1)[1]
             if file and allowed_file(file.filename):
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'],image_name))
+                if os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'],image_name)):
+                    os.remove(os.path.join(app.config['UPLOAD_FOLDER'],image_name))
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'],image_name),buffer_size=3145728)
+                file.flush()
+                os.fsync(file)
+                file.close()
                 update_image_re = update_image_name(info_type='1',image_name=image_name,ids=leader)
                 if update_image_re == 1:
                     return jsonify({"message": 1}), 201
@@ -775,3 +780,13 @@ def inse_partisan():
     except Exception as erro:
         app.logger.error(erro)
         return str(0)
+
+
+# 获取当前用户ip
+@mod.route('/get_ip/', methods=['GET'])
+def get_ip():
+    ip = request.remote_addr
+    if ip:
+        return jsonify({"message": ip}), 200
+    else:
+        return jsonify({"message": "The ip is null"}), 400
