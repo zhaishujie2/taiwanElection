@@ -15,6 +15,22 @@ def get_popularity(start_time, end_time, dict_name):
         tw = get_tw_count(dict_name, start_time, end_time)
         news = get_news_count(dict_name, start_time, end_time)
         ptt = get_ptt_popularity(dict_name, start_time, end_time)
+        if fb ==0:
+            fb = {}
+            for key,value in dict_name.items():
+                fb[value] = 0
+        if tw ==0:
+            tw = {}
+            for key,value in dict_name.items():
+                tw[value] = 0
+        if news ==0:
+            news = {}
+            for key,value in dict_name.items():
+                news[value] = 0
+        if ptt ==0:
+            ptt = {}
+            for key,value in dict_name.items():
+                ptt[value] = 0
         count = 1
         dict = {}
         flat = 1
