@@ -18,25 +18,28 @@ def insert_popularity_demo(start_time,end_time):
         count = cur.execute(sql,year)
         result = cur.fetchmany(count)
         for item in result:
-            sql = "SELECT * from candidate where administrative_id=%s and `year`=%s"
-            count = cur.execute(sql,(item[0],year))
-            data = cur.fetchmany(count)
-            dict = {}
-            for person in data:
-                dict[person[0]] = person[2]
-            popularity_dict =  (get_popularity(start_time,end_time,dict))
-            for  key,value in dict.items():
-                sql = "SELECT * FROM popularity WHERE  candidate_id=%s AND create_data=%s"
-                count = cur.execute(sql,(key,end_time))
-                print (key,end_time,count,popularity_dict[value])
-                if count <=0:
-                    sql = "INSERT INTO popularity (candidate_id,create_data,popularity_score)  VALUES (%s,%s,%s)"
-                    cur.execute(sql,(key,end_time,popularity_dict[value]*100))
-                    conn.commit()
-                else :
-                    sql = "UPDATE popularity SET popularity_score=%s WHERE candidate_id=%s AND create_data=%s "
-                    cur.execute(sql,(popularity_dict[value]*100,key,end_time))
-                    conn.commit()
+            try:
+                sql = "SELECT * from candidate where administrative_id=%s and `year`=%s"
+                count = cur.execute(sql,(item[0],year))
+                data = cur.fetchmany(count)
+                dict = {}
+                for person in data:
+                    dict[person[0]] = person[2]
+                popularity_dict =  (get_popularity(start_time,end_time,dict))
+                for  key,value in dict.items():
+                    sql = "SELECT * FROM popularity WHERE  candidate_id=%s AND create_data=%s"
+                    count = cur.execute(sql,(key,end_time))
+                    print (key,end_time,count,popularity_dict[value])
+                    if count <=0:
+                        sql = "INSERT INTO popularity (candidate_id,create_data,popularity_score)  VALUES (%s,%s,%s)"
+                        cur.execute(sql,(key,end_time,popularity_dict[value]*100))
+                        conn.commit()
+                    else :
+                        sql = "UPDATE popularity SET popularity_score=%s WHERE candidate_id=%s AND create_data=%s "
+                        cur.execute(sql,(popularity_dict[value]*100,key,end_time))
+                        conn.commit()
+            except:
+                pass
     except:
         return 0
     finally:
@@ -52,19 +55,42 @@ def get_popularity( start_time, end_time,dict_name):
         tw = get_tw_count(dict_name, start_time, end_time)
         news = get_news_count(dict_name, start_time, end_time)
         ptt = get_ptt_popularity(dict_name, start_time, end_time)
+        if fb ==0:
+            fb = {}
+            for key,value in dict_name.items():
+                fb[value] = 0
+        if tw ==0:
+            tw = {}
+            for key,value in dict_name.items():
+                tw[value] = 0
+        if news ==0:
+            news = {}
+            for key,value in dict_name.items():
+                news[value] = 0
+        if ptt ==0:
+            ptt = {}
+            for key,value in dict_name.items():
+                ptt[value] = 0
         count = 1
         dict = {}
         flat = 1
+        sum = 0
+        result_dict={}
+        for id in dict_name.keys():
+            sorce = round((fb[dict_name[id]] * fb_weight + ptt[dict_name[id]] * ptt_weight + tw[
+                dict_name[id]] * tw_weight + news[dict_name[id]] * news_weight), 3)
+            dict[dict_name[id]] = sorce
+            sum+=sorce
         for id in dict_name.keys():
             if count == len(dict_name):
-                dict[dict_name[id]] = round(flat, 3)
+                result_dict[dict_name[id]] = round(flat, 3)
             else:
-                sorce = round((fb[dict_name[id]] * fb_weight + ptt[dict_name[id]] * ptt_weight + tw[
-                    dict_name[id]] * tw_weight + news[dict_name[id]] * news_weight), 3)
-                dict[dict_name[id]] = sorce
+                sorce = round(dict[dict_name[id]] / sum ,3)
+                result_dict[dict_name[id]] = sorce
                 flat -= sorce
-        return dict
-    except:
+                count +=1
+        return result_dict
+    except :
         return 0
 
 def get_fb_aver_link(dict_name, start_time, end_time):
@@ -86,7 +112,6 @@ def get_fb_aver_link(dict_name, start_time, end_time):
                     likes += int(item["_source"]["likes"])
             dict[dict_name[id]] = int(likes / (len(result)))
             sum += int(likes / (len(result)))
-        print
         count = 1
         flat = 1
         result_dict = {}
@@ -228,11 +253,15 @@ def get_ptt_popularity(dict_name, start_time, end_time):
 if __name__ == '__main__':
 
     end_time = datetime.datetime.now().strftime("%Y-%m-%d")
-    list = get_date("2018-2-15",end_time)
+    list = get_date("2018-6-20",end_time)
     for item in list:
         start_time = get_before_time(item,45)
-        print (start_time,item)
         insert_popularity_demo(start_time,item)
-    # end_time = datetime.datetime.now().strftime("%Y-%m-%d")
-    # start_time = get_before_time(end_time, 45)
-    # insert_popularity_demo(start_time,end_time)
+    end_time = datetime.datetime.now().strftime("%Y-%m-%d")
+    start_time = get_before_time(end_time, 45)
+    insert_popularity_demo(start_time,end_time)
+    # dict = {}
+    # dict[47] = "林智坚"
+    # dict[48] = "许明财"
+    # result = get_popularity("2018-05-01","2018-06-19",dict)
+    # print (result)
