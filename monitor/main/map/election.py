@@ -34,16 +34,24 @@ def get_popularity(start_time, end_time, dict_name):
         count = 1
         dict = {}
         flat = 1
+        sum = 0
+        result_dict={}
+        for id in dict_name.keys():
+            sorce = round((fb[dict_name[id]] * fb_weight + ptt[dict_name[id]] * ptt_weight + tw[
+                dict_name[id]] * tw_weight + news[dict_name[id]] * news_weight), 3)
+            dict[dict_name[id]] = sorce
+            sum+=sorce
         for id in dict_name.keys():
             if count == len(dict_name):
-                dict[dict_name[id]] = round(flat, 3)
+                result_dict[dict_name[id]] = round(flat, 3)
             else:
-                sorce = round((fb[dict_name[id]] * fb_weight + ptt[dict_name[id]] * ptt_weight + tw[
-                    dict_name[id]] * tw_weight + news[dict_name[id]] * news_weight), 3)
-                dict[dict_name[id]] = sorce
+                sorce = dict[dict_name[id]] / sum
+                result_dict[dict_name[id]] = sorce
                 flat -= sorce
-        return dict
-    except:
+                print (flat)
+                count +=1
+        return result_dict
+    except :
         return 0
 
 
@@ -203,3 +211,11 @@ def get_ptt_popularity(dict_name, start_time, end_time):
         return result_dict
     except:
         return 0
+
+
+if __name__ == '__main__':
+    dict_name={}
+    dict_name[23] = "陈学圣"
+    dict_name[69] = "郑文灿"
+    data = get_popularity("2018-05-05","2018-06-20",dict_name)
+    print (data)

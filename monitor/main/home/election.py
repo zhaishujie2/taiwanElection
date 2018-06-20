@@ -8,9 +8,9 @@ from elasticsearch import Elasticsearch
 es = Elasticsearch(es_host, timeout=600)
 
 
-def get_popularity(start_time, end_time, dict_name):
+def get_popularity( start_time, end_time,dict_name):
     try:
-        start_time, end_time = get_time(start_time, end_time)
+        start_time,end_time = get_time(start_time,end_time)
         fb = get_fb_aver_link(dict_name, start_time, end_time)
         tw = get_tw_count(dict_name, start_time, end_time)
         news = get_news_count(dict_name, start_time, end_time)
@@ -34,16 +34,23 @@ def get_popularity(start_time, end_time, dict_name):
         count = 1
         dict = {}
         flat = 1
+        sum = 0
+        result_dict={}
+        for id in dict_name.keys():
+            sorce = round((fb[dict_name[id]] * fb_weight + ptt[dict_name[id]] * ptt_weight + tw[
+                dict_name[id]] * tw_weight + news[dict_name[id]] * news_weight), 3)
+            dict[dict_name[id]] = sorce
+            sum+=sorce
         for id in dict_name.keys():
             if count == len(dict_name):
-                dict[dict_name[id]] = round(flat, 3)
+                result_dict[dict_name[id]] = round(flat, 3)
             else:
-                sorce = round((fb[dict_name[id]] * fb_weight + ptt[dict_name[id]] * ptt_weight + tw[
-                    dict_name[id]] * tw_weight + news[dict_name[id]] * news_weight), 3)
-                dict[dict_name[id]] = sorce
+                sorce = round(dict[dict_name[id]] / sum ,3)
+                result_dict[dict_name[id]] = sorce
                 flat -= sorce
-        return dict
-    except:
+                count +=1
+        return result_dict
+    except :
         return 0
 
 
