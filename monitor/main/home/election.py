@@ -186,6 +186,8 @@ def get_ptt_popularity(dict_name, start_time, end_time):
             for item in result:
                 likes += int(item["_source"]["likes"])
                 likes -= int(item["_source"]["tread"])
+                if likes <=0:
+                    likes = 0
             dict[dict_name[id]] = likes
             sum += likes
         count = 1
