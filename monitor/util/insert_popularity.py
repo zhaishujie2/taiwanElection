@@ -74,16 +74,23 @@ def get_popularity( start_time, end_time,dict_name):
         count = 1
         dict = {}
         flat = 1
+        sum = 0
+        result_dict={}
+        for id in dict_name.keys():
+            sorce = round((fb[dict_name[id]] * fb_weight + ptt[dict_name[id]] * ptt_weight + tw[
+                dict_name[id]] * tw_weight + news[dict_name[id]] * news_weight), 3)
+            dict[dict_name[id]] = sorce
+            sum+=sorce
         for id in dict_name.keys():
             if count == len(dict_name):
-                dict[dict_name[id]] = round(flat, 3)
+                result_dict[dict_name[id]] = round(flat, 3)
             else:
-                sorce = round((fb[dict_name[id]] * fb_weight + ptt[dict_name[id]] * ptt_weight + tw[
-                    dict_name[id]] * tw_weight + news[dict_name[id]] * news_weight), 3)
-                dict[dict_name[id]] = sorce
+                sorce = round(dict[dict_name[id]] / sum ,3)
+                result_dict[dict_name[id]] = sorce
                 flat -= sorce
-        return dict
-    except:
+                count +=1
+        return result_dict
+    except :
         return 0
 
 def get_fb_aver_link(dict_name, start_time, end_time):
@@ -105,7 +112,6 @@ def get_fb_aver_link(dict_name, start_time, end_time):
                     likes += int(item["_source"]["likes"])
             dict[dict_name[id]] = int(likes / (len(result)))
             sum += int(likes / (len(result)))
-        print
         count = 1
         flat = 1
         result_dict = {}
@@ -247,10 +253,9 @@ def get_ptt_popularity(dict_name, start_time, end_time):
 if __name__ == '__main__':
 
     end_time = datetime.datetime.now().strftime("%Y-%m-%d")
-    list = get_date("2018-2-15",end_time)
+    list = get_date("2018-6-20",end_time)
     for item in list:
         start_time = get_before_time(item,45)
-        print (start_time,item)
         insert_popularity_demo(start_time,item)
     end_time = datetime.datetime.now().strftime("%Y-%m-%d")
     start_time = get_before_time(end_time, 45)
