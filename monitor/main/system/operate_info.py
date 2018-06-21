@@ -515,7 +515,7 @@ def delete_people_image(info_type,image_name):
             app.logger.error('无此侯选人图片')
             return 1
         elif info_type == '2':
-            candidate_id,member_id = get_new_id(image_name)
+            candidate_id,member_id = get_new_id()
             member_name = str(candidate_id)+'_'+str(member_id)
             for name in names:
                 exits = name.rfind(member_name)

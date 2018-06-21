@@ -2,16 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="42dab694-0d5b-4482-a07b-3d6f56b52412" name="Default" comment="修改">
-      <change beforePath="" afterPath="$PROJECT_DIR$/monitor/util/insert_popularity.py" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/app.log" afterPath="$PROJECT_DIR$/app.log" />
-      <change beforePath="$PROJECT_DIR$/monitor/main/forecast/character_analysis.py" afterPath="$PROJECT_DIR$/monitor/main/forecast/character_analysis.py" />
-      <change beforePath="$PROJECT_DIR$/monitor/main/forecast/views.py" afterPath="$PROJECT_DIR$/monitor/main/forecast/views.py" />
-      <change beforePath="$PROJECT_DIR$/monitor/main/home/election.py" afterPath="$PROJECT_DIR$/monitor/main/home/election.py" />
-      <change beforePath="$PROJECT_DIR$/monitor/main/map/views.py" afterPath="$PROJECT_DIR$/monitor/main/map/views.py" />
       <change beforePath="$PROJECT_DIR$/monitor/main/system/operate_info.py" afterPath="$PROJECT_DIR$/monitor/main/system/operate_info.py" />
-      <change beforePath="$PROJECT_DIR$/monitor/util/config.py" afterPath="$PROJECT_DIR$/monitor/util/config.py" />
-      <change beforePath="$PROJECT_DIR$/monitor/util/utilclass.py" afterPath="$PROJECT_DIR$/monitor/util/utilclass.py" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -28,14 +20,15 @@
     <SUITE FILE_PATH="coverage/TaiwanElection$views.coverage" NAME="views Coverage Results" MODIFIED="1527161177830" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/monitor/main/home" />
     <SUITE FILE_PATH="coverage/taiwanElection$show_party.coverage" NAME="show_party Coverage Results" MODIFIED="1526379719559" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/monitor/main/home" />
     <SUITE FILE_PATH="coverage/TaiwanElection$Demo.coverage" NAME="Demo Coverage Results" MODIFIED="1527160652397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/monitor/main/home" />
-    <SUITE FILE_PATH="coverage/TaiwanElection$run.coverage" NAME="run Coverage Results" MODIFIED="1527215929363" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/TaiwanElection$utilclass.coverage" NAME="utilclass Coverage Results" MODIFIED="1526874469406" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/monitor/util" />
+    <SUITE FILE_PATH="coverage/TaiwanElection$election.coverage" NAME="election Coverage Results" MODIFIED="1529483797529" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/monitor/main/map" />
+    <SUITE FILE_PATH="coverage/TaiwanElection$run.coverage" NAME="run Coverage Results" MODIFIED="1528342371983" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/TaiwanElection$utilclass.coverage" NAME="utilclass Coverage Results" MODIFIED="1528273922806" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/monitor/util" />
     <SUITE FILE_PATH="coverage/TaiwanElection$draw_mysql.coverage" NAME="draw_mysql Coverage Results" MODIFIED="1525328155856" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/monitor/main/map" />
     <SUITE FILE_PATH="coverage/TaiwanElection$information_statistics.coverage" NAME="information_statistics Coverage Results" MODIFIED="1526981805336" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/monitor/main/information" />
     <SUITE FILE_PATH="coverage/TaiwanElection$util.coverage" NAME="util Coverage Results" MODIFIED="1525228301313" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/monitor/util" />
     <SUITE FILE_PATH="coverage/taiwanElection$run.coverage" NAME="run Coverage Results" MODIFIED="1526380139904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/TaiwanElection$information.coverage" NAME="information Coverage Results" MODIFIED="1526982957884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/monitor/main/forecast" />
-    <SUITE FILE_PATH="coverage/TaiwanElection$insert_popularity.coverage" NAME="insert_popularity Coverage Results" MODIFIED="1527586267122" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/monitor/util" />
+    <SUITE FILE_PATH="coverage/TaiwanElection$information.coverage" NAME="information Coverage Results" MODIFIED="1528343236826" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/monitor/main/forecast" />
+    <SUITE FILE_PATH="coverage/TaiwanElection$insert_popularity.coverage" NAME="insert_popularity Coverage Results" MODIFIED="1529487466777" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/monitor/util" />
     <SUITE FILE_PATH="coverage/taiwanElection$views__1_.coverage" NAME="views (1) Coverage Results" MODIFIED="1526286198233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/monitor/main/home" />
   </component>
   <component name="CreatePatchCommitExecutor">
@@ -46,88 +39,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="operate_info.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/monitor/main/system/operate_info.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4092">
-              <caret line="124" column="0" lean-forward="true" selection-start-line="124" selection-start-column="0" selection-end-line="124" selection-end-column="0" />
-              <folding>
-                <element signature="e#15#67#0" expanded="true" />
-                <marker date="1527585591091" expanded="true" signature="351:466" ph="INSERT INTO spider_infos... " />
-                <marker date="1527585591091" expanded="true" signature="924:966" ph="DELETE FROM `spider_infos`... " />
-                <marker date="1527585591091" expanded="true" signature="2963:3000" ph="SELECT * FRO... spider_infoss" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="draw_mysql.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/monitor/main/map/draw_mysql.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="495">
-              <caret line="16" column="8" lean-forward="true" selection-start-line="16" selection-start-column="8" selection-end-line="16" selection-end-column="27" />
-              <folding>
-                <marker date="1525333292596" expanded="true" signature="198:400" ph="select area.... administrative_area" />
-                <marker date="1525333292596" expanded="true" signature="910:1100" ph="select candi... administrative_area" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="election.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/monitor/main/home/election.py">
+        <entry file="file://$PROJECT_DIR$/monitor/main/map/election.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-4000">
-              <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-              <folding>
-                <element signature="e#16#240#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="character_analysis.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/monitor/main/forecast/character_analysis.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#146#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/monitor/main/forecast/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="917">
-              <caret line="72" column="18" lean-forward="false" selection-start-line="72" selection-start-column="18" selection-end-line="72" selection-end-column="18" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="insert_popularity.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/monitor/util/insert_popularity.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="752">
-              <caret line="229" column="0" lean-forward="true" selection-start-line="229" selection-start-column="0" selection-end-line="229" selection-end-column="0" />
-              <folding>
-                <element signature="e#16#245#0" expanded="true" />
-                <marker date="1527586696691" expanded="true" signature="584:666" ph="SELECT admin... candidate" />
-                <marker date="1527586696691" expanded="true" signature="791:855" ph="SELECT * fro... candidate" />
-                <marker date="1527586696691" expanded="true" signature="1188:1273" ph="INSERT INTO popularity... " />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="utilclass.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/monitor/util/utilclass.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-238">
-              <caret line="14" column="12" lean-forward="false" selection-start-line="14" selection-start-column="4" selection-end-line="14" selection-end-column="12" />
+            <state relative-caret-position="6138">
+              <caret line="189" column="0" lean-forward="false" selection-start-line="189" selection-start-column="0" selection-end-line="190" selection-end-column="29" />
               <folding />
             </state>
           </provider>
@@ -136,28 +52,191 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/monitor/main/map/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-469">
-              <caret line="38" column="31" lean-forward="true" selection-start-line="38" selection-start-column="31" selection-end-line="38" selection-end-column="31" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="config.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/monitor/util/config.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="957">
-              <caret line="29" column="0" lean-forward="false" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+            <state relative-caret-position="2706">
+              <caret line="90" column="27" lean-forward="false" selection-start-line="90" selection-start-column="13" selection-end-line="90" selection-end-column="27" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
       <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/monitor/main/user/views.py">
+        <entry file="file://$PROJECT_DIR$/monitor/main/home/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1187">
+              <caret line="94" column="8" lean-forward="false" selection-start-line="94" selection-start-column="8" selection-end-line="94" selection-end-column="8" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="insert_popularity.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/monitor/util/insert_popularity.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="924">
-              <caret line="37" column="0" lean-forward="true" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
+              <caret line="265" column="15" lean-forward="false" selection-start-line="265" selection-start-column="15" selection-end-line="265" selection-end-column="15" />
+              <folding>
+                <marker date="1529487464980" expanded="true" signature="641:723" ph="SELECT admin... candidate" />
+                <marker date="1529487464980" expanded="true" signature="869:933" ph="SELECT * fro... candidate" />
+                <marker date="1529487464980" expanded="true" signature="1298:1364" ph="SELECT * FRO... popularity" />
+                <marker date="1529487464980" expanded="true" signature="1561:1646" ph="INSERT INTO popularity... " />
+                <marker date="1529487464980" expanded="true" signature="1827:1909" ph="UPDATE popularity... " />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="show_party.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/monitor/main/home/show_party.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1211">
+              <caret line="46" column="24" lean-forward="false" selection-start-line="46" selection-start-column="4" selection-end-line="46" selection-end-column="24" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="operate_info.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/monitor/main/system/operate_info.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="551">
+              <caret line="529" column="0" lean-forward="false" selection-start-line="529" selection-start-column="0" selection-end-line="529" selection-end-column="0" />
+              <folding>
+                <marker date="1529592450389" expanded="true" signature="634:755" ph="INSERT INTO `spider_infos`... " />
+                <marker date="1529592450389" expanded="true" signature="779:910" ph="SELECT `id` spider_infos" />
+                <marker date="1529592450389" expanded="true" signature="1604:1644" ph="DELETE FROM `spider_infos`... " />
+                <marker date="1529592450389" expanded="true" signature="6048:6128" ph="UPDATE `candidate_personnel_information`... " />
+                <marker date="1529592450389" expanded="true" signature="7499:7633" ph="SELECT `admi... spider_infos" />
+                <marker date="1529592450389" expanded="true" signature="8724:8825" ph="SELECT `user... candidate" />
+                <marker date="1529592450389" expanded="true" signature="8863:8916" ph="SELECT `admi... administrative_area" />
+                <marker date="1529592450389" expanded="true" signature="9852:10098" ph="SELECT `id`,... *" />
+                <marker date="1529592450389" expanded="true" signature="9946:9974" ph="SELECT * FRO... spider_infos" />
+                <marker date="1529592450389" expanded="true" signature="9980:10061" ph="SELECT `cand... candidate_personnel_information" />
+                <marker date="1529592450389" expanded="true" signature="10883:11010" ph="SELECT `info... administrative_infos" />
+                <marker date="1529592450389" expanded="true" signature="11817:12175" ph="SELECT `job`... candidate_personnel_information" />
+                <marker date="1529592450389" expanded="true" signature="13956:14283" ph="SELECT `job`... personnel_information" />
+                <marker date="1529592450389" expanded="true" signature="16152:16238" ph="SELECT `admi... administrative_area" />
+                <marker date="1529592450389" expanded="true" signature="16649:16735" ph="SELECT `admi... administrative_area" />
+                <marker date="1529592450389" expanded="true" signature="17139:17214" ph="SELECT `admi... administrative_area" />
+                <marker date="1529592450389" expanded="true" signature="18277:18317" ph="DELETE FROM `spider_infos`... " />
+                <marker date="1529592450389" expanded="true" signature="18626:18697" ph="DELETE FROM `candidate_personnel_information`... " />
+                <marker date="1529592450389" expanded="true" signature="18744:18793" ph="DELETE FROM `candidate`... " />
+                <marker date="1529592450389" expanded="true" signature="19886:19937" ph="DELETE FROM `personnel_information`... " />
+                <marker date="1529592450389" expanded="true" signature="23655:23758" ph="SELECT `admi... spider_infos" />
+                <marker date="1529592450389" expanded="true" signature="25391:25472" ph="INSERT INTO `candidate`... " />
+                <marker date="1529592450389" expanded="true" signature="29948:30350" ph="INSERT INTO `candidate_personnel_information`... " />
+                <marker date="1529592450389" expanded="true" signature="35472:36002" ph="SELECT * FRO... personnel_information" />
+                <marker date="1529592450389" expanded="true" signature="36056:36587" ph="SELECT * FRO... personnel_information" />
+                <marker date="1529592450389" expanded="true" signature="37107:37499" ph="INSERT INTO `personnel_information`... " />
+                <marker date="1529592450389" expanded="true" signature="38607:38695" ph="UPDATE `candidate_personnel_information`... " />
+                <marker date="1529592450389" expanded="true" signature="39289:39357" ph="UPDATE `personnel_information`... " />
+                <marker date="1529592450389" expanded="true" signature="39923:39982" ph="UPDATE `partisan`... " />
+                <marker date="1529592450389" expanded="true" signature="40544:40633" ph="UPDATE `candidate_personnel_information`... " />
+                <marker date="1529592450389" expanded="true" signature="41235:41304" ph="UPDATE `personnel_information`... " />
+                <marker date="1529592450389" expanded="true" signature="42025:42110" ph="SELECT `imag... candidate_personnel_information" />
+                <marker date="1529592450389" expanded="true" signature="42683:42748" ph="SELECT `imag... personnel_information" />
+                <marker date="1529592450389" expanded="true" signature="45027:45095" ph="UPDATE `spider_infos`... " />
+                <marker date="1529592450389" expanded="true" signature="45592:45656" ph="UPDATE `candidate`... " />
+                <marker date="1529592450389" expanded="true" signature="47774:48391" ph="SELECT `job`... *" />
+                <marker date="1529592450389" expanded="true" signature="48183:48256" ph="SELECT * FRO... candidate_personnel_information" />
+                <marker date="1529592450389" expanded="true" signature="48262:48360" ph="SELECT `year... candidate" />
+                <marker date="1529592450389" expanded="true" signature="48428:49027" ph="SELECT `job`... *" />
+                <marker date="1529592450389" expanded="true" signature="48836:48883" ph="SELECT * FRO... candidate_personnel_information" />
+                <marker date="1529592450389" expanded="true" signature="48889:48962" ph="SELECT `year... candidate" />
+                <marker date="1529592450389" expanded="true" signature="49068:49696" ph="SELECT `job`... *" />
+                <marker date="1529592450389" expanded="true" signature="49476:49523" ph="SELECT * FRO... candidate_personnel_information" />
+                <marker date="1529592450389" expanded="true" signature="49529:49602" ph="SELECT `year... candidate" />
+                <marker date="1529592450389" expanded="true" signature="52891:53558" ph="SELECT `job`... *" />
+                <marker date="1529592450389" expanded="true" signature="53304:53357" ph="SELECT * FRO... personnel_information" />
+                <marker date="1529592450389" expanded="true" signature="53362:53527" ph="SELECT `year... candidate" />
+                <marker date="1529592450389" expanded="true" signature="53595:54218" ph="SELECT `job`... *" />
+                <marker date="1529592450389" expanded="true" signature="54009:54072" ph="SELECT * FRO... personnel_information" />
+                <marker date="1529592450389" expanded="true" signature="54076:54174" ph="SELECT `year... candidate" />
+                <marker date="1529592450389" expanded="true" signature="57416:57493" ph="SELECT `year... candidate" />
+                <marker date="1529592450389" expanded="true" signature="58287:58383" ph="SELECT `cand... candidate" />
+                <marker date="1529592450389" expanded="true" signature="59174:59269" ph="SELECT `admi... spider_infos" />
+                <marker date="1529592450389" expanded="true" signature="59589:59786" ph="SELECT `job`... *" />
+                <marker date="1529592450389" expanded="true" signature="59607:59654" ph="SELECT * FRO... candidate_personnel_information" />
+                <marker date="1529592450389" expanded="true" signature="59660:59733" ph="SELECT `year... candidate" />
+                <marker date="1529592450389" expanded="true" signature="60133:60666" ph="SELECT `job`... *" />
+                <marker date="1529592450389" expanded="true" signature="60458:60505" ph="SELECT * FRO... candidate_personnel_information" />
+                <marker date="1529592450389" expanded="true" signature="60511:60584" ph="SELECT `year... candidate" />
+                <marker date="1529592450389" expanded="true" signature="61053:61581" ph="SELECT `job`... *" />
+                <marker date="1529592450389" expanded="true" signature="61384:61447" ph="SELECT * FRO... personnel_information" />
+                <marker date="1529592450389" expanded="true" signature="61451:61549" ph="SELECT `year... candidate" />
+                <marker date="1529592450389" expanded="true" signature="61986:62112" ph="SELECT `admi... spider_infos" />
+                <marker date="1529592450389" expanded="true" signature="62513:62571" ph="SELECT `id` poll_support" />
+                <marker date="1529592450389" expanded="true" signature="62914:62941" ph="SELECT `id` partisan" />
+                <marker date="1529592450389" expanded="true" signature="63589:63666" ph="SELECT `cand... candidate" />
+                <marker date="1529592450389" expanded="true" signature="63953:64037" ph="SELECT `cand... personnel_information" />
+                <marker date="1529592450389" expanded="true" signature="64337:64393" ph="SELECT `id` partisan" />
+                <marker date="1529592450389" expanded="true" signature="64662:64733" ph="SELECT `cand... personnel_information" />
+                <marker date="1529592450389" expanded="true" signature="65258:65377" ph="INSERT INTO `administrative_infos`... " />
+                <marker date="1529592450389" expanded="true" signature="65401:65493" ph="SELECT `info... administrative_infos" />
+                <marker date="1529592450389" expanded="true" signature="66141:66194" ph="DELETE FROM `administrative_infos`... " />
+                <marker date="1529592450389" expanded="true" signature="67908:68018" ph="SELECT `info... administrative_infos" />
+                <marker date="1529592450389" expanded="true" signature="69088:69219" ph="SELECT `info... administrative_infos" />
+                <marker date="1529592450389" expanded="true" signature="70164:70283" ph="SELECT `info... administrative_infos" />
+                <marker date="1529592450389" expanded="true" signature="71528:71671" ph="INSERT INTO `previous_elections`... " />
+                <marker date="1529592450389" expanded="true" signature="71695:71866" ph="SELECT `id` previous_elections" />
+                <marker date="1529592450389" expanded="true" signature="72647:72693" ph="DELETE FROM `previous_elections`... " />
+                <marker date="1529592450389" expanded="true" signature="74413:74537" ph="SELECT `id`,... previous_elections" />
+                <marker date="1529592450389" expanded="true" signature="75631:75771" ph="SELECT `id`,... previous_elections" />
+                <marker date="1529592450389" expanded="true" signature="76739:76871" ph="SELECT `id`,... previous_elections" />
+                <marker date="1529592450389" expanded="true" signature="78512:78588" ph="SELECT `admi... administrative_area" />
+                <marker date="1529592450389" expanded="true" signature="79082:79235" ph="SELECT `info... administrative_infos" />
+                <marker date="1529592450389" expanded="true" signature="79266:79406" ph="SELECT `info... administrative_infos" />
+                <marker date="1529592450389" expanded="true" signature="80814:80977" ph="SELECT `id`,... previous_elections" />
+                <marker date="1529592450389" expanded="true" signature="81008:81158" ph="SELECT `id`,... previous_elections" />
+                <marker date="1529592450389" expanded="true" signature="83482:83669" ph="INSERT INTO `poll_support`... " />
+                <marker date="1529592450389" expanded="true" signature="83701:83792" ph="SELECT `supp... poll_support" />
+                <marker date="1529592450389" expanded="true" signature="84667:84857" ph="SELECT `id`,... poll_support" />
+                <marker date="1529592450389" expanded="true" signature="84898:85066" ph="SELECT `id`,... poll_support" />
+                <marker date="1529592450389" expanded="true" signature="86469:86509" ph="DELETE FROM `poll_support`... " />
+                <marker date="1529592450389" expanded="true" signature="88591:88638" ph="INSERT INTO `partisan`... " />
+                <marker date="1529592450389" expanded="true" signature="88670:88726" ph="SELECT `part... partisan" />
+                <marker date="1529592450389" expanded="true" signature="89450:89517" ph="SELECT `id`,... partisan" />
+                <marker date="1529592450389" expanded="true" signature="89558:89630" ph="SELECT `id`,... partisan" />
+                <marker date="1529592450389" expanded="true" signature="90689:90725" ph="DELETE FROM `partisan`... " />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/monitor/main/system/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="198">
+              <caret line="9" column="28" lean-forward="false" selection-start-line="9" selection-start-column="12" selection-end-line="9" selection-end-column="28" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="character_analysis.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/monitor/main/forecast/character_analysis.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1947">
+              <caret line="63" column="27" lean-forward="false" selection-start-line="63" selection-start-column="27" selection-end-line="63" selection-end-column="27" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="draw_mysql.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/monitor/main/map/draw_mysql.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="495">
+              <caret line="16" column="8" lean-forward="false" selection-start-line="16" selection-start-column="8" selection-end-line="16" selection-end-column="20" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="election.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/monitor/main/home/election.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="6369">
+              <caret line="196" column="36" lean-forward="false" selection-start-line="196" selection-start-column="36" selection-end-line="196" selection-end-column="36" />
               <folding />
             </state>
           </provider>
@@ -179,9 +258,11 @@
       <find>get_candidates/</find>
       <find>get_information_twitter_statistics_count</find>
       <find>print</find>
+      <find>get_popularity</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
+    <option name="PUSH_AUTO_UPDATE" value="true" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="PUSH_TAGS">
@@ -217,22 +298,25 @@
         <option value="$PROJECT_DIR$/monitor/__init__.py" />
         <option value="$PROJECT_DIR$/monitor/main/home/show_info.py" />
         <option value="$PROJECT_DIR$/monitor/main/information/views.py" />
-        <option value="$PROJECT_DIR$/monitor/main/forecast/information.py" />
         <option value="$PROJECT_DIR$/monitor/main/information/character_analysis.py" />
         <option value="$PROJECT_DIR$/monitor/main/home/Demo.py" />
-        <option value="$PROJECT_DIR$/monitor/main/home/views.py" />
         <option value="$PROJECT_DIR$/monitor/util/mysql_util.py" />
         <option value="$PROJECT_DIR$/monitor/main/home/show_party.py" />
-        <option value="$PROJECT_DIR$/monitor/main/information/information_statistics.py" />
         <option value="$PROJECT_DIR$/monitor/main/forecast/character_analysis.py" />
-        <option value="$PROJECT_DIR$/monitor/main/forecast/views.py" />
         <option value="$PROJECT_DIR$/monitor/main/map/views.py" />
         <option value="$PROJECT_DIR$/monitor/util/config.py" />
-        <option value="$PROJECT_DIR$/monitor/main/home/election.py" />
-        <option value="$PROJECT_DIR$/monitor/main/system/operate_info.py" />
-        <option value="$PROJECT_DIR$/monitor/util/utilclass.py" />
-        <option value="$PROJECT_DIR$/monitor/util/insert_popularity.py" />
         <option value="$PROJECT_DIR$/monitor/main/forecast/google_translate.py" />
+        <option value="$PROJECT_DIR$/monitor/main/information/information_statistics.py" />
+        <option value="$PROJECT_DIR$/monitor/main/forecast/support_mysql.py" />
+        <option value="$PROJECT_DIR$/monitor/util/utilclass.py" />
+        <option value="$PROJECT_DIR$/monitor/main/forecast/views.py" />
+        <option value="$PROJECT_DIR$/monitor/main/forecast/information.py" />
+        <option value="$PROJECT_DIR$/monitor/main/home/views.py" />
+        <option value="$PROJECT_DIR$/monitor/util/update_popularity.py" />
+        <option value="$PROJECT_DIR$/monitor/main/map/election.py" />
+        <option value="$PROJECT_DIR$/monitor/main/home/election.py" />
+        <option value="$PROJECT_DIR$/monitor/util/insert_popularity.py" />
+        <option value="$PROJECT_DIR$/monitor/main/system/operate_info.py" />
       </list>
     </option>
   </component>
@@ -264,6 +348,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -321,29 +408,19 @@
               <item name="TaiwanElection" type="b2602c69:ProjectViewProjectNode" />
               <item name="TaiwanElection" type="462c0819:PsiDirectoryNode" />
               <item name="monitor" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="user" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TaiwanElection" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TaiwanElection" type="462c0819:PsiDirectoryNode" />
-              <item name="monitor" type="462c0819:PsiDirectoryNode" />
               <item name="util" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="AndroidView" />
-      <pane id="Scope" />
       <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="settings.editor.selected.configurable" value="vcs.Git" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.0" />
@@ -352,15 +429,15 @@
     <property name="ChangesBrowser.SHOW_FLATTEN" value="false" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\idea data 2017.03\python\TaiwanElection\monitor\main" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\idea data 2017.03\python\TaiwanElection\monitor\main\system" />
+      <recent name="D:\idea data 2017.03\python\TaiwanElection\monitor\main\home" />
       <recent name="D:\idea data 2017.03\python\TaiwanElection\monitor\util" />
       <recent name="D:\idea data 2017.03\python\TaiwanElection\monitor\main\forecast" />
       <recent name="D:\idea data 2017.03\python\TaiwanElection\monitor\main" />
-      <recent name="E:\idea\taiwanElection\monitor\main" />
-      <recent name="D:\idea data 2017.03\python\TaiwanElection\monitor\main\home" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\idea data 2017.03\python\TaiwanElection\monitor\main" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -450,26 +527,26 @@
       <envs />
       <patterns />
     </configuration>
-    <configuration name="Demo" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="election" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/monitor/main/home" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/monitor/main/map" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="TaiwanElection" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="D:\idea data 2017.03\python\TaiwanElection\monitor\main\home\election.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/monitor/main/map/election.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
     </configuration>
-    <configuration name="google_translate" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="information" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -482,7 +559,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="TaiwanElection" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/monitor/main/forecast/google_translate.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/monitor/main/forecast/information.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -526,20 +603,20 @@
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
     </configuration>
-    <configuration name="views" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="utilclass" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/monitor/main/home" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/monitor/util" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="TaiwanElection" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/monitor/main/home/views.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/monitor/util/utilclass.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -1051,18 +1128,18 @@
     </configuration>
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.run" />
-      <item index="1" class="java.lang.String" itemvalue="Python.Demo" />
-      <item index="2" class="java.lang.String" itemvalue="Python.views" />
-      <item index="3" class="java.lang.String" itemvalue="Python.google_translate" />
-      <item index="4" class="java.lang.String" itemvalue="Python.insert_popularity" />
+      <item index="1" class="java.lang.String" itemvalue="Python.insert_popularity" />
+      <item index="2" class="java.lang.String" itemvalue="Python.information" />
+      <item index="3" class="java.lang.String" itemvalue="Python.utilclass" />
+      <item index="4" class="java.lang.String" itemvalue="Python.election" />
     </list>
     <recent_temporary>
       <list size="5">
         <item index="0" class="java.lang.String" itemvalue="Python.insert_popularity" />
-        <item index="1" class="java.lang.String" itemvalue="Python.google_translate" />
-        <item index="2" class="java.lang.String" itemvalue="Python.run" />
-        <item index="3" class="java.lang.String" itemvalue="Python.views" />
-        <item index="4" class="java.lang.String" itemvalue="Python.Demo" />
+        <item index="1" class="java.lang.String" itemvalue="Python.election" />
+        <item index="2" class="java.lang.String" itemvalue="Python.information" />
+        <item index="3" class="java.lang.String" itemvalue="Python.run" />
+        <item index="4" class="java.lang.String" itemvalue="Python.utilclass" />
       </list>
     </recent_temporary>
   </component>
@@ -1101,6 +1178,16 @@
       <workItem from="1527154666704" duration="7087000" />
       <workItem from="1527213143877" duration="9328000" />
       <workItem from="1527573339690" duration="9772000" />
+      <workItem from="1528190915671" duration="1006000" />
+      <workItem from="1528195570399" duration="11680000" />
+      <workItem from="1528338749824" duration="5911000" />
+      <workItem from="1528698012055" duration="922000" />
+      <workItem from="1528768630523" duration="5783000" />
+      <workItem from="1528872734142" duration="1949000" />
+      <workItem from="1529414858823" duration="6885000" />
+      <workItem from="1529480910837" duration="8963000" />
+      <workItem from="1529548675077" duration="75000" />
+      <workItem from="1529567720755" duration="876000" />
     </task>
     <task id="LOCAL-00001" summary="Merge branch 'master' of https://github.com/zhaishujie2/taiwanElection&#10;&#10;# Conflicts:&#10;#&#9;run.py">
       <created>1525255248449</created>
@@ -1256,11 +1343,95 @@
       <option name="project" value="LOCAL" />
       <updated>1527217675653</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="twitter修改">
+      <created>1528264320777</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1528264320777</updated>
+    </task>
+    <task id="LOCAL-00024" summary="添加民调支持率">
+      <created>1528275124894</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1528275124894</updated>
+    </task>
+    <task id="LOCAL-00025" summary="民调代码修改">
+      <created>1528275919344</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1528275919344</updated>
+    </task>
+    <task id="LOCAL-00026" summary="添加选举流量">
+      <created>1528343287204</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1528343287204</updated>
+    </task>
+    <task id="LOCAL-00027" summary="修改">
+      <created>1528872769275</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1528872769275</updated>
+    </task>
+    <task id="LOCAL-00028" summary="支持率预测修改">
+      <created>1529416062370</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1529416062371</updated>
+    </task>
+    <task id="LOCAL-00029" summary="支持率预测">
+      <created>1529416491813</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1529416491813</updated>
+    </task>
+    <task id="LOCAL-00030" summary="修改">
+      <created>1529422148411</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1529422148411</updated>
+    </task>
+    <task id="LOCAL-00031" summary="修改">
+      <created>1529484255431</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1529484255431</updated>
+    </task>
+    <task id="LOCAL-00032" summary="支持率修改">
+      <created>1529487402284</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1529487402284</updated>
+    </task>
+    <task id="LOCAL-00033" summary="每天定时任务">
+      <created>1529548197897</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1529548197897</updated>
+    </task>
+    <task id="LOCAL-00034" summary="添加字段">
+      <created>1529567855307</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1529567855307</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="188477000" />
+    <option name="totallyTimeSpent" value="232527000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="2576" height="1416" extended-state="6" />
@@ -1272,8 +1443,8 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32980973" sideWeight="0.5125" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23200613" sideWeight="0.4875" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3283582" sideWeight="0.49583334" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23200613" sideWeight="0.4875" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2852459" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -1284,8 +1455,8 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39816234" sideWeight="0.49791667" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39872068" sideWeight="0.49791667" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1351,10 +1522,19 @@
     <MESSAGE value="home修改" />
     <MESSAGE value="历史支持率" />
     <MESSAGE value="地区基本信息" />
-    <MESSAGE value="修改" />
     <MESSAGE value="支持率计算" />
     <MESSAGE value="添加画历时选举支持率表" />
-    <option name="LAST_COMMIT_MESSAGE" value="添加画历时选举支持率表" />
+    <MESSAGE value="twitter修改" />
+    <MESSAGE value="添加民调支持率" />
+    <MESSAGE value="民调代码修改" />
+    <MESSAGE value="添加选举流量" />
+    <MESSAGE value="支持率预测修改" />
+    <MESSAGE value="支持率预测" />
+    <MESSAGE value="修改" />
+    <MESSAGE value="支持率修改" />
+    <MESSAGE value="每天定时任务" />
+    <MESSAGE value="添加字段" />
+    <option name="LAST_COMMIT_MESSAGE" value="添加字段" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1363,20 +1543,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/monitor/util/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="7" column="19" lean-forward="false" selection-start-line="7" selection-start-column="15" selection-end-line="7" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/main/user/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="55" column="0" lean-forward="false" selection-start-line="55" selection-start-column="0" selection-end-line="55" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/config.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1424,7 +1590,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="24" column="0" lean-forward="false" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1500,7 +1665,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/main/forecast/app.log" />
     <entry file="file://$PROJECT_DIR$/monitor/main/user/draw_mysql.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="132">
@@ -1516,14 +1680,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/monitor/main/home/show_info.py" />
-    <entry file="file://$PROJECT_DIR$/monitor/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="577">
-          <caret line="47" column="0" lean-forward="true" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/monitor/main/home/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="33">
@@ -1545,22 +1701,178 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/main/forecast/information.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3828">
-          <caret line="116" column="57" lean-forward="false" selection-start-line="116" selection-start-column="57" selection-end-line="116" selection-end-column="57" />
-          <folding>
-            <element signature="e#15#30#0" expanded="false" />
-            <marker date="1526983807512" expanded="true" signature="787:899" ph="select trend... google_trend" />
-            <marker date="1526983807512" expanded="true" signature="3893:4079" ph="SELECT CAST(... popularity" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/monitor/util/mysql_util.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="644">
           <caret line="26" column="17" lean-forward="true" selection-start-line="26" selection-start-column="17" selection-end-line="26" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/main/user/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1122">
+          <caret line="37" column="0" lean-forward="false" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/main/forecast/google_translate.py" />
+    <entry file="file://$PROJECT_DIR$/monitor/main/information/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="363">
+          <caret line="424" column="30" lean-forward="true" selection-start-line="424" selection-start-column="30" selection-end-line="424" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/main/map/news_show.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="587">
+          <caret line="37" column="50" lean-forward="true" selection-start-line="37" selection-start-column="50" selection-end-line="37" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="677">
+          <caret line="47" column="0" lean-forward="true" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/util/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="957">
+          <caret line="29" column="0" lean-forward="false" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/main/forecast/app.log">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/main/information/information_statistics.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="11649">
+          <caret line="357" column="46" lean-forward="false" selection-start-line="357" selection-start-column="46" selection-end-line="357" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/main/forecast/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3828">
+          <caret line="120" column="18" lean-forward="false" selection-start-line="120" selection-start-column="18" selection-end-line="120" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/run.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/util/utilclass.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="297">
+          <caret line="34" column="0" lean-forward="true" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/main/information/character_analysis.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="66">
+          <caret line="2" column="0" lean-forward="false" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/main/forecast/information.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="10197">
+          <caret line="315" column="0" lean-forward="false" selection-start-line="315" selection-start-column="0" selection-end-line="320" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/util/update_popularity.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1155">
+          <caret line="35" column="11" lean-forward="false" selection-start-line="35" selection-start-column="11" selection-end-line="35" selection-end-column="11" />
+          <folding>
+            <marker date="1529418072286" expanded="true" signature="655:737" ph="SELECT admin... candidate" />
+            <marker date="1529418072286" expanded="true" signature="863:927" ph="SELECT * fro... candidate" />
+            <marker date="1529418072286" expanded="true" signature="1263:1345" ph="UPDATE popularity... " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/main/forecast/character_analysis.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1947">
+          <caret line="63" column="27" lean-forward="false" selection-start-line="63" selection-start-column="27" selection-end-line="63" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/main/map/draw_mysql.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="16" column="8" lean-forward="false" selection-start-line="16" selection-start-column="8" selection-end-line="16" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/main/map/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2706">
+          <caret line="90" column="27" lean-forward="false" selection-start-line="90" selection-start-column="13" selection-end-line="90" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/main/map/election.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6138">
+          <caret line="189" column="0" lean-forward="false" selection-start-line="189" selection-start-column="0" selection-end-line="190" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/main/home/election.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6369">
+          <caret line="196" column="36" lean-forward="false" selection-start-line="196" selection-start-column="36" selection-end-line="196" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/util/insert_popularity.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="924">
+          <caret line="265" column="15" lean-forward="false" selection-start-line="265" selection-start-column="15" selection-end-line="265" selection-end-column="15" />
+          <folding>
+            <marker date="1529487464980" expanded="true" signature="641:723" ph="SELECT admin... candidate" />
+            <marker date="1529487464980" expanded="true" signature="869:933" ph="SELECT * fro... candidate" />
+            <marker date="1529487464980" expanded="true" signature="1298:1364" ph="SELECT * FRO... popularity" />
+            <marker date="1529487464980" expanded="true" signature="1561:1646" ph="INSERT INTO popularity... " />
+            <marker date="1529487464980" expanded="true" signature="1827:1909" ph="UPDATE popularity... " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/main/home/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1187">
+          <caret line="94" column="8" lean-forward="false" selection-start-line="94" selection-start-column="8" selection-end-line="94" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/monitor/main/home/show_party.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1211">
+          <caret line="46" column="24" lean-forward="false" selection-start-line="46" selection-start-column="4" selection-end-line="46" selection-end-column="24" />
           <folding />
         </state>
       </provider>
@@ -1569,178 +1881,111 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="198">
           <caret line="9" column="28" lean-forward="false" selection-start-line="9" selection-start-column="12" selection-end-line="9" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/run.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="12" column="0" lean-forward="true" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/main/information/character_analysis.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="66">
-          <caret line="2" column="0" lean-forward="false" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="39" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/main/map/news_show.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/main/home/show_party.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1452">
-          <caret line="46" column="24" lean-forward="false" selection-start-line="46" selection-start-column="4" selection-end-line="46" selection-end-column="24" />
-          <folding>
-            <element signature="e#15#68#0" expanded="false" />
-            <marker date="1527217413427" expanded="true" signature="349:430" ph="SELECT `part... candidate_personnel_information" />
-            <marker date="1527217413427" expanded="true" signature="491:583" ph="SELECT `name... personnel_information" />
-            <marker date="1527217413427" expanded="true" signature="1981:2304" ph="SELECT `job`... candidate_personnel_information" />
-            <marker date="1527217413427" expanded="true" signature="4158:4476" ph="SELECT `job`... personnel_information" />
-            <marker date="1527217413427" expanded="true" signature="6487:6576" ph="SELECT `area... administrative_infos" />
-            <marker date="1527217413427" expanded="true" signature="6487:6595" ph="SELECT `area... administrative_infos" />
-            <marker date="1527217413427" expanded="true" signature="7109:7198" ph="SELECT `regi... administrative_area" />
-            <marker date="1527217413427" expanded="true" signature="7359:7688" ph="SELECT `admi... previous_elections" />
-            <marker date="1527217413427" expanded="true" signature="8513:8812" ph="SELECT `admi... previous_elections" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/main/information/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-14494">
-          <caret line="114" column="0" lean-forward="true" selection-start-line="114" selection-start-column="0" selection-end-line="114" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/main/home/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="653">
-          <caret line="86" column="27" lean-forward="false" selection-start-line="86" selection-start-column="27" selection-end-line="86" selection-end-column="27" />
-          <folding>
-            <element signature="e#15#57#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/main/information/information_statistics.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="908">
-          <caret line="95" column="19" lean-forward="false" selection-start-line="95" selection-start-column="15" selection-end-line="95" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/main/map/draw_mysql.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="495">
-          <caret line="16" column="8" lean-forward="true" selection-start-line="16" selection-start-column="8" selection-end-line="16" selection-end-column="27" />
-          <folding>
-            <marker date="1525333292596" expanded="true" signature="198:400" ph="select area.... administrative_area" />
-            <marker date="1525333292596" expanded="true" signature="910:1100" ph="select candi... administrative_area" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/util/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="957">
-          <caret line="29" column="0" lean-forward="false" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/main/user/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="924">
-          <caret line="37" column="0" lean-forward="true" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/util/utilclass.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-238">
-          <caret line="14" column="12" lean-forward="false" selection-start-line="14" selection-start-column="4" selection-end-line="14" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/main/forecast/google_translate.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-978">
-          <caret line="89" column="0" lean-forward="false" selection-start-line="89" selection-start-column="0" selection-end-line="89" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/main/forecast/character_analysis.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#146#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/main/forecast/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="917">
-          <caret line="72" column="18" lean-forward="false" selection-start-line="72" selection-start-column="18" selection-end-line="72" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/main/home/election.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4000">
-          <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-          <folding>
-            <element signature="e#16#240#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/main/map/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-469">
-          <caret line="38" column="31" lean-forward="true" selection-start-line="38" selection-start-column="31" selection-end-line="38" selection-end-column="31" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/monitor/main/system/operate_info.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4092">
-          <caret line="124" column="0" lean-forward="true" selection-start-line="124" selection-start-column="0" selection-end-line="124" selection-end-column="0" />
+        <state relative-caret-position="551">
+          <caret line="529" column="0" lean-forward="false" selection-start-line="529" selection-start-column="0" selection-end-line="529" selection-end-column="0" />
           <folding>
-            <element signature="e#15#67#0" expanded="true" />
-            <marker date="1527585591091" expanded="true" signature="351:466" ph="INSERT INTO spider_infos... " />
-            <marker date="1527585591091" expanded="true" signature="924:966" ph="DELETE FROM `spider_infos`... " />
-            <marker date="1527585591091" expanded="true" signature="2963:3000" ph="SELECT * FRO... spider_infoss" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monitor/util/insert_popularity.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="752">
-          <caret line="229" column="0" lean-forward="true" selection-start-line="229" selection-start-column="0" selection-end-line="229" selection-end-column="0" />
-          <folding>
-            <element signature="e#16#245#0" expanded="true" />
-            <marker date="1527586696691" expanded="true" signature="584:666" ph="SELECT admin... candidate" />
-            <marker date="1527586696691" expanded="true" signature="791:855" ph="SELECT * fro... candidate" />
-            <marker date="1527586696691" expanded="true" signature="1188:1273" ph="INSERT INTO popularity... " />
+            <marker date="1529592450389" expanded="true" signature="634:755" ph="INSERT INTO `spider_infos`... " />
+            <marker date="1529592450389" expanded="true" signature="779:910" ph="SELECT `id` spider_infos" />
+            <marker date="1529592450389" expanded="true" signature="1604:1644" ph="DELETE FROM `spider_infos`... " />
+            <marker date="1529592450389" expanded="true" signature="6048:6128" ph="UPDATE `candidate_personnel_information`... " />
+            <marker date="1529592450389" expanded="true" signature="7499:7633" ph="SELECT `admi... spider_infos" />
+            <marker date="1529592450389" expanded="true" signature="8724:8825" ph="SELECT `user... candidate" />
+            <marker date="1529592450389" expanded="true" signature="8863:8916" ph="SELECT `admi... administrative_area" />
+            <marker date="1529592450389" expanded="true" signature="9852:10098" ph="SELECT `id`,... *" />
+            <marker date="1529592450389" expanded="true" signature="9946:9974" ph="SELECT * FRO... spider_infos" />
+            <marker date="1529592450389" expanded="true" signature="9980:10061" ph="SELECT `cand... candidate_personnel_information" />
+            <marker date="1529592450389" expanded="true" signature="10883:11010" ph="SELECT `info... administrative_infos" />
+            <marker date="1529592450389" expanded="true" signature="11817:12175" ph="SELECT `job`... candidate_personnel_information" />
+            <marker date="1529592450389" expanded="true" signature="13956:14283" ph="SELECT `job`... personnel_information" />
+            <marker date="1529592450389" expanded="true" signature="16152:16238" ph="SELECT `admi... administrative_area" />
+            <marker date="1529592450389" expanded="true" signature="16649:16735" ph="SELECT `admi... administrative_area" />
+            <marker date="1529592450389" expanded="true" signature="17139:17214" ph="SELECT `admi... administrative_area" />
+            <marker date="1529592450389" expanded="true" signature="18277:18317" ph="DELETE FROM `spider_infos`... " />
+            <marker date="1529592450389" expanded="true" signature="18626:18697" ph="DELETE FROM `candidate_personnel_information`... " />
+            <marker date="1529592450389" expanded="true" signature="18744:18793" ph="DELETE FROM `candidate`... " />
+            <marker date="1529592450389" expanded="true" signature="19886:19937" ph="DELETE FROM `personnel_information`... " />
+            <marker date="1529592450389" expanded="true" signature="23655:23758" ph="SELECT `admi... spider_infos" />
+            <marker date="1529592450389" expanded="true" signature="25391:25472" ph="INSERT INTO `candidate`... " />
+            <marker date="1529592450389" expanded="true" signature="29948:30350" ph="INSERT INTO `candidate_personnel_information`... " />
+            <marker date="1529592450389" expanded="true" signature="35472:36002" ph="SELECT * FRO... personnel_information" />
+            <marker date="1529592450389" expanded="true" signature="36056:36587" ph="SELECT * FRO... personnel_information" />
+            <marker date="1529592450389" expanded="true" signature="37107:37499" ph="INSERT INTO `personnel_information`... " />
+            <marker date="1529592450389" expanded="true" signature="38607:38695" ph="UPDATE `candidate_personnel_information`... " />
+            <marker date="1529592450389" expanded="true" signature="39289:39357" ph="UPDATE `personnel_information`... " />
+            <marker date="1529592450389" expanded="true" signature="39923:39982" ph="UPDATE `partisan`... " />
+            <marker date="1529592450389" expanded="true" signature="40544:40633" ph="UPDATE `candidate_personnel_information`... " />
+            <marker date="1529592450389" expanded="true" signature="41235:41304" ph="UPDATE `personnel_information`... " />
+            <marker date="1529592450389" expanded="true" signature="42025:42110" ph="SELECT `imag... candidate_personnel_information" />
+            <marker date="1529592450389" expanded="true" signature="42683:42748" ph="SELECT `imag... personnel_information" />
+            <marker date="1529592450389" expanded="true" signature="45027:45095" ph="UPDATE `spider_infos`... " />
+            <marker date="1529592450389" expanded="true" signature="45592:45656" ph="UPDATE `candidate`... " />
+            <marker date="1529592450389" expanded="true" signature="47774:48391" ph="SELECT `job`... *" />
+            <marker date="1529592450389" expanded="true" signature="48183:48256" ph="SELECT * FRO... candidate_personnel_information" />
+            <marker date="1529592450389" expanded="true" signature="48262:48360" ph="SELECT `year... candidate" />
+            <marker date="1529592450389" expanded="true" signature="48428:49027" ph="SELECT `job`... *" />
+            <marker date="1529592450389" expanded="true" signature="48836:48883" ph="SELECT * FRO... candidate_personnel_information" />
+            <marker date="1529592450389" expanded="true" signature="48889:48962" ph="SELECT `year... candidate" />
+            <marker date="1529592450389" expanded="true" signature="49068:49696" ph="SELECT `job`... *" />
+            <marker date="1529592450389" expanded="true" signature="49476:49523" ph="SELECT * FRO... candidate_personnel_information" />
+            <marker date="1529592450389" expanded="true" signature="49529:49602" ph="SELECT `year... candidate" />
+            <marker date="1529592450389" expanded="true" signature="52891:53558" ph="SELECT `job`... *" />
+            <marker date="1529592450389" expanded="true" signature="53304:53357" ph="SELECT * FRO... personnel_information" />
+            <marker date="1529592450389" expanded="true" signature="53362:53527" ph="SELECT `year... candidate" />
+            <marker date="1529592450389" expanded="true" signature="53595:54218" ph="SELECT `job`... *" />
+            <marker date="1529592450389" expanded="true" signature="54009:54072" ph="SELECT * FRO... personnel_information" />
+            <marker date="1529592450389" expanded="true" signature="54076:54174" ph="SELECT `year... candidate" />
+            <marker date="1529592450389" expanded="true" signature="57416:57493" ph="SELECT `year... candidate" />
+            <marker date="1529592450389" expanded="true" signature="58287:58383" ph="SELECT `cand... candidate" />
+            <marker date="1529592450389" expanded="true" signature="59174:59269" ph="SELECT `admi... spider_infos" />
+            <marker date="1529592450389" expanded="true" signature="59589:59786" ph="SELECT `job`... *" />
+            <marker date="1529592450389" expanded="true" signature="59607:59654" ph="SELECT * FRO... candidate_personnel_information" />
+            <marker date="1529592450389" expanded="true" signature="59660:59733" ph="SELECT `year... candidate" />
+            <marker date="1529592450389" expanded="true" signature="60133:60666" ph="SELECT `job`... *" />
+            <marker date="1529592450389" expanded="true" signature="60458:60505" ph="SELECT * FRO... candidate_personnel_information" />
+            <marker date="1529592450389" expanded="true" signature="60511:60584" ph="SELECT `year... candidate" />
+            <marker date="1529592450389" expanded="true" signature="61053:61581" ph="SELECT `job`... *" />
+            <marker date="1529592450389" expanded="true" signature="61384:61447" ph="SELECT * FRO... personnel_information" />
+            <marker date="1529592450389" expanded="true" signature="61451:61549" ph="SELECT `year... candidate" />
+            <marker date="1529592450389" expanded="true" signature="61986:62112" ph="SELECT `admi... spider_infos" />
+            <marker date="1529592450389" expanded="true" signature="62513:62571" ph="SELECT `id` poll_support" />
+            <marker date="1529592450389" expanded="true" signature="62914:62941" ph="SELECT `id` partisan" />
+            <marker date="1529592450389" expanded="true" signature="63589:63666" ph="SELECT `cand... candidate" />
+            <marker date="1529592450389" expanded="true" signature="63953:64037" ph="SELECT `cand... personnel_information" />
+            <marker date="1529592450389" expanded="true" signature="64337:64393" ph="SELECT `id` partisan" />
+            <marker date="1529592450389" expanded="true" signature="64662:64733" ph="SELECT `cand... personnel_information" />
+            <marker date="1529592450389" expanded="true" signature="65258:65377" ph="INSERT INTO `administrative_infos`... " />
+            <marker date="1529592450389" expanded="true" signature="65401:65493" ph="SELECT `info... administrative_infos" />
+            <marker date="1529592450389" expanded="true" signature="66141:66194" ph="DELETE FROM `administrative_infos`... " />
+            <marker date="1529592450389" expanded="true" signature="67908:68018" ph="SELECT `info... administrative_infos" />
+            <marker date="1529592450389" expanded="true" signature="69088:69219" ph="SELECT `info... administrative_infos" />
+            <marker date="1529592450389" expanded="true" signature="70164:70283" ph="SELECT `info... administrative_infos" />
+            <marker date="1529592450389" expanded="true" signature="71528:71671" ph="INSERT INTO `previous_elections`... " />
+            <marker date="1529592450389" expanded="true" signature="71695:71866" ph="SELECT `id` previous_elections" />
+            <marker date="1529592450389" expanded="true" signature="72647:72693" ph="DELETE FROM `previous_elections`... " />
+            <marker date="1529592450389" expanded="true" signature="74413:74537" ph="SELECT `id`,... previous_elections" />
+            <marker date="1529592450389" expanded="true" signature="75631:75771" ph="SELECT `id`,... previous_elections" />
+            <marker date="1529592450389" expanded="true" signature="76739:76871" ph="SELECT `id`,... previous_elections" />
+            <marker date="1529592450389" expanded="true" signature="78512:78588" ph="SELECT `admi... administrative_area" />
+            <marker date="1529592450389" expanded="true" signature="79082:79235" ph="SELECT `info... administrative_infos" />
+            <marker date="1529592450389" expanded="true" signature="79266:79406" ph="SELECT `info... administrative_infos" />
+            <marker date="1529592450389" expanded="true" signature="80814:80977" ph="SELECT `id`,... previous_elections" />
+            <marker date="1529592450389" expanded="true" signature="81008:81158" ph="SELECT `id`,... previous_elections" />
+            <marker date="1529592450389" expanded="true" signature="83482:83669" ph="INSERT INTO `poll_support`... " />
+            <marker date="1529592450389" expanded="true" signature="83701:83792" ph="SELECT `supp... poll_support" />
+            <marker date="1529592450389" expanded="true" signature="84667:84857" ph="SELECT `id`,... poll_support" />
+            <marker date="1529592450389" expanded="true" signature="84898:85066" ph="SELECT `id`,... poll_support" />
+            <marker date="1529592450389" expanded="true" signature="86469:86509" ph="DELETE FROM `poll_support`... " />
+            <marker date="1529592450389" expanded="true" signature="88591:88638" ph="INSERT INTO `partisan`... " />
+            <marker date="1529592450389" expanded="true" signature="88670:88726" ph="SELECT `part... partisan" />
+            <marker date="1529592450389" expanded="true" signature="89450:89517" ph="SELECT `id`,... partisan" />
+            <marker date="1529592450389" expanded="true" signature="89558:89630" ph="SELECT `id`,... partisan" />
+            <marker date="1529592450389" expanded="true" signature="90689:90725" ph="DELETE FROM `partisan`... " />
           </folding>
         </state>
       </provider>
