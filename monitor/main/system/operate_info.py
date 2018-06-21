@@ -735,8 +735,8 @@ def add_administrative_infos(auto_id, info_type, content):
                 job = content.get('job')
 
             department = ''
-            if content.get('department') != '':
-                department = content.get('department')
+            if content.get('department') == None:
+                department = ''
 
             family = ''
             if content.get('family') != '':
@@ -858,8 +858,8 @@ def add_administrative_infos(auto_id, info_type, content):
                 job = content.get('job')
 
             department = ''
-            if content.get('department') != '' and content.get('department') != None:
-                department = content.get('department')
+            if content.get('department') == None:
+                department = ''
 
             family = ''
             if content.get('family') != '' and content.get('family') != None:
@@ -940,42 +940,127 @@ def update_image_name(info_type,image_name,ids):
         update_sql = """UPDATE `candidate_personnel_information` SET `image_name` = %s WHERE `candidate_id` = %s"""
         conn = getconn()
         cur = conn.cursor()
-        update_re = cur.execute(update_sql,(image_name,ids))
-        if update_re == 1:
-            app.logger.error('侯选人图片名称写入成功')
-            closeAll(conn,cur)
-            return 1
-        elif update_re == 0:
-            app.logger.error('侯选人图片名称未发生变化')
-            closeAll(conn,cur)
+        try:
+            print(image_name)
+            update_re = cur.execute(update_sql,(image_name,ids))
+            if update_re == 1:
+                app.logger.error('侯选人图片名称写入成功')
+                closeAll(conn,cur)
+                return 1
+            elif update_re == 0:
+                app.logger.error('侯选人图片名称未发生变化')
+                closeAll(conn,cur)
+                return 0
+        except Exception as erro:
+            app.logger.error(erro,'954行')
             return 0
     elif info_type == '2':
         update_sql = """UPDATE `personnel_information` SET `image_name` = %s WHERE `id` = %s"""
         conn = getconn()
         cur = conn.cursor()
-        update_re = cur.execute(update_sql,(image_name,ids))
-        if update_re == 1:
-            app.logger.error('团队成员图片名称写入成功')
-            closeAll(conn,cur)
-            return 1
-        elif update_re == 0:
-            app.logger.error('团队成员图片名称未发生变化')
-            closeAll(conn,cur)
+        try:
+            update_re = cur.execute(update_sql,(image_name,ids))
+            if update_re == 1:
+                app.logger.error('团队成员图片名称写入成功')
+                closeAll(conn,cur)
+                return 1
+            elif update_re == 0:
+                app.logger.error('团队成员图片名称未发生变化')
+                closeAll(conn,cur)
+                return 0
+        except Exception as erro:
+            app.logger.error(erro,'971行')
             return 0
     elif info_type == '5':
         update_sql = """UPDATE `partisan` SET `partisan_image` = %s WHERE `id` = %s"""
         conn = getconn()
         cur = conn.cursor()
-        update_re = cur.execute(update_sql,(image_name,ids))
-        if update_re == 1:
-            app.logger.error('党派图片名称写入成功')
-            closeAll(conn,cur)
-            return 1
-        elif update_re == 0:
-            app.logger.error('党派图片名称未发生变化')
-            closeAll(conn,cur)
+        try:
+            update_re = cur.execute(update_sql,(image_name,ids))
+            if update_re == 1:
+                app.logger.error('党派图片名称写入成功')
+                closeAll(conn,cur)
+                return 1
+            elif update_re == 0:
+                app.logger.error('党派图片名称未发生变化')
+                closeAll(conn,cur)
+                return 0
+        except Exception as erro:
+            app.logger.error(erro,'988行')
+            return 0
+    elif info_type == '6':
+        update_sql = """UPDATE `candidate_personnel_information` SET `image_infos` = %s WHERE `candidate_id` = %s"""
+        conn = getconn()
+        cur = conn.cursor()
+        try:
+            image_name+='|'
+            update_re = cur.execute(update_sql,(image_name,ids))
+            if update_re == 1:
+                app.logger.error('信息图片名称写入成功')
+                # closeAll(conn,cur)
+                return 1,conn,cur
+            elif update_re == 0:
+                app.logger.error('信息图片名称未发生变化')
+                closeAll(conn,cur)
+                return 0
+        except Exception as erro:
+            app.logger.error(erro,'1005行')
+            return 0
+    elif info_type == '7':
+        update_sql = """UPDATE `personnel_information` SET `image_infos` = %s WHERE `id` = %s"""
+        conn = getconn()
+        cur = conn.cursor()
+        try:
+            image_name+='|'
+            update_re = cur.execute(update_sql,(image_name,ids))
+            if update_re == 1:
+                app.logger.error('信息图片名称写入成功')
+                # closeAll(conn,cur)
+                return 1,conn,cur
+            elif update_re == 0:
+                app.logger.error('信息图片名称未发生变化')
+                closeAll(conn,cur)
+                return 0
+        except Exception as erro:
+            app.logger.error(erro,'1005行')
             return 0
 
+#获取获选人或团队成员image_infos
+def get_image_infos(info_type,infos_id):
+    conn = getconn()
+    cur = conn.cursor()
+    if info_type == '6':
+        candidate_image_infos = """SELECT `image_infos` FROM `candidate_personnel_information` WHERE `candidate_id` = %s"""
+        try:
+            select_re = cur.execute(candidate_image_infos,(infos_id))
+            if select_re == 1:
+                app.logger.error('信息图片名称查询成功')
+                result = cur.fetchone()
+                closeAll(conn,cur)
+                return result[0]
+            elif select_re == 0:
+                app.logger.error('信息图片名称查询失败')
+                closeAll(conn,cur)
+                return 0
+        except Exception as erro:
+            app.logger.error(erro,'1045行')
+            return 0
+    elif info_type == '7':
+        candidate_image_infos = """SELECT `image_infos` FROM `personnel_information` WHERE `id` = %s"""
+        try:
+            select_re = cur.execute(candidate_image_infos,(infos_id))
+            if select_re == 1:
+                app.logger.error('信息图片名称查询成功')
+                result = cur.fetchone()
+                closeAll(conn,cur)
+                return result[0]
+            elif select_re == 0:
+                app.logger.error('信息图片名称查询失败')
+                closeAll(conn,cur)
+                return 0
+        except Exception as erro:
+            app.logger.error(erro,'1045行')
+            return 0
 
 # 更新候选人信息和团队人员信息
 def update_people_information(info_type, content):
@@ -1093,9 +1178,9 @@ def get_everyinformation(type, content):
         if type == '1':
 
             id = content.get('id')
-            one_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`year`,`administrative_id`,`image_name`,`mainland_pass`,`character_feature`,`social_activity`,`asset_status` FROM (SELECT * FROM `candidate_personnel_information` WHERE `candidate_id` = %s )a ,(SELECT `year`,`candidate_id` as ids,`administrative_id` FROM `candidate` WHERE `candidate_id` = %s)b WHERE a.candidate_id = b.ids """
-            all_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`year`,`administrative_id`,`image_name`,`mainland_pass`,`character_feature`,`social_activity`,`asset_status` FROM(SELECT * FROM `candidate_personnel_information` )a ,(SELECT `year`,`candidate_id` as ids,`administrative_id`  FROM `candidate` )b WHERE a.candidate_id = b.ids ORDER BY `year` DESC LIMIT %s,%s"""
-            area_all_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`year`,`administrative_id`,`image_name`,`mainland_pass`,`character_feature`,`social_activity`,`asset_status` FROM(SELECT * FROM `candidate_personnel_information` )a ,(SELECT `year`,`candidate_id` as ids,`administrative_id`  FROM `candidate` )b WHERE a.candidate_id = b.ids AND `administrative_id` = %s ORDER BY `year` DESC LIMIT %s,%s """
+            one_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`year`,`administrative_id`,`image_name`,`mainland_pass`,`character_feature`,`social_activity`,`asset_status`,`image_infos` FROM (SELECT * FROM `candidate_personnel_information` WHERE `candidate_id` = %s )a ,(SELECT `year`,`candidate_id` as ids,`administrative_id` FROM `candidate` WHERE `candidate_id` = %s)b WHERE a.candidate_id = b.ids """
+            all_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`year`,`administrative_id`,`image_name`,`mainland_pass`,`character_feature`,`social_activity`,`asset_status`,`image_infos` FROM(SELECT * FROM `candidate_personnel_information` )a ,(SELECT `year`,`candidate_id` as ids,`administrative_id`  FROM `candidate` )b WHERE a.candidate_id = b.ids ORDER BY `year` DESC LIMIT %s,%s"""
+            area_all_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`year`,`administrative_id`,`image_name`,`mainland_pass`,`character_feature`,`social_activity`,`asset_status`,`image_infos` FROM(SELECT * FROM `candidate_personnel_information` )a ,(SELECT `year`,`candidate_id` as ids,`administrative_id`  FROM `candidate` )b WHERE a.candidate_id = b.ids AND `administrative_id` = %s ORDER BY `year` DESC LIMIT %s,%s """
             conn = getconn()
             cur = conn.cursor()
             every = content.get('every')
@@ -1116,6 +1201,7 @@ def get_everyinformation(type, content):
             for item in result:
                 leader_infos_dict = {}
                 information = {}
+                leader_infos_dict['image_infos'] = item[31]
                 leader_infos_dict['social_activity'] = item[29]
                 leader_infos_dict['asset_status'] = item[30]
                 leader_infos_dict['image_name'] = item[26]
@@ -1124,7 +1210,7 @@ def get_everyinformation(type, content):
                 leader_infos_dict['auto_id'] = item[23]
                 leader_infos_dict['name'] = item[22]
                 leader_infos_dict['job'] = item[0]
-                leader_infos_dict['department'] = item[1]
+                # leader_infos_dict['department'] = item[1]
                 leader_infos_dict['family'] = item[2]
                 leader_infos_dict['job_manager'] = item[3]
                 leader_infos_dict['political'] = item[4]
@@ -1140,7 +1226,7 @@ def get_everyinformation(type, content):
                 information['passport'] = item[14]
                 information['personal_webpage'] = item[15]
                 information['personal_phone'] = item[16]
-                information['work_phone'] = item[17]
+                # information['work_phone'] = item[17]
                 information['email'] = item[18]
                 information['address'] = item[19]
                 information['education'] = item[20]
@@ -1161,8 +1247,8 @@ def get_everyinformation(type, content):
             conn = getconn()
             cur = conn.cursor()
             every = content.get('every')
-            member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id`,`year`,`administrative_id`,`image_name`,`mainland_pass`,`character_feature`,`social_activity`,`asset_status` FROM(SELECT * FROM `personnel_information` WHERE `id` = %s)a, (SELECT `year`,`candidate_id` as ids,`administrative_id` FROM `candidate` WHERE `candidate_id` = (SELECT `candidate_id` FROM `personnel_information` WHERE `id` = %s ))b WHERE a.candidate_id = b.ids """
-            all_member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id`,`year`,`administrative_id`,`image_name`,`mainland_pass`,`character_feature`,`social_activity`,`asset_status` FROM (SELECT * FROM `personnel_information` WHERE `candidate_id` = %s)a,(SELECT `year`,`candidate_id` as ids,`administrative_id`  FROM `candidate` WHERE `candidate_id` =%s)b  WHERE a.candidate_id = b.ids LIMIT %s,%s"""
+            member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id`,`year`,`administrative_id`,`image_name`,`mainland_pass`,`character_feature`,`social_activity`,`asset_status`,`image_infos` FROM(SELECT * FROM `personnel_information` WHERE `id` = %s)a, (SELECT `year`,`candidate_id` as ids,`administrative_id` FROM `candidate` WHERE `candidate_id` = (SELECT `candidate_id` FROM `personnel_information` WHERE `id` = %s ))b WHERE a.candidate_id = b.ids """
+            all_member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id`,`year`,`administrative_id`,`image_name`,`mainland_pass`,`character_feature`,`social_activity`,`asset_status`,`image_infos` FROM (SELECT * FROM `personnel_information` WHERE `candidate_id` = %s)a,(SELECT `year`,`candidate_id` as ids,`administrative_id`  FROM `candidate` WHERE `candidate_id` =%s)b  WHERE a.candidate_id = b.ids LIMIT %s,%s"""
             count = ''
             if every == '0':
                 count = cur.execute(member_sql, (id, id))
@@ -1178,6 +1264,7 @@ def get_everyinformation(type, content):
                 for item in result:
                     member_dict = {}
                     information = {}
+                    member_dict['image_infos'] = item[32]
                     member_dict['social_activity'] = item[30]
                     member_dict['asset_status'] = item[31]
                     member_dict['image_name'] = item[27]
@@ -1187,7 +1274,7 @@ def get_everyinformation(type, content):
                     member_dict['name'] = item[23]
                     member_dict['auto_id'] = item[22]
                     member_dict['job'] = item[0]
-                    member_dict['department'] = item[1]
+                    # member_dict['department'] = item[1]
                     member_dict['family'] = item[2]
                     member_dict['job_manager'] = item[3]
                     member_dict['political'] = item[4]
@@ -1203,7 +1290,7 @@ def get_everyinformation(type, content):
                     information['passport'] = item[14]
                     information['personal_webpage'] = item[15]
                     information['personal_phone'] = item[16]
-                    information['work_phone'] = item[17]
+                    # information['work_phone'] = item[17]
                     information['email'] = item[18]
                     information['address'] = item[19]
                     information['education'] = item[20]

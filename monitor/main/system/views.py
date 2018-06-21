@@ -10,9 +10,9 @@ from monitor.main.system.operate_info import insert_info, delete_info, update_in
     insert_election_info, delete_election_info, update_election_info, select_election_all, select_election_info_one, \
     select_election_info_page, get_new_id, select_election_code_info, select_area_code_info, update_image_name, \
     select_support, delete_support, update_support, insert_support, insert_partisan, update_partisan, delete_partisan, \
-    select_partisan
+    select_partisan, get_image_infos
 import json, os
-
+from monitor.util.mysql_util import closeAll
 
 # facebook写入数据
 @mod.route('/insert/', methods=['POST'])
@@ -292,7 +292,11 @@ def upload_file():
         member = request.form.get('id','')
         leader = request.form.get('candidate_id','')
         file = request.files['file']
+        print(file)
+        print(info_type)
+        print(leader)
         if file == '' or file == None:
+            print(111)
             return jsonify({"message": "data input is null"}), 406
         if info_type == '1':
             leader = get_new_id(info_type)
@@ -303,7 +307,7 @@ def upload_file():
                 if update_image_re == 1:
                     return jsonify({"message": 1}), 201
                 else:
-                    return  jsonify({"message":"图片名称未存储成功"}),200
+                    return  jsonify({"message":"领导人图片名称未存储成功"}),200
         if info_type == '2':
             leader, member = get_new_id(info_type)
             image_name = str(leader) + '_' + str(member) + '.' + file.filename.rsplit('.', 1)[1]
@@ -313,7 +317,7 @@ def upload_file():
                 if update_image_re == 1:
                     return jsonify({"message": 1}), 201
                 else:
-                    return  jsonify({"message":"图片名称未存储成功"}),200
+                    return  jsonify({"message":"团队成员图片名称未存储成功"}),200
         if info_type == '3'and leader != None:#修改侯选人图片
             image_name = str(leader) + '.' + file.filename.rsplit('.', 1)[1]
             if file and allowed_file(file.filename):
@@ -327,7 +331,7 @@ def upload_file():
                 if update_image_re == 1:
                     return jsonify({"message": 1}), 201
                 else:
-                    return  jsonify({"message":"图片名称未存储成功"}),200
+                    return  jsonify({"message":"侯选人图片名称未存储成功"}),200
         if info_type == '4'and leader != None and member != None:#修改团队人员图片
             image_name = str(leader) + '_' + str(member) + '.' + file.filename.rsplit('.', 1)[1]
             if file and allowed_file(file.filename):
@@ -336,10 +340,10 @@ def upload_file():
                 if update_image_re == 1:
                     return jsonify({"message": 1}), 201
                 else:
-                    return  jsonify({"message":"图片名称未存储成功"}),200
+                    return  jsonify({"message":"团队成员图片名称未存储成功"}),200
         if info_type == '5':#存储党派图片
             partisan_id = request.form.get('partisan_id','')
-            if partisan_id != None and partisan_id != '':
+            if partisan_id != None and partisan_id != '':#修改图片
                 if file and allowed_file(file.filename):
                     image_name = 'p_'+str(partisan_id) + '.' + file.filename.rsplit('.', 1)[1]
                     file.save(os.path.join(app.config['UPLOAD_FOLDER'],image_name ))
@@ -347,8 +351,8 @@ def upload_file():
                     if update_image_re == 1:
                         return jsonify({"message": 1}), 201
                     else:
-                        return  jsonify({"message":"图片名称未存储成功"}),200
-            else:
+                        return  jsonify({"message":"党派图片名称未存储成功"}),200
+            else:#添加党图片
                 partisan = get_new_id(info_type)
                 if file and allowed_file(file.filename):
                     image_name = 'p_'+str(partisan) + '.' + file.filename.rsplit('.', 1)[1]
@@ -357,11 +361,100 @@ def upload_file():
                     if update_image_re == 1:
                         return jsonify({"message": 1}), 201
                     else:
-                        return  jsonify({"message":"图片名称未存储成功"}),200
-
+                        return  jsonify({"message":"党派图片名称未存储成功"}),200
+        if info_type == '6':
+            image_infos = request.form.get('image_infos','')
+            print('1',image_infos)
+            # if image_infos == '':#存侯选人信息图片
+            # image_name = ''
+            old_infos_image = get_image_infos(info_type=info_type,infos_id=leader)
+            if old_infos_image == '':
+                print('第一次')
+                image_name = str(leader) + '_infos_1' + '.' + file.filename.rsplit('.', 1)[1]
+            else:
+                print('第二次')
+                number = int((old_infos_image.split('|')[-2]).split('.')[0][-1])+1
+                print(old_infos_image)
+                print(number)
+                image_name = str(leader) + '_infos_'+ str(number)+'.' + file.filename.rsplit('.', 1)[1]
+            # elif '|' not in image_infos:#删除某一图片
+            #     old_infos_image = get_image_infos(info_type=info_type,infos_id=leader)
+            #     image_infos+='|'
+            #     print(image_infos)
+            #     new_info_image = (old_infos_image.replace(image_infos,''))[:-1]
+            #     update_re,conn,cur = update_image_name(info_type,new_info_image,leader)
+            #     if update_re == 1:
+            #         try:
+            #             os.remove(app.config['UPLOAD_FOLDER']+(image_infos)[:-1])
+            #         except Exception as erro:
+            #             app.logger.error(erro,'376行')
+            #             conn.rollback()
+            #             cur.close()
+            #             conn.close()
+            #             return 0
+            #         closeAll(conn,cur)
+            #         return jsonify({"message": 1}), 201
+            #     else:
+            #         return  jsonify({"message":"删除侯选人团队信息图片名称更新成功"}),200
+            # else:
+            #     number = int((image_infos.split('|')[-2]).split('.')[0][-1])+1
+            #     print(image_infos)
+            #     print(number)
+            #     image_name = str(leader) + '_infos_'+ str(number)+'.' + file.filename.rsplit('.', 1)[1]
+            result = save_image_infos(file,image_name,old_infos_image,info_type,infos_id=leader)
+            return result
+        if info_type == '7':
+            image_name = ''
+            image_infos = request.form.get('image_infos','')
+            if image_infos == '':#存团队成员信息图片
+                image_name = str(leader) + '_' + str(member) + '_infos_1' + '.' + file.filename.rsplit('.', 1)[1]
+            elif '|' not in image_infos:#删除某一图片
+                os.remove(app.config['UPLOAD_FOLDER']+(image_infos)[:-1])
+                old_infos_image = get_image_infos(info_type=info_type,infos_id=member)
+                image_infos+='|'
+                print(image_infos)
+                new_info_image = (old_infos_image.replace(image_infos,''))[:-1]
+                update_re,conn,cur = update_image_name(info_type,new_info_image,member)
+                if update_re == 1:
+                    try:
+                        os.remove(app.config['UPLOAD_FOLDER']+image_infos)
+                    except Exception as erro:
+                        app.logger.error(erro,'376行')
+                        conn.rollback()
+                        cur.close()
+                        conn.close()
+                        return 0
+                    closeAll(conn,cur)
+                    return jsonify({"message": 1}), 201
+                else:
+                    return  jsonify({"message":"删除侯选人团队信息图片名称更新成功"}),200
+            else:
+                number = int((image_infos.split('|')[-2]).split('.')[0][-1])+1
+                image_name = str(leader) + '_' + str(member) + '_infos_'+ str(number)+'.' + file.filename.rsplit('.', 1)[1]
+            result = save_image_infos(file,image_name,image_infos,info_type,infos_id=member)
+            return result
     except Exception as erro:
         app.logger.error(erro)
         return str(0)
+
+#存储侯选人和团队成员信息图片
+def save_image_infos(file,image_name,image_infos,info_type,infos_id):
+    update_image=image_infos+image_name
+    update_image_re,conn,cur = update_image_name(info_type=info_type,image_name=update_image,ids=infos_id)
+    if update_image_re == 1:
+        if file and allowed_file(file.filename):
+            try:
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'],image_name))
+            except Exception as erro:
+                app.logger.error(erro,'415行')
+                conn.rollback()
+                cur.close()
+                conn.close()
+                return 0
+        closeAll(conn,cur)
+        return jsonify({"message": 1}), 201
+    else:
+        return  jsonify({"message":"信息图片名称未存储成功"}),200
 
 
 # 地区信息写入数据
