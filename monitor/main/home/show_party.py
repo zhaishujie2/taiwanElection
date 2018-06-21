@@ -64,8 +64,8 @@ def get_everyinformation(type, content):
         if type == '1':
             result_list = []
             id = content.get('id')
-            one_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id` FROM `candidate_personnel_information` WHERE  `candidate_id` = %s"""
-            all_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id` FROM `candidate_personnel_information`"""
+            one_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`mainland_pass`,`character_feature`,`social_activity`,`asset_status`,`image_infos` FROM `candidate_personnel_information` WHERE  `candidate_id` = %s"""
+            all_leader_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`name`,`candidate_id`,`mainland_pass`,`character_feature`,`social_activity`,`asset_status`,`image_infos` FROM `candidate_personnel_information`"""
             conn = getconn()
             cur = conn.cursor()
             every = content.get('every')
@@ -78,6 +78,9 @@ def get_everyinformation(type, content):
             for item in result:
                 leader_infos_dict = {}
                 information = {}
+                leader_infos_dict['social_activity'] = item[26]
+                leader_infos_dict['asset_status'] = item[27]
+                leader_infos_dict['image_infos'] = item[28]
                 leader_infos_dict['auto_id'] = item[23]
                 leader_infos_dict['name'] = item[22]
                 leader_infos_dict['job'] = item[0]
@@ -102,6 +105,8 @@ def get_everyinformation(type, content):
                 information['address'] = item[19]
                 information['education'] = item[20]
                 information['partisan'] = item[21]
+                information['mainland_pass'] = item[24]
+                information['character_feature'] = item[25]
                 leader_infos_dict['information'] = information
                 result_list.append(leader_infos_dict)
             closeAll(conn, cur)
@@ -112,8 +117,8 @@ def get_everyinformation(type, content):
             id = content.get('id')
             conn = getconn()
             cur = conn.cursor()
-            member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id` FROM `personnel_information` WHERE `id` = %s """
-            all_member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id` FROM `personnel_information` WHERE `candidate_id` = %s"""
+            member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id`,`mainland_pass`,`character_feature`,`social_activity`,`asset_status`,`image_infos` FROM `personnel_information` WHERE `id` = %s """
+            all_member_sql = """SELECT `job`,`department`,`family`,`job_manager`,`political`,`society`,`competition`,`situation`,`stain`,`sex`,`name_en`,`birthday`,`birthplace`,`taiwan_id`,`passport`,`personal_webpage`,`personal_phone`,`work_phone`,`email`,`address`,`education`,`partisan`,`id`,`name`,`candidate_id`,`mainland_pass`,`character_feature`,`social_activity`,`asset_status`,`image_infos` FROM `personnel_information` WHERE `candidate_id` = %s"""
             every = content.get('every')
             count = ''
             if every == '0':
@@ -127,6 +132,9 @@ def get_everyinformation(type, content):
                 for item in result:
                     member_dict = {}
                     information = {}
+                    member_dict['social_activity'] = item[27]
+                    member_dict['asset_status'] = item[28]
+                    member_dict['image_infos'] = item[29]
                     member_dict['candidate_id'] = item[24]
                     member_dict['name'] = item[23]
                     member_dict['auto_id'] = item[22]
@@ -152,6 +160,8 @@ def get_everyinformation(type, content):
                     information['address'] = item[19]
                     information['education'] = item[20]
                     information['partisan'] = item[21]
+                    information['mainland_pass'] = item[25]
+                    information['character_feature'] = item[26]
                     member_dict['information'] = information
                     result_list.append(member_dict)
                 closeAll(conn, cur)
