@@ -60,7 +60,7 @@ def get_facebook_trend(start_time, end_time, dict_name):
             link_dict[item] = 0
             post_dict[item] = 0
         query = {"query": {"bool": {"must": [{"term": {"facebook_name": name}},
-                                             {"range": {"timestamps": {"gt": start_time, "lt": end_time}}}]}},
+                                             {"range": {"timestamps": {"gte": start_time, "lte": end_time}}}]}},
                  "from": 0,
                  "size": 9999}
         result = es.search(index=es_facebook_index, doc_type=es_facebook_type, body=query)['hits']['hits']
