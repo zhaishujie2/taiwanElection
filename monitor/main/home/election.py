@@ -62,7 +62,7 @@ def get_fb_aver_link(dict_name, start_time, end_time):
             likes = 0
             name = dict_name[id]
             query = {"query": {"bool": {"must": [{"term": {"facebook_name": name}},
-                                                 {"range": {"timestamps": {"gt": start_time, "lt": end_time}}}]}},
+                                                 {"range": {"timestamps": {"gte": start_time, "lte": end_time}}}]}},
                      "from": 0,
                      "size": 10000}
             result = es.search(index=es_facebook_index, doc_type=es_facebook_type, body=query)['hits']['hits']
@@ -104,7 +104,7 @@ def get_tw_count(dict_name, start_time, end_time):
         for id in dict_name.keys():
             name = dict_name[id]
             query = {"query": {"bool": {"must": [{"term": {"twitter_search": name}},
-                                                 {"range": {"timestamps": {"gt": start_time, "lt": end_time}}}]}},
+                                                 {"range": {"timestamps": {"gte": start_time, "lte": end_time}}}]}},
                      "from": 0,
                      "size": 10000}
             result = es.search(index=es_twitter_index, doc_type=es_twitter_type, body=query)['hits']['hits']
@@ -141,7 +141,7 @@ def get_news_count(dict_name, start_time, end_time):
         for id in dict_name.keys():
             name = dict_name[id]
             query = {"query": {"bool": {"must": [{"term": {"keywords": name}},
-                                                 {"range": {"timestamps": {"gt": start_time, "lt": end_time}}}]}},
+                                                 {"range": {"timestamps": {"gte": start_time, "lte": end_time}}}]}},
                      "from": 0,
                      "size": 10000}
             result = es.search(index=es_news_index, doc_type=es_news_type, body=query)['hits']['hits']
@@ -179,7 +179,7 @@ def get_ptt_popularity(dict_name, start_time, end_time):
             likes = 0
             name = dict_name[id]
             query = {"query": {"bool": {"must": [{"term": {"keywords": name}},
-                                                 {"range": {"timestamps": {"gt": start_time, "lt": end_time}}}]}},
+                                                 {"range": {"timestamps": {"gte": start_time, "lte": end_time}}}]}},
                      "from": 0,
                      "size": 10000}
             result = es.search(index=es_forum_index, doc_type=es_forum_type, body=query)['hits']['hits']

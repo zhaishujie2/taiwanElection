@@ -18,13 +18,13 @@ def get_candidates(dict_name):
         for item in dict_name.keys():
             name = dict_name[item]
             query = {"query": {"bool": {"must": [{"term": {"keywords": name}},
-                                                 {"range": {"timestamps": {"gt": start_time, "lt": end_time}}}]}},
+                                                 {"range": {"timestamps": {"gte": start_time, "lte": end_time}}}]}},
                      "from": 0,
                      "size": 9999}
             result = es.search(index=es_news_index, doc_type=es_news_type, body=query)['hits']['hits']
             new_count = len(result)
             query = {"query": {"bool": {"must": [{"term": {"twitter_search": name}},
-                                                 {"range": {"timestamps": {"gt": start_time, "lt": end_time}}}]}},
+                                                 {"range": {"timestamps": {"gte": start_time, "lte": end_time}}}]}},
                      "from": 0,
                      "size": 9999}
             result = es.search(index=es_twitter_index, doc_type=es_twitter_type, body=query)['hits']['hits']
@@ -33,7 +33,7 @@ def get_candidates(dict_name):
             sum += name_count
             dict[name] = name_count
             query = {"query": {"bool": {"must": [{"term": {"facebook_name": name}},
-                                                 {"range": {"timestamps": {"gt": start_time, "lt": end_time}}}]}},
+                                                 {"range": {"timestamps": {"gte": start_time, "lte": end_time}}}]}},
                      "from": 0,
                      "size": 9999}
             result = es.search(index=es_facebook_index, doc_type=es_facebook_type, body=query)['hits']['hits']

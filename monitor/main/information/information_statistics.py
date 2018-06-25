@@ -19,7 +19,7 @@ def get_information_facebook_statistics_count(start_time, end_time, dict_name):
         data_dict = {}
         count_list = []
         name = dict_name[item]
-        query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+        query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                                              {"term": {"facebook_name": name}}], "must_not": [], "should": []}},
                  "from": 0,
                  "size": 10000, "sort": [], "aggs": {}}
@@ -48,7 +48,7 @@ def get_information_news_statistics_count(start_time, end_time, dict_name):
         count_list = []
         data_dict = {}
         name = dict_name[item]
-        query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+        query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                                              {"term": {"keywords": name}}], "must_not": [], "should": []}}, "from": 0,
                  "size": 10000, "sort": [], "aggs": {}}
         result = es.search(index=es_news_index, doc_type=es_news_type, body=query)['hits']['hits']
@@ -76,7 +76,7 @@ def get_information_twitter_statistics_count(start_time, end_time, dict_name):
         count_list = []
         data_dict = {}
         name = dict_name[item]
-        query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+        query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                                              {"term": {"twitter_search": name}}], "must_not": [], "should": []}},
                  "from": 0,
                  "size": 10000, "sort": [], "aggs": {}}
@@ -105,7 +105,7 @@ def get_information_forum_statistics_count(start_time, end_time, dict_name):
         count_list = []
         data_dict = {}
         name = dict_name[item]
-        query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+        query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                                              {"term": {"keywords": name}}], "must_not": [], "should": []}}, "from": 0,
                  "size": 10000, "sort": [], "aggs": {}}
         result = es.search(index=es_forum_index, doc_type=es_forum_type, body=query)['hits']['hits']
@@ -149,7 +149,7 @@ def get_facebook_pages(name, start_date, end_date):
     start_timestamps, end_timestamps = get_time(start_date, end_date)
     if start_timestamps == 0 or end_timestamps == 0:
         return None
-    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                                          {"term": {"facebook_name": name}}], "must_not": [], "should": []}}, "from": 0,
              "size": 10000, "sort": [], "aggs": {}}
     result = es.search(index=es_facebook_index, doc_type=es_facebook_type, body=query)['hits']['hits']
@@ -161,7 +161,7 @@ def get_facebook_data(name, page_number, page_size, start_date, end_date):
     start_timestamps, end_timestamps = get_time(start_date, end_date)
     if start_timestamps == 0 or end_timestamps == 0:
         return None
-    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                                          {"term": {"facebook_name": name}}], "must_not": [], "should": []}},
              "from": start_from,
              "size": page_size, "sort": [], "aggs": {}}
@@ -189,7 +189,7 @@ def get_all_facebook_pages(dict_name, start_date, end_date):
         dict["term"] = {"facebook_name": dict_name[item]}
         list.append(dict)
     query = {"query": {
-        "bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+        "bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                           {"bool": {"should": list}}]}}, "from": 0,
         "size": 10000, "sort": [], "aggs": {}}
     print(query)
@@ -208,7 +208,7 @@ def get_all_facebook_data(dict_name, page_number, page_size, start_date, end_dat
         dict["term"] = {"facebook_name": dict_name[item]}
         list.append(dict)
     query = {"query": {
-        "bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+        "bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                           {"bool": {"should": list}}]}}, "from": start_from,
         "size": page_size, "sort": [], "aggs": {}}
     result = es.search(index=es_facebook_index, doc_type=es_facebook_type, body=query)['hits']['hits']
@@ -229,7 +229,7 @@ def get_news_pages(name, start_date, end_date):
     start_timestamps, end_timestamps = get_time(start_date, end_date)
     if start_timestamps == 0 or end_timestamps == 0:
         return None
-    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                                          {"term": {"keywords": name}}], "must_not": [], "should": []}}, "from": 0,
              "size": 10000, "sort": [], "aggs": {}}
     result = es.search(index=es_news_index, doc_type=es_news_type, body=query)['hits']['hits']
@@ -241,7 +241,7 @@ def get_news_data(name, page_number, page_size, start_date, end_date):
     start_timestamps, end_timestamps = get_time(start_date, end_date)
     if start_timestamps == 0 or end_timestamps == 0:
         return None
-    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                                          {"term": {"keywords": name}}], "must_not": [], "should": []}},
              "from": start_from,
              "size": page_size, "sort": [], "aggs": {}}
@@ -272,7 +272,7 @@ def get_all_news_pages(dict_name, start_date, end_date):
         dict["term"] = {"keywords": dict_name[item]}
         list.append(dict)
     query = {"query": {
-        "bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+        "bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                           {"bool": {"should": list}}]}}, "from": 0,
         "size": 10000, "sort": [], "aggs": {}}
     result = es.search(index=es_news_index, doc_type=es_news_type, body=query)['hits']['hits']
@@ -290,7 +290,7 @@ def get_all_news_data(dict_name, page_number, page_size, start_date, end_date):
         dict["term"] = {"keywords": dict_name[item]}
         list.append(dict)
     query = {"query": {
-        "bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+        "bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                           {"bool": {"should": list}}]}}, "from": start_from,
         "size": page_size, "sort": [], "aggs": {}}
     result = es.search(index=es_news_index, doc_type=es_news_type, body=query)['hits']['hits']
@@ -314,7 +314,7 @@ def get_twitter_pages(name, start_date, end_date):
     start_timestamps, end_timestamps = get_time(start_date, end_date)
     if start_timestamps == 0 or end_timestamps == 0:
         return None
-    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                                          {"term": {"twitter_search": name}}], "must_not": [], "should": []}}, "from": 0,
              "size": 10000, "sort": [], "aggs": {}}
     result = es.search(index=es_twitter_index, doc_type=es_twitter_type, body=query)['hits']['hits']
@@ -324,7 +324,7 @@ def get_twitter_pages(name, start_date, end_date):
 def get_twitter_data(name, page_number, page_size, start_date, end_date):
     start_from = (page_number - 1) * page_size
     start_timestamps, end_timestamps = get_time(start_date, end_date)
-    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                                          {"term": {"twitter_search": name}}], "must_not": [], "should": []}},
              "from": start_from,
              "size": page_size, "sort": [], "aggs": {}}
@@ -353,7 +353,7 @@ def get_all_twitter_pages(dict_name, start_date, end_date):
         dict["term"] = {"twitter_search": dict_name[item]}
         list.append(dict)
     query = {"query": {
-        "bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+        "bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                           {"bool": {"should": list}}]}}, "from": 0,
         "size": 10000, "sort": [], "aggs": {}}
     result = es.search(index=es_twitter_index, doc_type=es_twitter_type, body=query)['hits']['hits']
@@ -371,7 +371,7 @@ def get_all_twitter_data(dict_name, page_number, page_size, start_date, end_date
         dict["term"] = {"twitter_search": dict_name[item]}
         list.append(dict)
     query = {"query": {
-        "bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+        "bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                           {"bool": {"should": list}}]}}, "from": start_from,
         "size": page_size, "sort": [], "aggs": {}}
     result = es.search(index=es_twitter_index, doc_type=es_twitter_type, body=query)['hits']['hits']
@@ -393,7 +393,7 @@ def get_forum_pages(name, start_date, end_date):
     start_timestamps, end_timestamps = get_time(start_date, end_date)
     if start_timestamps == 0 or end_timestamps == 0:
         return None
-    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                                          {"term": {"keywords": name}}], "must_not": [], "should": []}}, "from": 0,
              "size": 10000, "sort": [], "aggs": {}}
     result = es.search(index=es_forum_index, doc_type=es_forum_type, body=query)['hits']['hits']
@@ -403,7 +403,7 @@ def get_forum_pages(name, start_date, end_date):
 def get_forum_data(name, page_number, page_size, start_date, end_date):
     start_from = (page_number - 1) * page_size
     start_timestamps, end_timestamps = get_time(start_date, end_date)
-    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+    query = {"query": {"bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                                          {"term": {"keywords": name}}], "must_not": [], "should": []}},
              "from": start_from,
              "size": page_size, "sort": [], "aggs": {}}
@@ -438,7 +438,7 @@ def get_all_forum_pages(dict_name, start_date, end_date):
         dict["term"] = {"keywords": dict_name[item]}
         list.append(dict)
     query = {"query": {
-        "bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+        "bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                           {"bool": {"should": list}}]}}, "from": 0,
         "size": 10000, "sort": [], "aggs": {}}
     result = es.search(index=es_forum_index, doc_type=es_forum_type, body=query)['hits']['hits']
@@ -456,7 +456,7 @@ def get_all_forum_data(dict_name, page_number, page_size, start_date, end_date):
         dict["term"] = {"keywords": dict_name[item]}
         list.append(dict)
     query = {"query": {
-        "bool": {"must": [{"range": {"timestamps": {"gt": start_timestamps, "lt": end_timestamps}}},
+        "bool": {"must": [{"range": {"timestamps": {"gte": start_timestamps, "lte": end_timestamps}}},
                           {"bool": {"should": list}}]}}, "from": start_from,
         "size": page_size, "sort": [], "aggs": {}}
     result = es.search(index=es_forum_index, doc_type=es_forum_type, body=query)['hits']['hits']
