@@ -31,7 +31,7 @@ def get_egional_electors(id, year):
     conn = getconn()
     cur = conn.cursor()
     try:
-        sql = "select candidate_id,username from administrative_area as area,candidate where  area.administrative_id=candidate.administrative_id and area.administrative_id=%s and candidate.`year`=%s"
+        sql = "select candidate_id,username from candidate where  administrative_id=%s and `year`=%s"
         count = cur.execute(sql, (id, year))
         if count < 1:
             app.logger.error("当前省选举结果有问题，请与管理员联系前，输入的年份为：" + str(year) + "输入id:" + str(id))
@@ -46,6 +46,28 @@ def get_egional_electors(id, year):
     finally:
         closeAll(conn, cur)
 
+# 获取当前地区的session
+def get_session(id, year):
+    dict_img = {}
+    dict_partisan = {}
+    conn = getconn()
+    cur = conn.cursor()
+    try:
+        sql = "select candidate.candidate_id,candidate.username,partisan,image_name from candidate,candidate_personnel_information where  candidate_personnel_information.candidate_id=candidate.candidate_id and candidate.administrative_id=%s and candidate.`year`=%s"
+        count = cur.execute(sql, (id, year))
+        if count < 1:
+            app.logger.error("当前省选举结果有问题，请与管理员联系前，输入的年份为：" + str(year) + "输入id:" + str(id))
+            return 0
+        result = cur.fetchmany(count)
+        for item in result:
+            dict_img[item[1]] = item[3]
+            dict_partisan[item[1]] = item[2]
+        return dict_img,dict_partisan
+    except (Exception) as e:
+        app.logger.error(e)
+        return 0
+    finally:
+        closeAll(conn, cur)
 
 # 获取当前选举人图片
 def get_egional_images(id):
@@ -62,3 +84,4 @@ def get_egional_images(id):
         return 0
     finally:
         closeAll(conn, cur)
+
