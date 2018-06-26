@@ -39,9 +39,10 @@ def get_party(message):
                 member_dict['team_id'] = member[3]
                 member_dict['type'] = '2'
                 if member[4] != '':
-                    member_dict['symbol'] = "'image://' + IP + '/' + " + member[4] +" '"
+                    member_dict['symbol'] = "'image://'+IP+'/"+member[4]+"'"
+
                 else:
-                    member_dict['symbol'] = "'image://' + IP + '/' + unknown.png '"
+                    member_dict['symbol'] = "'image://'+IP+'/unknown.png'"
                 member_dict['symbolSize'] = [70,70]
                 member_dict['draggable'] = 'true'
                 member_dict['category'] = '1'
@@ -59,9 +60,9 @@ def get_party(message):
             leader_dict['team_id'] = name_id
             leader_dict['party'] = party[0]
             if party[1] != '':
-                leader_dict['symbol'] = "'image://' + IP + '/' + " + party[1]+" '"
+                leader_dict['symbol'] = "'image://'+IP+'/"+ party[1]+"'"
             else:
-                leader_dict['symbol'] = "'image://' + IP + '/' + unknown.png '"
+                leader_dict['symbol'] = "'image://'+IP+'/unknown.png'"
             leader_dict['symbolSize'] = [70,70]
             leader_dict['label'] = {
                 'verticalAlign':'bottom',
@@ -86,7 +87,7 @@ def get_party(message):
                 infos_dict[party[0]] = mids_list
             else:
                 leader_dict['name'] = name
-                leader_dict['id'] = name_id
+                leader_dict['team_id'] = name_id
                 leader_dict['party'] = party[0]
                 mid_list = [leader_dict]
                 for mem in member_list:
