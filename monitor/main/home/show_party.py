@@ -81,7 +81,6 @@ def get_party(message):
                 leader_dict['name'] = name
                 leader_dict['id'] = name_id
                 leader_dict['party'] = party[0]
-                # leader_dict['member'] = member_list
                 mid_list = [leader_dict]
                 for mem in member_list:
                     mid_list.append(mem)
@@ -93,28 +92,46 @@ def get_party(message):
         keys_num = len(keys_list)
         keys_list.remove('民进党')
         keys_list.remove('国民党')
+        num_dic = OrderedDict()
         for item in every_list:
             mid_dic = {}
             mid_dic['data'] = item['民进党']
             one_links = get_one_links(item,'民进党',end_links_list)
             mid_dic['links'] = one_links
-            end_dic['0民进党'] = mid_dic
+            end_dic['民进党'] = mid_dic
             mid_dic ={}
             mid_dic['data'] = item['国民党']
             one_links = get_one_links(item,'国民党',end_links_list)
             mid_dic['links'] = one_links
-            end_dic['1国民党'] = mid_dic
+            end_dic['国民党'] = mid_dic
             for key in keys_list:
                 mid_dic={}
                 mid_dic['data'] = item[key]
                 one_links = get_one_links(item,key,end_links_list)
                 mid_dic['links'] = one_links
-                if key == '无党':
-                    key = str(keys_num-1)+'无党'
-                else:
-                    key = str(keys_num-2)+key
                 end_dic[key] = mid_dic
-        end_list.append(end_dic)
+            num_dic = {}
+            num = -1
+            for k,v in end_dic.items():
+                if k == '民进党':
+                    zhuan_dic = {}
+                    zhuan_dic[k]=v
+                    num_dic['0'] = zhuan_dic
+                elif k == '国民党':
+                    zhuan_dic = {}
+                    zhuan_dic[k]=v
+                    num_dic['1'] = zhuan_dic
+                elif k == '无党':
+                    zhuan_dic = {}
+                    zhuan_dic[k]=v
+                    num_dic[str(keys_num)] = zhuan_dic
+                else:
+
+                    zhuan_dic = {}
+                    zhuan_dic[k]=v
+                    num_dic[str(keys_num+num)] = zhuan_dic
+                    num -= 1
+        end_list.append(num_dic)
         closeAll(houxuanren_conn, houxuanren_cur)
         closeAll(member_conn, member_cur)
         return end_list
