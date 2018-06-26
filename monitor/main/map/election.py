@@ -48,7 +48,6 @@ def get_popularity(start_time, end_time, dict_name):
                 sorce = dict[dict_name[id]] / sum
                 result_dict[dict_name[id]] = sorce
                 flat -= sorce
-                print (flat)
                 count +=1
         return result_dict
     except :
@@ -214,10 +213,3 @@ def get_ptt_popularity(dict_name, start_time, end_time):
     except:
         return 0
 
-
-if __name__ == '__main__':
-    dict_name={}
-    dict_name[23] = "陈学圣"
-    dict_name[69] = "郑文灿"
-    data = get_popularity("2018-05-05","2018-06-20",dict_name)
-    print (data)

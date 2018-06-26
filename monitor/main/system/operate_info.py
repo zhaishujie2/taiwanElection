@@ -326,7 +326,7 @@ def get_one_infos(info_type, data):
             information['work_phone'] = item[17]
             information['email'] = item[18]
             information['address'] = item[19]
-            information['education'] = item[20]
+            candidate_dict['education'] = item[20]
             information['partisan'] = item[21]
             candidate_dict['information'] = information
         candidate_list.append(candidate_dict)
@@ -368,7 +368,7 @@ def get_one_infos(info_type, data):
             information['work_phone'] = item[17]
             information['email'] = item[18]
             information['address'] = item[19]
-            information['education'] = item[20]
+            member_dict['education'] = item[20]
             information['partisan'] = item[21]
             member_dict['information'] = information
         member_list.append(member_dict)
@@ -515,7 +515,16 @@ def delete_people_image(info_type,image_name):
             app.logger.error('无此侯选人图片')
             return 1
         elif info_type == '2':
-            candidate_id,member_id = get_new_id(info_type)
+            conn = getconn()
+            cur = conn.cursor()
+            select_sql = """SELECT `candidate_id`,`id` FROM `personnel_information` WHERE `id` = %s"""
+            try:
+                cur.execute(select_sql,(image_name))
+            except Exception as erro:
+                app.logger.error(erro)
+                app.logger.error('525行')
+            candidate_id,member_id = cur.fetchone()
+            closeAll(conn,cur)
             member_name = str(candidate_id)+'_'+str(member_id)
             for name in names:
                 exits = name.rfind(member_name)
@@ -941,7 +950,6 @@ def update_image_name(info_type,image_name,ids):
         conn = getconn()
         cur = conn.cursor()
         try:
-            print(image_name)
             update_re = cur.execute(update_sql,(image_name,ids))
             if update_re == 1:
                 app.logger.error('侯选人图片名称写入成功')
@@ -952,7 +960,8 @@ def update_image_name(info_type,image_name,ids):
                 closeAll(conn,cur)
                 return 0
         except Exception as erro:
-            app.logger.error(erro,'954行')
+            app.logger.error(erro)
+            app.logger.error('965行')
             return 0
     elif info_type == '2':
         update_sql = """UPDATE `personnel_information` SET `image_name` = %s WHERE `id` = %s"""
@@ -969,7 +978,8 @@ def update_image_name(info_type,image_name,ids):
                 closeAll(conn,cur)
                 return 0
         except Exception as erro:
-            app.logger.error(erro,'971行')
+            app.logger.error(erro)
+            app.logger.error('983行')
             return 0
     elif info_type == '5':
         update_sql = """UPDATE `partisan` SET `partisan_image` = %s WHERE `id` = %s"""
@@ -986,7 +996,8 @@ def update_image_name(info_type,image_name,ids):
                 closeAll(conn,cur)
                 return 0
         except Exception as erro:
-            app.logger.error(erro,'988行')
+            app.logger.error(erro)
+            app.logger.error('1001行')
             return 0
     elif info_type == '6':
         update_sql = """UPDATE `candidate_personnel_information` SET `image_infos` = %s WHERE `candidate_id` = %s"""
@@ -1004,7 +1015,8 @@ def update_image_name(info_type,image_name,ids):
                 closeAll(conn,cur)
                 return 0
         except Exception as erro:
-            app.logger.error(erro,'1005行')
+            app.logger.error(erro)
+            app.logger.error('1020行')
             return 0
     elif info_type == '7':
         update_sql = """UPDATE `personnel_information` SET `image_infos` = %s WHERE `id` = %s"""
@@ -1022,7 +1034,8 @@ def update_image_name(info_type,image_name,ids):
                 closeAll(conn,cur)
                 return 0
         except Exception as erro:
-            app.logger.error(erro,'1005行')
+            app.logger.error(erro)
+            app.logger.error('1039行')
             return 0
 
 #获取获选人或团队成员image_infos
@@ -1043,7 +1056,8 @@ def get_image_infos(info_type,infos_id):
                 closeAll(conn,cur)
                 return 0
         except Exception as erro:
-            app.logger.error(erro,'1045行')
+            app.logger.error(erro)
+            app.logger.error('1061行')
             return 0
     elif info_type == '7':
         candidate_image_infos = """SELECT `image_infos` FROM `personnel_information` WHERE `id` = %s"""
@@ -1059,7 +1073,8 @@ def get_image_infos(info_type,infos_id):
                 closeAll(conn,cur)
                 return 0
         except Exception as erro:
-            app.logger.error(erro,'1045行')
+            app.logger.error(erro)
+            app.logger.error('1078行')
             return 0
 
 # 更新候选人信息和团队人员信息
@@ -1229,7 +1244,7 @@ def get_everyinformation(type, content):
                 # information['work_phone'] = item[17]
                 information['email'] = item[18]
                 information['address'] = item[19]
-                information['education'] = item[20]
+                leader_infos_dict['education'] = item[20]
                 information['partisan'] = item[21]
                 information['mainland_pass'] = item[27]
                 information['character_feature'] = item[28]
@@ -1293,7 +1308,7 @@ def get_everyinformation(type, content):
                     # information['work_phone'] = item[17]
                     information['email'] = item[18]
                     information['address'] = item[19]
-                    information['education'] = item[20]
+                    member_dict['education'] = item[20]
                     information['partisan'] = item[21]
                     information['mainland_pass'] = item[28]
                     information['character_feature'] = item[29]
