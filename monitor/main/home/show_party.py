@@ -3,8 +3,7 @@ from monitor.util.mysql_util import getconn, closeAll
 from collections import OrderedDict
 from monitor import app
 from flask import session
-import json
-
+from monitor.util.config import IP
 
 # 获取每个候选人团队信息
 def get_party(message):
@@ -37,15 +36,15 @@ def get_party(message):
                 member_dict['job'] = member[1]
                 member_dict['department'] = member[2]
                 member_dict['team_id'] = member[3]
-                member_dict['type'] = '2'
+                member_dict['type'] = 2
                 if member[4] != '':
-                    member_dict['symbol'] = "'image://'+IP+'/"+member[4]+"'"
+                    member_dict['symbol'] = "image://http://"+IP+"/"+member[4]
 
                 else:
-                    member_dict['symbol'] = "'image://'+IP+'/unknown.png'"
+                    member_dict['symbol'] = "image://http://"+IP+"/unknown.png"
                 member_dict['symbolSize'] = [70,70]
                 member_dict['draggable'] = 'true'
-                member_dict['category'] = '1'
+                member_dict['category'] = 1
                 member_dict['label'] = {
                     'verticalAlign':'bottom',
                     'offset':[5,55],
@@ -55,14 +54,14 @@ def get_party(message):
                 }
                 member_list.append(member_dict)
             leader_dict['name'] = name
-            leader_dict['type'] = '1'
-            leader_dict['category'] = '0'
-            leader_dict['team_id'] = name_id
+            leader_dict['type'] = 1
+            leader_dict['category'] = 0
+            leader_dict['team_id'] = int(name_id)
             leader_dict['party'] = party[0]
             if party[1] != '':
-                leader_dict['symbol'] = "'image://'+IP+'/"+ party[1]+"'"
+                leader_dict['symbol'] = "image://http://"+IP+"/"+ party[1]
             else:
-                leader_dict['symbol'] = "'image://'+IP+'/unknown.png'"
+                leader_dict['symbol'] = "image://http://"+IP+"/unknown.png"
             leader_dict['symbolSize'] = [70,70]
             leader_dict['label'] = {
                 'verticalAlign':'bottom',
@@ -87,7 +86,7 @@ def get_party(message):
                 infos_dict[party[0]] = mids_list
             else:
                 leader_dict['name'] = name
-                leader_dict['team_id'] = name_id
+                leader_dict['team_id'] = int(name_id)
                 leader_dict['party'] = party[0]
                 mid_list = [leader_dict]
                 for mem in member_list:
@@ -152,7 +151,7 @@ def get_one_links(item,dangpai,end_links_list):
     all_links_list = []
     for na in item[dangpai]:
         leader_name = na['name']
-        if na['type'] == '1':
+        if na['type'] == 1:
             for links in end_links_list:
                 if links.get(leader_name) == None:
                     pass
@@ -168,7 +167,7 @@ def get_links(leader_dic):
     links_dic = {}
     for one in leader_dic['member']:
         links_dic['source'] = leader_dic['name']
-        if one['type'] == '2':
+        if one['type'] == 2:
             links_dic['target'] = one['name']
             target_list.append(one['name'])
     for tar in target_list:
