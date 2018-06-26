@@ -3,6 +3,7 @@ from monitor.util.mysql_util import getconn, closeAll
 from collections import OrderedDict
 from monitor import app
 from flask import session
+import json
 
 
 # 获取每个候选人团队信息
@@ -10,15 +11,16 @@ def get_party(message):
     try:
         every_list = []
         infos_dict = {}
+        member_list = ''
         houxuanren_conn = ''
         houxuanren_cur = ''
         member_conn = ''
         member_cur = ''
+        end_links_list = []
         for name_id, name in message.items():
             leader_dict = OrderedDict()
-            member_list = []
-            houxuanren_sql = """SELECT `partisan` FROM candidate_personnel_information WHERE `candidate_id`= %s"""
-            member_sql = """SELECT `name`,`job`,`department`,`id`,`image_name` FROM personnel_information WHERE `candidate_id` = %s"""
+            houxuanren_sql = """SELECT `partisan`,`image_name`FROM `candidate_personnel_information` WHERE `candidate_id`= %s"""
+            member_sql = """SELECT `name`,`job`,`department`,`id`,`image_name` FROM `personnel_information` WHERE `candidate_id` = %s"""
             houxuanren_conn = getconn()
             houxuanren_cur = houxuanren_conn.cursor()
             member_conn = getconn()
@@ -27,36 +29,130 @@ def get_party(message):
             member_cur.execute(member_sql, (name_id))
             members = member_cur.fetchall()
             party = houxuanren_cur.fetchone()
+            member_list = []
+
             for member in members:
                 member_dict = {}
                 member_dict['name'] = member[0]
                 member_dict['job'] = member[1]
                 member_dict['department'] = member[2]
                 member_dict['id'] = member[3]
-                member_dict['image_name'] = member[4]
+                member_dict['type'] = '2'
+                member_dict['symbol'] = "'image://' + IP + '/' + " + member[4]
+                member_dict['symbolSize'] = [70,70]
+                member_dict['draggable'] = 'true'
+                member_dict['category'] = '1'
+                member_dict['label'] = {
+                    'verticalAlign':'bottom',
+                    'offset':[5,55],
+                    'fontStyle':'normal',
+                    'color': 'auto',
+                    'fontSize': 16,
+                }
                 member_list.append(member_dict)
             leader_dict['name'] = name
+            leader_dict['type'] = '1'
+            leader_dict['category'] = '0'
             leader_dict['id'] = name_id
             leader_dict['party'] = party[0]
-            leader_dict['member'] = member_list
+            leader_dict['symbol'] = "'image://' + IP + '/' + " + party[1]
+            leader_dict['symbolSize'] = [70,70]
+            leader_dict['label'] = {
+                'verticalAlign':'bottom',
+                'offset':[5,55],
+                'fontStyle':'normal',
+                'color': 'auto',
+                'fontSize': 16,
+            }
+            leader_dict['draggable'] = 'true'
+            mid_leader_dict = {}
+            mid_leader_dict['member'] = member_list
+            mid_leader_dict['name'] = leader_dict['name']
+            mid_links_list = get_links(mid_leader_dict)
+            end_links_dic = {}
+            end_links_dic[leader_dict['name']] = mid_links_list
+
+            end_links_list.append(end_links_dic)
             if party[0] in infos_dict.keys():
-                list = infos_dict[party[0]]
-                list.append(leader_dict)
-                infos_dict[party[0]] = list
+                mids_list = infos_dict[party[0]]
+                mids_list.append(leader_dict)
+                infos_dict[party[0]] = mids_list
             else:
                 leader_dict['name'] = name
                 leader_dict['id'] = name_id
                 leader_dict['party'] = party[0]
-                leader_dict['member'] = member_list
-                infos_dict[party[0]] = [leader_dict]
+                # leader_dict['member'] = member_list
+                mid_list = [leader_dict]
+                for mem in member_list:
+                    mid_list.append(mem)
+                infos_dict[party[0]] = mid_list
         every_list.append(infos_dict)
+        end_list = []
+        end_dic = OrderedDict()
+        keys_list = list(every_list[0].keys())
+        keys_num = len(keys_list)
+        keys_list.remove('民进党')
+        keys_list.remove('国民党')
+        for item in every_list:
+            mid_dic = {}
+            mid_dic['data'] = item['民进党']
+            one_links = get_one_links(item,'民进党',end_links_list)
+            mid_dic['links'] = one_links
+            end_dic['0民进党'] = mid_dic
+            mid_dic ={}
+            mid_dic['data'] = item['国民党']
+            one_links = get_one_links(item,'国民党',end_links_list)
+            mid_dic['links'] = one_links
+            end_dic['1国民党'] = mid_dic
+            for key in keys_list:
+                mid_dic={}
+                mid_dic['data'] = item[key]
+                one_links = get_one_links(item,key,end_links_list)
+                mid_dic['links'] = one_links
+                if key == '无党':
+                    key = str(keys_num-1)+'无党'
+                else:
+                    key = str(keys_num-2)+key
+                end_dic[key] = mid_dic
+        end_list.append(end_dic)
         closeAll(houxuanren_conn, houxuanren_cur)
         closeAll(member_conn, member_cur)
-        return every_list
+        return end_list
     except Exception as erro:
         app.logger.error(erro)
         return str(erro)
 
+#将每一个links添加到links中
+def get_one_links(item,dangpai,end_links_list):
+    all_links_list = []
+    for na in item[dangpai]:
+        leader_name = na['name']
+        if na['type'] == '1':
+            for links in end_links_list:
+                if links.get(leader_name) == None:
+                    pass
+                elif links.get(leader_name) != None:
+                    for one in links[leader_name]:
+                        all_links_list.append(one)
+    return all_links_list
+
+#获得每个以后选人的links
+def get_links(leader_dic):
+    end_links_list = []
+    target_list = []
+    links_dic = {}
+    for one in leader_dic['member']:
+        links_dic['source'] = leader_dic['name']
+        if one['type'] == '2':
+            links_dic['target'] = one['name']
+            target_list.append(one['name'])
+    for tar in target_list:
+        end_links = {}
+        end_links['source'] = links_dic['source']
+        end_links['target'] = tar
+        end_links['value'] = ''
+        end_links_list.append(end_links)
+    return end_links_list
 
 # 获取每一个人的详细信息加上every条件后可以返回所有
 def get_everyinformation(type, content):

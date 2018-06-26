@@ -291,12 +291,14 @@ def upload_file():
         info_type = request.form.get('type', '')
         member = request.form.get('id','')
         leader = request.form.get('candidate_id','')
-        file = request.files['file']
-        print(file)
-        print(info_type)
-        print(leader)
+        try:
+            file = request.files['file']
+        except:
+            file = request.files.getlist('file_arr')
+        # print(file)
+        # print(info_type)
+        # print('leader',leader)
         if file == '' or file == None:
-            print(111)
             return jsonify({"message": "data input is null"}), 406
         if info_type == '1':
             leader = get_new_id(info_type)
@@ -364,45 +366,75 @@ def upload_file():
                         return  jsonify({"message":"党派图片名称未存储成功"}),200
         if info_type == '6':
             image_infos = request.form.get('image_infos','')
-            print('1',image_infos)
-            # if image_infos == '':#存侯选人信息图片
-            # image_name = ''
-            old_infos_image = get_image_infos(info_type=info_type,infos_id=leader)
-            if old_infos_image == '':
-                print('第一次')
-                image_name = str(leader) + '_infos_1' + '.' + file.filename.rsplit('.', 1)[1]
+            image_infos_list = image_infos.split('|')
+            image_infos_len = len(image_infos_list) - 1
+            num = 1
+            if file == []:
+                return jsonify({"message": 1}), 200
+            elif len(file) == image_infos_len:
+                print(1)
             else:
-                print('第二次')
-                number = int((old_infos_image.split('|')[-2]).split('.')[0][-1])+1
-                print(old_infos_image)
-                print(number)
-                image_name = str(leader) + '_infos_'+ str(number)+'.' + file.filename.rsplit('.', 1)[1]
-            # elif '|' not in image_infos:#删除某一图片
-            #     old_infos_image = get_image_infos(info_type=info_type,infos_id=leader)
-            #     image_infos+='|'
-            #     print(image_infos)
-            #     new_info_image = (old_infos_image.replace(image_infos,''))[:-1]
-            #     update_re,conn,cur = update_image_name(info_type,new_info_image,leader)
-            #     if update_re == 1:
-            #         try:
-            #             os.remove(app.config['UPLOAD_FOLDER']+(image_infos)[:-1])
-            #         except Exception as erro:
-            #             app.logger.error(erro,'376行')
-            #             conn.rollback()
-            #             cur.close()
-            #             conn.close()
-            #             return 0
-            #         closeAll(conn,cur)
-            #         return jsonify({"message": 1}), 201
-            #     else:
-            #         return  jsonify({"message":"删除侯选人团队信息图片名称更新成功"}),200
-            # else:
-            #     number = int((image_infos.split('|')[-2]).split('.')[0][-1])+1
-            #     print(image_infos)
-            #     print(number)
-            #     image_name = str(leader) + '_infos_'+ str(number)+'.' + file.filename.rsplit('.', 1)[1]
-            result = save_image_infos(file,image_name,old_infos_image,info_type,infos_id=leader)
-            return result
+                lichen_re,conn,cur = update_image_name(info_type=info_type,image_name=' ',ids=leader)
+                if lichen_re == '1':
+                    closeAll(conn,cur)
+                for one_image in file:
+                    # image_name= ''
+                    old_infos_image = get_image_infos(info_type=info_type,infos_id=leader)
+                    if image_infos == '' and num == 1:
+                        image_name = str(leader) + '_infos_1' + '.' + one_image.filename.rsplit('.', 1)[1]
+                        num  += 1
+                        result = save_image_infos(one_image,image_name,old_infos_image,info_type,infos_id=leader)
+                        if len(file) == 1:
+                            return result
+                        elif len(file) >1:
+                            pass
+                    else:
+                        number = int((old_infos_image.split('|')[-2]).split('.')[0][-1])+1
+                        image_name = str(leader) + '_infos_'+ str(number)+'.' + one_image.filename.rsplit('.', 1)[1]
+                        if num < len(file):
+                            save_image_infos(one_image,image_name,old_infos_image,info_type,infos_id=leader)
+                            num += 1
+                        elif num == len(file):
+                            result = save_image_infos(one_image,image_name,old_infos_image,info_type,infos_id=leader)
+                            return result
+                            # if image_infos == '':#存侯选人信息图片
+                            #     image_name = ''
+                            #     old_infos_image = get_image_infos(info_type=info_type,infos_id=leader)
+                            #     if old_infos_image == '':
+                            #         print('第一次')
+                            #         image_name = str(leader) + '_infos_1' + '.' + file.filename.rsplit('.', 1)[1]
+                            #     else:
+                            #         print('第二次')
+                            #         number = int((old_infos_image.split('|')[-2]).split('.')[0][-1])+1
+                            #         print(old_infos_image)
+                            #         print(number)
+                            #         image_name = str(leader) + '_infos_'+ str(number)+'.' + file.filename.rsplit('.', 1)[1]
+                            # elif '|' not in image_infos:#删除某一图片
+                            #     old_infos_image = get_image_infos(info_type=info_type,infos_id=leader)
+                            #     image_infos+='|'
+                            #     print(image_infos)
+                            #     new_info_image = (old_infos_image.replace(image_infos,''))[:-1]
+                            #     update_re,conn,cur = update_image_name(info_type,new_info_image,leader)
+                            #     if update_re == 1:
+                            #         try:
+                            #             os.remove(app.config['UPLOAD_FOLDER']+(image_infos)[:-1])
+                            #         except Exception as erro:
+                            #             app.logger.error(erro,'376行')
+                            #             conn.rollback()
+                            #             cur.close()
+                            #             conn.close()
+                            #             return 0
+                            #         closeAll(conn,cur)
+                            #         return jsonify({"message": 1}), 201
+                            #     else:
+                            #         return  jsonify({"message":"删除侯选人团队信息图片名称更新成功"}),200
+                            # else:
+                            #     number = int((image_infos.split('|')[-2]).split('.')[0][-1])+1
+                            #     print(image_infos)
+                            #     print(number)
+                            #     image_name = str(leader) + '_infos_'+ str(number)+'.' + file.filename.rsplit('.', 1)[1]
+                            # result = save_image_infos(file,image_name,old_infos_image,info_type,infos_id=leader)
+                            # return result
         if info_type == '7':
             image_name = ''
             image_infos = request.form.get('image_infos','')
@@ -412,7 +444,7 @@ def upload_file():
                 os.remove(app.config['UPLOAD_FOLDER']+(image_infos)[:-1])
                 old_infos_image = get_image_infos(info_type=info_type,infos_id=member)
                 image_infos+='|'
-                print(image_infos)
+                # print(image_infos)
                 new_info_image = (old_infos_image.replace(image_infos,''))[:-1]
                 update_re,conn,cur = update_image_name(info_type,new_info_image,member)
                 if update_re == 1:
