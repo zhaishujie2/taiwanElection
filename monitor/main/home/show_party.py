@@ -36,7 +36,7 @@ def get_party(message):
                 member_dict['name'] = member[0]
                 member_dict['job'] = member[1]
                 member_dict['department'] = member[2]
-                member_dict['id'] = member[3]
+                member_dict['team_id'] = member[3]
                 member_dict['type'] = '2'
                 if member[4] != '':
                     member_dict['symbol'] = "'image://' + IP + '/' + " + member[4] +" '"
@@ -56,7 +56,7 @@ def get_party(message):
             leader_dict['name'] = name
             leader_dict['type'] = '1'
             leader_dict['category'] = '0'
-            leader_dict['id'] = name_id
+            leader_dict['team_id'] = name_id
             leader_dict['party'] = party[0]
             if party[1] != '':
                 leader_dict['symbol'] = "'image://' + IP + '/' + " + party[1]+" '"
