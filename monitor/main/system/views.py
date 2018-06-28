@@ -10,7 +10,7 @@ from monitor.main.system.operate_info import insert_info, delete_info, update_in
     insert_election_info, delete_election_info, update_election_info, select_election_all, select_election_info_one, \
     select_election_info_page, get_new_id, select_election_code_info, select_area_code_info, update_image_name, \
     select_support, delete_support, update_support, insert_support, insert_partisan, update_partisan, delete_partisan, \
-    select_partisan, get_image_infos
+    select_partisan, get_image_infos, del_arr_image, change_arr_image, new_arr_image
 import json, os
 from monitor.util.mysql_util import closeAll
 
@@ -366,108 +366,188 @@ def upload_file():
                         return  jsonify({"message":"党派图片名称未存储成功"}),200
         if info_type == '6':
             image_infos = request.form.get('image_infos','')
-            image_infos_list = image_infos.split('|')
-            image_infos_len = len(image_infos_list) - 1
+            del_arr = request.form.getlist('del_arr[]')
+            # print(type(del_arr))
+            change_arr = request.form.getlist('change_arr[]')
+            # print('del_arr',del_arr)
+            # print('change_arr',change_arr)
+            # print('image_infos',image_infos)
             num = 1
-            if file == []:
-                return jsonify({"message": 1}), 200
-            elif len(file) == image_infos_len:
-                print(1)
-            else:
-                lichen_re,conn,cur = update_image_name(info_type=info_type,image_name=' ',ids=leader)
-                if lichen_re == '1':
-                    closeAll(conn,cur)
-                for one_image in file:
-                    # image_name= ''
-                    old_infos_image = get_image_infos(info_type=info_type,infos_id=leader)
-                    if image_infos == '' and num == 1:
-                        image_name = str(leader) + '_infos_1' + '.' + one_image.filename.rsplit('.', 1)[1]
-                        num  += 1
-                        result = save_image_infos(one_image,image_name,old_infos_image,info_type,infos_id=leader)
-                        if len(file) == 1:
-                            return result
-                        elif len(file) >1:
-                            pass
+            new_file = ''
+            change_file = ''
+            cha = len(file) - len(change_arr)
+            if len(change_arr) < len(file):
+                begin = 0 -(len(file) - len(change_arr))
+                new_file = file[begin:]
+                change_file = file[:begin]
+            if change_arr == [] :
+                if del_arr ==[] and file == []:#未发生变化
+                    # print('不变')
+                    return jsonify({"message": 1}), 200
+                if  del_arr != [] and file == []:#只删
+                    # print('只删')
+                    del_re = del_arr_image(del_arr,info_type,le=leader)
+                    if del_re == 1:
+                        return jsonify({"message":1}),200
                     else:
-                        number = int((old_infos_image.split('|')[-2]).split('.')[0][-1])+1
-                        image_name = str(leader) + '_infos_'+ str(number)+'.' + one_image.filename.rsplit('.', 1)[1]
-                        if num < len(file):
-                            save_image_infos(one_image,image_name,old_infos_image,info_type,infos_id=leader)
-                            num += 1
-                        elif num == len(file):
-                            result = save_image_infos(one_image,image_name,old_infos_image,info_type,infos_id=leader)
-                            return result
-                            # if image_infos == '':#存侯选人信息图片
-                            #     image_name = ''
-                            #     old_infos_image = get_image_infos(info_type=info_type,infos_id=leader)
-                            #     if old_infos_image == '':
-                            #         print('第一次')
-                            #         image_name = str(leader) + '_infos_1' + '.' + file.filename.rsplit('.', 1)[1]
-                            #     else:
-                            #         print('第二次')
-                            #         number = int((old_infos_image.split('|')[-2]).split('.')[0][-1])+1
-                            #         print(old_infos_image)
-                            #         print(number)
-                            #         image_name = str(leader) + '_infos_'+ str(number)+'.' + file.filename.rsplit('.', 1)[1]
-                            # elif '|' not in image_infos:#删除某一图片
-                            #     old_infos_image = get_image_infos(info_type=info_type,infos_id=leader)
-                            #     image_infos+='|'
-                            #     print(image_infos)
-                            #     new_info_image = (old_infos_image.replace(image_infos,''))[:-1]
-                            #     update_re,conn,cur = update_image_name(info_type,new_info_image,leader)
-                            #     if update_re == 1:
-                            #         try:
-                            #             os.remove(app.config['UPLOAD_FOLDER']+(image_infos)[:-1])
-                            #         except Exception as erro:
-                            #             app.logger.error(erro,'376行')
-                            #             conn.rollback()
-                            #             cur.close()
-                            #             conn.close()
-                            #             return 0
-                            #         closeAll(conn,cur)
-                            #         return jsonify({"message": 1}), 201
-                            #     else:
-                            #         return  jsonify({"message":"删除侯选人团队信息图片名称更新成功"}),200
-                            # else:
-                            #     number = int((image_infos.split('|')[-2]).split('.')[0][-1])+1
-                            #     print(image_infos)
-                            #     print(number)
-                            #     image_name = str(leader) + '_infos_'+ str(number)+'.' + file.filename.rsplit('.', 1)[1]
-                            # result = save_image_infos(file,image_name,old_infos_image,info_type,infos_id=leader)
-                            # return result
+                        return  jsonify({"message":"侯选人图片删除失败"}),400
+                if del_arr != []  and file != []:#删加
+                    # print('删加')
+                    new_re = new_arr_image(file,image_infos,info_type,le=leader)
+                    if new_re == 1:
+                        del_re = del_arr_image(del_arr,info_type,le=leader)
+                        if del_re == 1:
+                            return jsonify({"message":1}),200
+                        else:
+                            return  jsonify({"message":"侯选人图片删除失败"}),400
+                    else:
+                        return  jsonify({"message":"侯选人图片新增失败"}),400
+                if del_arr == [] and file != []:#只加
+                    # print('只加')
+                    new_re = new_arr_image(file,image_infos,info_type,le=leader)
+                    if new_re == 1:
+                        return jsonify({"message":1}),201
+                    else:
+                        return  jsonify({"message":"侯选人图片新增失败"}),400
+            elif change_arr != []:
+                if del_arr != [] and file != [] and cha == 0:#删改
+                    # print('删改')
+                    cha_re = change_arr_image(file,change_arr,info_type)
+                    if cha_re == 1:
+                        del_re = del_arr_image(del_arr,info_type,le=leader)
+                        if del_re == 1:
+                            return jsonify({"message":1}),200
+                        else:
+                            return  jsonify({"message":"侯选人图片删除失败"}),400
+                    else:
+                        return  jsonify({"message":"侯选人图片删除成功，更新失败"}),400
+                if file != [] and del_arr == [] and cha > 0:#改加
+                    # print('改加')
+                    new_re = new_arr_image(new_file,image_infos,info_type,le=leader)
+                    if new_re == 1:
+                        change_re = change_arr_image(change_file,change_arr,info_type)
+                        if change_re == 1:
+                            return jsonify({"message":1}),201
+                        else:
+                            return  jsonify({"message":"侯选人图片修改失败"}),400
+                    else:
+                            return  jsonify({"message":"侯选人图片新增失败"}),400
+                if file != [] and del_arr == [] and cha == 0:#只改
+                    # print('只改')
+                    change_re = change_arr_image(file,change_arr,info_type)
+                    if change_re == 1:
+                        return jsonify({"message":1}),201
+                    else:
+                        return  jsonify({"message":"侯选人图片修改失败"}),400
+                if file != [] and del_arr != [] and cha > 0:#删改加
+                    # print('删改加')
+                    change_re = change_arr_image(change_file,change_arr,info_type)
+                    if change_re == 1:
+                        new_re = new_arr_image(new_file,image_infos,info_type,le=leader)
+                        if new_re == 1:
+                            del_re = del_arr_image(del_arr,info_type,le=leader)
+                            if del_re == 1:
+                                return jsonify({"message":1}),200
+                            else:
+                                return  jsonify({"message":"侯选人图片删除失败"}),400
+                        else:
+                            return  jsonify({"message":"侯选人图片新增失败"}),400
+                    else:
+                        return  jsonify({"message":"侯选人图片修改失败"}),400
         if info_type == '7':
-            image_name = ''
             image_infos = request.form.get('image_infos','')
-            if image_infos == '':#存团队成员信息图片
-                image_name = str(leader) + '_' + str(member) + '_infos_1' + '.' + file.filename.rsplit('.', 1)[1]
-            elif '|' not in image_infos:#删除某一图片
-                os.remove(app.config['UPLOAD_FOLDER']+(image_infos)[:-1])
-                old_infos_image = get_image_infos(info_type=info_type,infos_id=member)
-                image_infos+='|'
-                # print(image_infos)
-                new_info_image = (old_infos_image.replace(image_infos,''))[:-1]
-                update_re,conn,cur = update_image_name(info_type,new_info_image,member)
-                if update_re == 1:
-                    try:
-                        os.remove(app.config['UPLOAD_FOLDER']+image_infos)
-                    except Exception as erro:
-                        app.logger.error(erro,'376行')
-                        conn.rollback()
-                        cur.close()
-                        conn.close()
-                        return 0
-                    closeAll(conn,cur)
-                    return jsonify({"message": 1}), 201
-                else:
-                    return  jsonify({"message":"删除侯选人团队信息图片名称更新成功"}),200
-            else:
-                number = int((image_infos.split('|')[-2]).split('.')[0][-1])+1
-                image_name = str(leader) + '_' + str(member) + '_infos_'+ str(number)+'.' + file.filename.rsplit('.', 1)[1]
-            result = save_image_infos(file,image_name,image_infos,info_type,infos_id=member)
-            return result
+            del_arr = request.form.getlist('del_arr[]')
+            # print(type(del_arr))
+            change_arr = request.form.getlist('change_arr[]')
+            # print('del_arr',del_arr)
+            # print('change_arr',change_arr)
+            # print('image_infos',image_infos)
+            num = 1
+            new_file = ''
+            change_file = ''
+            cha = len(file) - len(change_arr)
+            if len(change_arr) < len(file):
+                begin = 0 -(len(file) - len(change_arr))
+                new_file = file[begin:]
+                change_file = file[:begin]
+            if change_arr == [] :
+                if del_arr ==[] and file == []:#未发生变化
+                    # print('不变')
+                    return jsonify({"message": 1}), 200
+                if  del_arr != [] and file == []:#只删
+                    # print('只删')
+                    del_re = del_arr_image(del_arr,info_type,le=leader,me=member)
+                    if del_re == 1:
+                        return jsonify({"message":1}),200
+                    else:
+                        return  jsonify({"message":"侯选人团队成员图片删除失败"}),400
+                if del_arr != []  and file != []:#删加
+                    # print('删加')
+                    new_re = new_arr_image(file,image_infos,info_type,le=leader,me=member)
+                    if new_re == 1:
+                        del_re = del_arr_image(del_arr,info_type,me=member)
+                        if del_re == 1:
+                            return jsonify({"message":1}),200
+                        else:
+                            return  jsonify({"message":"侯选人团队成员图片删除失败"}),400
+                    else:
+                        return  jsonify({"message":"侯选人团队成员图片新增失败"}),400
+                if del_arr == [] and file != []:#只加
+                    # print('只加')
+                    new_re = new_arr_image(file,image_infos,info_type,le=leader,me=member)
+                    if new_re == 1:
+                        return jsonify({"message":1}),201
+                    else:
+                        return  jsonify({"message":"侯选人团队成员图片新增失败"}),400
+            elif change_arr != []:
+                if del_arr != [] and file != [] and cha == 0:#删改
+                    # print('删改')
+                    cha_re = change_arr_image(file,change_arr,info_type)
+                    if cha_re == 1:
+                        del_re = del_arr_image(del_arr,info_type,me=member)
+                        if del_re == 1:
+                            return jsonify({"message":1}),200
+                        else:
+                            return  jsonify({"message":"侯选人团队成员图片删除失败"}),400
+                    else:
+                        return  jsonify({"message":"侯选人团队成员图片删除成功，更新失败"}),400
+                if file != [] and del_arr == [] and cha > 0:#改加
+                    # print('改加')
+                    new_re = new_arr_image(new_file,image_infos,info_type,le=leader,me=member)
+                    if new_re == 1:
+                        change_re = change_arr_image(change_file,change_arr,info_type)
+                        if change_re == 1:
+                            return jsonify({"message":1}),201
+                        else:
+                            return  jsonify({"message":"侯选人团队成员图片修改失败"}),400
+                    else:
+                        return  jsonify({"message":"侯选人团队成员图片新增失败"}),400
+                if file != [] and del_arr == [] and cha == 0:#只改
+                    # print('只改')
+                    change_re = change_arr_image(file,change_arr,info_type)
+                    if change_re == 1:
+                        return jsonify({"message":1}),201
+                    else:
+                        return  jsonify({"message":"侯选人团队成员图片修改失败"}),400
+                if file != [] and del_arr != [] and cha > 0:#删改加
+                    # print('删改加')
+                    change_re = change_arr_image(change_file,change_arr,info_type)
+                    if change_re == 1:
+                        new_re = new_arr_image(new_file,image_infos,info_type,le=leader,me=member)
+                        if new_re == 1:
+                            del_re = del_arr_image(del_arr,info_type,me=member)
+                            if del_re == 1:
+                                return jsonify({"message":1}),200
+                            else:
+                                return  jsonify({"message":"侯选人团队成员图片删除失败"}),400
+                        else:
+                            return  jsonify({"message":"侯选人团队成员图片新增失败"}),400
+                    else:
+                        return  jsonify({"message":"侯选人团队成员图片修改失败"}),400
     except Exception as erro:
         app.logger.error(erro)
         return str(0)
+
 
 #存储侯选人和团队成员信息图片
 def save_image_infos(file,image_name,image_infos,info_type,infos_id):

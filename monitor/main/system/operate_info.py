@@ -1004,7 +1004,10 @@ def update_image_name(info_type,image_name,ids):
         conn = getconn()
         cur = conn.cursor()
         try:
-            image_name+='|'
+            if image_name == ' ':
+                image_name = ''
+            else:
+                image_name+='|'
             update_re = cur.execute(update_sql,(image_name,ids))
             if update_re == 1:
                 app.logger.error('信息图片名称写入成功')
@@ -1076,6 +1079,184 @@ def get_image_infos(info_type,infos_id):
             app.logger.error(erro)
             app.logger.error('1078行')
             return 0
+
+#删除图片
+def del_arr_image(del_arr,info_type,**ids):
+    if info_type == '6':
+        leader = ids.get('leader')
+        num = 1
+        for one_image_name in del_arr:
+            old_infos_image = get_image_infos(info_type=info_type,infos_id=leader)
+            one_image_name+='|'
+            new_info_image = (old_infos_image.replace(one_image_name,''))[:-1]
+            update_re = ''
+            conn = ''
+            cur = ''
+            if new_info_image == '':
+                new_info_image = ' '
+                update_re,conn,cur = update_image_name(info_type,new_info_image,leader)
+            else:
+                update_re,conn,cur = update_image_name(info_type,new_info_image,leader)
+            if update_re == 1:
+                try:
+                    os.remove(app.config['UPLOAD_FOLDER']+one_image_name[:-1])
+                except Exception as erro:
+                    app.logger.error('1095行')
+                    app.logger.error(erro)
+                    conn.rollback()
+                    cur.close()
+                    conn.close()
+                    return 0
+                closeAll(conn,cur)
+                app.logger.error('删除侯选人信息图片名称成功')
+                if num == len(del_arr):
+                    return 1
+                num += 1
+            else:
+                app.logger.error("删除侯选人信息图片名称未更新成功")
+                app.logger.error('1119行')
+                conn.rollback()
+                cur.close()
+                conn.close()
+                return 0
+    elif info_type == '7':
+        member = ids.get('member')
+        num = 1
+        for one_image_name in del_arr:
+            old_infos_image = get_image_infos(info_type=info_type,infos_id=member)
+            one_image_name+='|'
+            new_info_image = (old_infos_image.replace(one_image_name,''))[:-1]
+            update_re = ''
+            conn = ''
+            cur = ''
+            if new_info_image == '':
+                new_info_image = ' '
+                update_re,conn,cur = update_image_name(info_type,new_info_image,member)
+            else:
+                update_re,conn,cur = update_image_name(info_type,new_info_image,member)
+            if update_re == 1:
+                try:
+                    os.remove(app.config['UPLOAD_FOLDER']+one_image_name[:-1])
+                except Exception as erro:
+                    app.logger.error('1095行')
+                    app.logger.error(erro)
+                    conn.rollback()
+                    cur.close()
+                    conn.close()
+                    return 0
+                closeAll(conn,cur)
+                app.logger.error('删除侯选人信息图片名称成功')
+                if num == len(del_arr):
+                    return 1
+                num += 1
+            else:
+                app.logger.error("删除侯选人信息图片名称未更新成功")
+                app.logger.error('1119行')
+                conn.rollback()
+                cur.close()
+                conn.close()
+                return 0
+
+#修改图片
+def change_arr_image(file,change_arr,info_type):
+    try:
+        num = 0
+        for one_image_name in change_arr:
+            if num < len(change_arr):
+                one_file = file[num]
+                if one_file and allowed_file(one_file.filename):
+                    try:
+                        one_file.save(os.path.join(app.config['UPLOAD_FOLDER'],one_image_name))
+                    except Exception as erro:
+                        app.logger.error(erro,'1129行')
+                        return 0
+                num += 1
+            elif num == len(change_arr):
+                for one_file in file:
+                    if one_file and allowed_file(one_file.filename):
+                        try:
+                            one_file.save(os.path.join(app.config['UPLOAD_FOLDER'],one_image_name))
+                        except Exception as erro:
+                            app.logger.error(erro,'1137行')
+                            return 0
+                    num += 1
+        return 1
+    except Exception as erro:
+        app.logger.error(erro)
+        app.logger.error('1151行')
+        return 0
+#添加图片
+def new_arr_image(file,image_infos,info_type,**ids):
+    try:
+        if info_type == '6':
+            leader = ids.get('leader')
+            num = 1
+            for one_image in file:
+                old_infos_image = get_image_infos(info_type=info_type,infos_id=ids)
+                if image_infos == '' and num == 1:#第一次存图片
+                    image_name = str(ids) + '_infos_1' + '.' + one_image.filename.rsplit('.', 1)[1]
+                    num  += 1
+                    result = save_image_infos(one_image,image_name,old_infos_image,info_type,infos_id=leader)
+                    if len(file) == 1:
+                        return result
+                    elif len(file) >1:
+                        pass
+                else:
+                    number = int((old_infos_image.split('|')[-2]).split('.')[0][-1])+1
+                    image_name = str(ids) + '_infos_'+ str(number)+'.' + one_image.filename.rsplit('.', 1)[1]
+                    if num < len(file):
+                        save_image_infos(one_image,image_name,old_infos_image,info_type,infos_id=leader)
+                        num += 1
+                    elif num == len(file):
+                        result = save_image_infos(one_image,image_name,old_infos_image,info_type,infos_id=leader)
+                        return result
+        elif info_type == '7':
+            leader = ids.get('le')
+            member = ids.get('me')
+            num = 1
+            for one_image in file:
+                old_infos_image = get_image_infos(info_type=info_type,infos_id=member)
+                if image_infos == '' and num == 1:#第一次存图片
+                    image_name = str(leader) + '_' + str(member) + '_infos_1' + '.' + one_image.filename.rsplit('.', 1)[1]
+                    num  += 1
+                    result = save_image_infos(one_image,image_name,old_infos_image,info_type,infos_id=member)
+                    if len(file) == 1:
+                        return result
+                    elif len(file) >1:
+                        pass
+                else:
+                    number = int((old_infos_image.split('|')[-2]).split('.')[0][-1])+1
+                    image_name = str(leader) + '_' + str(member) + '_infos_'+ str(number)+'.' + one_image.filename.rsplit('.', 1)[1]
+                    if num < len(file):
+                        save_image_infos(one_image,image_name,old_infos_image,info_type,infos_id=member)
+                        num += 1
+                    elif num == len(file):
+                        result = save_image_infos(one_image,image_name,old_infos_image,info_type,infos_id=member)
+                        return result
+    except Exception as erro:
+        app.logger.error(erro)
+        app.logger.error('1173行')
+        return 0
+
+#存储侯选人和团队成员信息图片
+def save_image_infos(file,image_name,image_infos,info_type,infos_id):
+    update_image=image_infos+image_name
+    update_image_re,conn,cur = update_image_name(info_type=info_type,image_name=update_image,ids=infos_id)
+    if update_image_re == 1:
+        if file and allowed_file(file.filename):
+            try:
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'],image_name))
+            except Exception as erro:
+                app.logger.error(erro,'415行')
+                conn.rollback()
+                cur.close()
+                conn.close()
+                return 0
+        closeAll(conn,cur)
+        return 1
+    else:
+        app.logger.error("信息图片名称未存储成功")
+        return 0
 
 # 更新候选人信息和团队人员信息
 def update_people_information(info_type, content):
