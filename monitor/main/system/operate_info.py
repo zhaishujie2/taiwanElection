@@ -1045,6 +1045,7 @@ def update_image_name(info_type,image_name,ids):
 def get_image_infos(info_type,infos_id):
     conn = getconn()
     cur = conn.cursor()
+    # print(infos_id)
     if info_type == '6':
         candidate_image_infos = """SELECT `image_infos` FROM `candidate_personnel_information` WHERE `candidate_id` = %s"""
         try:
@@ -1083,7 +1084,7 @@ def get_image_infos(info_type,infos_id):
 #删除图片
 def del_arr_image(del_arr,info_type,**ids):
     if info_type == '6':
-        leader = ids.get('leader')
+        leader = ids.get('le')
         num = 1
         for one_image_name in del_arr:
             old_infos_image = get_image_infos(info_type=info_type,infos_id=leader)
@@ -1120,7 +1121,7 @@ def del_arr_image(del_arr,info_type,**ids):
                 conn.close()
                 return 0
     elif info_type == '7':
-        member = ids.get('member')
+        member = ids.get('me')
         num = 1
         for one_image_name in del_arr:
             old_infos_image = get_image_infos(info_type=info_type,infos_id=member)
@@ -1189,12 +1190,12 @@ def change_arr_image(file,change_arr,info_type):
 def new_arr_image(file,image_infos,info_type,**ids):
     try:
         if info_type == '6':
-            leader = ids.get('leader')
+            leader = ids.get('le')
             num = 1
             for one_image in file:
-                old_infos_image = get_image_infos(info_type=info_type,infos_id=ids)
+                old_infos_image = get_image_infos(info_type=info_type,infos_id=leader)
                 if image_infos == '' and num == 1:#第一次存图片
-                    image_name = str(ids) + '_infos_1' + '.' + one_image.filename.rsplit('.', 1)[1]
+                    image_name = str(leader) + '_infos_1' + '.' + one_image.filename.rsplit('.', 1)[1]
                     num  += 1
                     result = save_image_infos(one_image,image_name,old_infos_image,info_type,infos_id=leader)
                     if len(file) == 1:
@@ -1203,7 +1204,7 @@ def new_arr_image(file,image_infos,info_type,**ids):
                         pass
                 else:
                     number = int((old_infos_image.split('|')[-2]).split('.')[0][-1])+1
-                    image_name = str(ids) + '_infos_'+ str(number)+'.' + one_image.filename.rsplit('.', 1)[1]
+                    image_name = str(leader) + '_infos_'+ str(number)+'.' + one_image.filename.rsplit('.', 1)[1]
                     if num < len(file):
                         save_image_infos(one_image,image_name,old_infos_image,info_type,infos_id=leader)
                         num += 1
