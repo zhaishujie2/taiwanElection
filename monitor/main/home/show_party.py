@@ -43,7 +43,7 @@ def get_party(message):
                 else:
                     member_dict['symbol'] = "image://http://"+IP+"/unknown.png"
                 member_dict['symbolSize'] = [70,70]
-                member_dict['draggable'] = 'true'
+                member_dict['draggable'] = 'false'
                 member_dict['category'] = 1
                 member_dict['label'] = {
                     'verticalAlign':'bottom',
@@ -96,21 +96,34 @@ def get_party(message):
         end_list = []
         end_dic = OrderedDict()
         keys_list = list(every_list[0].keys())
+        all_keys_list = list(every_list[0].keys())
         keys_num = len(keys_list)
-        keys_list.remove('民进党')
-        keys_list.remove('国民党')
+        if '民进党' in keys_list:
+            keys_list.remove('民进党')
+        else:
+            pass
+        if '国民党' in keys_list:    
+            keys_list.remove('国民党')
+        else:
+            pass
         num_dic = OrderedDict()
         for item in every_list:
-            mid_dic = {}
-            mid_dic['data'] = item['民进党']
-            one_links = get_one_links(item,'民进党',end_links_list)
-            mid_dic['links'] = one_links
-            end_dic['民进党'] = mid_dic
-            mid_dic ={}
-            mid_dic['data'] = item['国民党']
-            one_links = get_one_links(item,'国民党',end_links_list)
-            mid_dic['links'] = one_links
-            end_dic['国民党'] = mid_dic
+            if '民进党' in all_keys_list:
+                mid_dic = {}
+                mid_dic['data'] = item['民进党']
+                one_links = get_one_links(item,'民进党',end_links_list)
+                mid_dic['links'] = one_links
+                end_dic['民进党'] = mid_dic
+            else:
+                pass
+            if '国民党' in all_keys_list:
+                mid_dic ={}
+                mid_dic['data'] = item['国民党']
+                one_links = get_one_links(item,'国民党',end_links_list)
+                mid_dic['links'] = one_links
+                end_dic['国民党'] = mid_dic
+            else:
+                pass
             for key in keys_list:
                 mid_dic={}
                 mid_dic['data'] = item[key]
@@ -136,7 +149,10 @@ def get_party(message):
 
                     zhuan_dic = {}
                     zhuan_dic[k]=v
-                    num_dic[str(keys_num+num)] = zhuan_dic
+                    if keys_num > 2:
+                        num_dic[str(keys_num+num)] = zhuan_dic
+                    elif keys_num <= 2:
+                        num_dic[str(3+num)] = zhuan_dic
                     num -= 1
         end_list.append(num_dic)
         closeAll(houxuanren_conn, houxuanren_cur)
