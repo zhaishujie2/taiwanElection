@@ -85,3 +85,20 @@ def get_egional_images(id):
     finally:
         closeAll(conn, cur)
 
+def get_partisan(id):
+    conn = getconn()
+    cur = conn.cursor()
+    try:
+        sql = "select partisan from candidate_personnel_information  where candidate_id =%s"
+        cur.execute(sql, id)
+        result = cur.fetchone()
+        print(result[0],"==================",id)
+        if result[0] == "":
+            return "无党"
+        if result[0] == None:
+            return "无党"
+        return result[0]
+    except (Exception) as e:
+        return "无党"
+    finally:
+        closeAll(conn, cur)
