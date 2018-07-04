@@ -3,8 +3,7 @@ from monitor.util.mysql_util import getconn, closeAll
 from collections import OrderedDict
 from monitor import app
 from flask import session
-import json
-
+from monitor.util.config import IP
 
 # 获取每个候选人团队信息
 def get_party(message):
@@ -36,12 +35,16 @@ def get_party(message):
                 member_dict['name'] = member[0]
                 member_dict['job'] = member[1]
                 member_dict['department'] = member[2]
-                member_dict['id'] = member[3]
-                member_dict['type'] = '2'
-                member_dict['symbol'] = "'image://' + IP + '/' + " + member[4]
+                member_dict['team_id'] = member[3]
+                member_dict['type'] = 2
+                if member[4] != '':
+                    member_dict['symbol'] = "image://http://"+IP+"/"+member[4]
+
+                else:
+                    member_dict['symbol'] = "image://http://"+IP+"/unknown.png"
                 member_dict['symbolSize'] = [70,70]
-                member_dict['draggable'] = 'true'
-                member_dict['category'] = '1'
+                member_dict['draggable'] = 'false'
+                member_dict['category'] = 1
                 member_dict['label'] = {
                     'verticalAlign':'bottom',
                     'offset':[5,55],
@@ -51,11 +54,14 @@ def get_party(message):
                 }
                 member_list.append(member_dict)
             leader_dict['name'] = name
-            leader_dict['type'] = '1'
-            leader_dict['category'] = '0'
-            leader_dict['id'] = name_id
+            leader_dict['type'] = 1
+            leader_dict['category'] = 0
+            leader_dict['team_id'] = int(name_id)
             leader_dict['party'] = party[0]
-            leader_dict['symbol'] = "'image://' + IP + '/' + " + party[1]
+            if party[1] != '':
+                leader_dict['symbol'] = "image://http://"+IP+"/"+ party[1]
+            else:
+                leader_dict['symbol'] = "image://http://"+IP+"/unknown.png"
             leader_dict['symbolSize'] = [70,70]
             leader_dict['label'] = {
                 'verticalAlign':'bottom',
@@ -71,17 +77,17 @@ def get_party(message):
             mid_links_list = get_links(mid_leader_dict)
             end_links_dic = {}
             end_links_dic[leader_dict['name']] = mid_links_list
-
             end_links_list.append(end_links_dic)
             if party[0] in infos_dict.keys():
                 mids_list = infos_dict[party[0]]
                 mids_list.append(leader_dict)
+                for mem in member_list:
+                    mids_list.append(mem)
                 infos_dict[party[0]] = mids_list
             else:
                 leader_dict['name'] = name
-                leader_dict['id'] = name_id
+                leader_dict['team_id'] = int(name_id)
                 leader_dict['party'] = party[0]
-                # leader_dict['member'] = member_list
                 mid_list = [leader_dict]
                 for mem in member_list:
                     mid_list.append(mem)
@@ -90,31 +96,65 @@ def get_party(message):
         end_list = []
         end_dic = OrderedDict()
         keys_list = list(every_list[0].keys())
+        all_keys_list = list(every_list[0].keys())
         keys_num = len(keys_list)
-        keys_list.remove('民进党')
-        keys_list.remove('国民党')
+        if '民进党' in keys_list:
+            keys_list.remove('民进党')
+        else:
+            pass
+        if '国民党' in keys_list:    
+            keys_list.remove('国民党')
+        else:
+            pass
+        num_dic = OrderedDict()
         for item in every_list:
-            mid_dic = {}
-            mid_dic['data'] = item['民进党']
-            one_links = get_one_links(item,'民进党',end_links_list)
-            mid_dic['links'] = one_links
-            end_dic['0民进党'] = mid_dic
-            mid_dic ={}
-            mid_dic['data'] = item['国民党']
-            one_links = get_one_links(item,'国民党',end_links_list)
-            mid_dic['links'] = one_links
-            end_dic['1国民党'] = mid_dic
+            if '民进党' in all_keys_list:
+                mid_dic = {}
+                mid_dic['data'] = item['民进党']
+                one_links = get_one_links(item,'民进党',end_links_list)
+                mid_dic['links'] = one_links
+                end_dic['民进党'] = mid_dic
+            else:
+                pass
+            if '国民党' in all_keys_list:
+                mid_dic ={}
+                mid_dic['data'] = item['国民党']
+                one_links = get_one_links(item,'国民党',end_links_list)
+                mid_dic['links'] = one_links
+                end_dic['国民党'] = mid_dic
+            else:
+                pass
             for key in keys_list:
                 mid_dic={}
                 mid_dic['data'] = item[key]
                 one_links = get_one_links(item,key,end_links_list)
                 mid_dic['links'] = one_links
-                if key == '无党':
-                    key = str(keys_num-1)+'无党'
-                else:
-                    key = str(keys_num-2)+key
                 end_dic[key] = mid_dic
-        end_list.append(end_dic)
+            num_dic = {}
+            num = -1
+            for k,v in end_dic.items():
+                if k == '民进党':
+                    zhuan_dic = {}
+                    zhuan_dic[k]=v
+                    num_dic['0'] = zhuan_dic
+                elif k == '国民党':
+                    zhuan_dic = {}
+                    zhuan_dic[k]=v
+                    num_dic['1'] = zhuan_dic
+                elif k == '无党':
+                    zhuan_dic = {}
+                    zhuan_dic[k]=v
+                    num_dic[str(keys_num)] = zhuan_dic
+                else:
+
+                    zhuan_dic = {}
+                    zhuan_dic[k]=v
+                    if keys_num > 2:
+                        num_dic[str(keys_num+num)] = zhuan_dic
+                    elif keys_num <= 2:
+                        num_dic[str(3+num)] = zhuan_dic
+                    num -= 1
+        end_list.append(num_dic)
         closeAll(houxuanren_conn, houxuanren_cur)
         closeAll(member_conn, member_cur)
         return end_list
@@ -127,7 +167,7 @@ def get_one_links(item,dangpai,end_links_list):
     all_links_list = []
     for na in item[dangpai]:
         leader_name = na['name']
-        if na['type'] == '1':
+        if na['type'] == 1:
             for links in end_links_list:
                 if links.get(leader_name) == None:
                     pass
@@ -143,7 +183,7 @@ def get_links(leader_dic):
     links_dic = {}
     for one in leader_dic['member']:
         links_dic['source'] = leader_dic['name']
-        if one['type'] == '2':
+        if one['type'] == 2:
             links_dic['target'] = one['name']
             target_list.append(one['name'])
     for tar in target_list:
