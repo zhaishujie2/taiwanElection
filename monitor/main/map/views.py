@@ -1,6 +1,6 @@
 # coding=utf-8
 from flask import request, session, jsonify
-from .draw_mysql import get_map_color, get_egional_electors, get_egional_images,get_session
+from .draw_mysql import get_map_color, get_egional_electors,get_session,get_popularity_partisan
 from .news_show import taiwan_latest_news, taiwan_event_news
 from .election import get_popularity
 from monitor import app
@@ -111,3 +111,12 @@ def get_popularity_info():
     except:
         app.logger.error("传入area_id,year有误 id:", id, "year:", year)
         return jsonify({"message": "传入area_id,year有误"}), 406
+
+
+@mod.route('/get_popularity_partisan/')
+def get_popularity_partisan_info():
+    result = get_popularity_partisan()
+    if result == 0:
+        return jsonify({"message": "mysql查询出现错误"}), 406
+    else:
+        return jsonify({"message": result}), 200
