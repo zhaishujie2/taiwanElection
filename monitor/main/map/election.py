@@ -4,6 +4,7 @@ from monitor.util.config import fb_weight, tw_weight, news_weight, ptt_weight, e
     es_facebook_type, es_news_index, es_news_type, es_twitter_index, es_twitter_type, es_forum_type, es_forum_index
 from monitor.util.utilclass import get_time
 from elasticsearch import Elasticsearch
+from monitor.main.map.draw_mysql import get_partisan
 
 es = Elasticsearch(es_host, timeout=600)
 
@@ -42,11 +43,15 @@ def get_popularity(start_time, end_time, dict_name):
             dict[dict_name[id]] = sorce
             sum+=sorce
         for id in dict_name.keys():
+            map_dict = {}
+            map_dict["partisan"] = get_partisan(id)
             if count == len(dict_name):
-                result_dict[dict_name[id]] = round(flat, 3)
+                map_dict["sorce"] = round(flat, 3)
+                result_dict[dict_name[id]] =map_dict
             else:
                 sorce = dict[dict_name[id]] / sum
-                result_dict[dict_name[id]] = sorce
+                map_dict["sorce"] = sorce
+                result_dict[dict_name[id]] = map_dict
                 flat -= sorce
                 count +=1
         return result_dict
@@ -212,4 +217,3 @@ def get_ptt_popularity(dict_name, start_time, end_time):
         return result_dict
     except:
         return 0
-

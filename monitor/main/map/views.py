@@ -1,6 +1,6 @@
 # coding=utf-8
 from flask import request, session, jsonify
-from .draw_mysql import get_map_color, get_egional_electors, get_egional_images,get_session
+from .draw_mysql import get_map_color, get_egional_electors,get_session
 from .news_show import taiwan_latest_news, taiwan_event_news
 from .election import get_popularity
 from monitor import app
