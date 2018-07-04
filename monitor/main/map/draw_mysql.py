@@ -92,7 +92,6 @@ def get_partisan(id):
         sql = "select partisan from candidate_personnel_information  where candidate_id =%s"
         cur.execute(sql, id)
         result = cur.fetchone()
-        print(result[0],"==================",id)
         if result[0] == "":
             return "无党"
         if result[0] == None:
@@ -100,5 +99,26 @@ def get_partisan(id):
         return result[0]
     except (Exception) as e:
         return "无党"
+    finally:
+        closeAll(conn, cur)
+
+
+def get_popularity_partisan():
+    conn = getconn()
+    cur = conn.cursor()
+    dict = {}
+    try:
+        sql = "select m.a as area ,partisan from popularity,(select max(popularity_score) as s ,m.s as t ,m.n as a from  popularity ,(select max(create_data) as s,administrative_id as n  from popularity GROUP BY administrative_id)m where administrative_id = m.n  and create_data=m.s GROUP BY administrative_id)m ,candidate_personnel_information where create_data = m.t and administrative_id = m.a and popularity_score = m.s and popularity.candidate_id = candidate_personnel_information.candidate_id"
+        count = cur.execute(sql)
+        if count ==0:
+            return 0
+        else :
+            result = cur.fetchmany(count)
+            for item in result:
+                dict[item[0]]=item[1]
+            return dict
+        return 0
+    except (Exception) as e:
+        return 0
     finally:
         closeAll(conn, cur)
