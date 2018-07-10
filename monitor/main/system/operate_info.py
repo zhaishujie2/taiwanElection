@@ -94,6 +94,9 @@ def update_info(datas):
                     up_sql += "{} = '{}', ".format(k, v)
                 else:
                     up_sql += "{} = '{}' ".format(k, v)
+            select_facebook_url = """SELECT `facebook_url` FROM `spider_infos` WHERE """+ where_sql
+            cur.execute(select_facebook_url)
+            url = cur.fetchone()
 
             update_spider_sql = """UPDATE `spider_infos` SET """ + up_sql + ' WHERE ' + where_sql
             spider_re = cur.execute(update_spider_sql)
@@ -104,7 +107,7 @@ def update_info(datas):
                 conn.close()
                 return 0
             else:
-                if len(up_dict) == 1 and facebook_url != None:
+                if facebook_url != url[0]:
                     app.logger.error('facebook数据更新成功，关联更新数据未在侯选人信息与详细信息中')
                     closeAll(conn,cur)
                     return 1
