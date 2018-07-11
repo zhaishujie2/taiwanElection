@@ -1,7 +1,8 @@
 from monitor.util.config import es_host, es_facebook_index, es_facebook_type, es_news_index, es_news_type, \
     es_twitter_index, es_twitter_type
 from elasticsearch import Elasticsearch
-from monitor.util.utilclass import get_date, get_time
+from monitor.util.utilclass import get_time,get_before_time
+
 import time
 
 es = Elasticsearch(es_host, timeout=600)
@@ -10,7 +11,8 @@ es = Elasticsearch(es_host, timeout=600)
 def get_candidates(dict_name):
     try:
         date = time.strftime("%Y-%m-%d")
-        start_time, end_time = get_time(date, date)
+        start_time = get_before_time(date,45)
+        start_time, end_time = get_time(start_time, date)
         sum = 0
         dict = {}
         face_dict = {}
