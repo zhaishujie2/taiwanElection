@@ -36,15 +36,23 @@ app.config['SECRET_KEY'] = '123456'
 app.config['UPLOAD_FOLDER'] = '/var/www/html/tw/image/'#当前工作目录
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024#图片上传最大限制
 #add Module
-from .main import  userModule
+from .main import userModule
 from .main import mapModule
 from .main import informationModule
 from .main import homeModule
-from .main import systemModule
+# from .main import systemModule
 from .main import forecastModule
+from .main import candidateModule
+from .main import regionModule
+from .main import settingModule
+from .main import supportModule
 app.register_blueprint(userModule)
 app.register_blueprint(mapModule)
 app.register_blueprint(informationModule)
 app.register_blueprint(homeModule)
-app.register_blueprint(systemModule)
+# app.register_blueprint(systemModule)
 app.register_blueprint(forecastModule)
+app.register_blueprint(candidateModule)
+app.register_blueprint(regionModule)
+app.register_blueprint(settingModule)
+app.register_blueprint(supportModule)
