@@ -4,6 +4,7 @@ from .information.views import mod as informationModule
 from .home.views import mod as homeModule
 # from .system.views import mod as systemModule
 from .forecast.views import mod as forecastModule
+from .measure.views import mod as measureModule
 from .system.candidate.views import mod as candidateModule
 from .system.region.views import mod as regionModule
 from .system.setting.views import mod as settingModule
