@@ -11,7 +11,7 @@ es = Elasticsearch(es_host, timeout=600)
 def get_candidates(dict_name):
     try:
         date = time.strftime("%Y-%m-%d")
-        start_time = get_before_time(date,45)
+        start_time = get_before_time(date,30)
         start_time, end_time = get_time(start_time, date)
         sum = 0
         dict = {}
