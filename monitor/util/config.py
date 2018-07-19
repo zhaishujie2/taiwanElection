@@ -30,3 +30,4 @@ year = 2018
 
 #读取图片存储路径
 IP = '192.168.3.24/tw/image'#读取图片
+upload_files = "/var/www/html/tw/home/file/"
