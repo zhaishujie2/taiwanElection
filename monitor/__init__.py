@@ -46,10 +46,12 @@ from .main import candidateModule
 from .main import regionModule
 from .main import settingModule
 from .main import supportModule
+from .main import measureModule
 app.register_blueprint(userModule)
 app.register_blueprint(mapModule)
 app.register_blueprint(informationModule)
 app.register_blueprint(homeModule)
+app.register_blueprint(measureModule)
 # app.register_blueprint(systemModule)
 app.register_blueprint(forecastModule)
 app.register_blueprint(candidateModule)
