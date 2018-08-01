@@ -2,11 +2,12 @@
 from flask import jsonify, request, url_for, send_from_directory, session
 from . import mod
 from monitor import app
-from monitor.util.config import upload_files
+from monitor.util.config import UPLOAD_FILES
 from monitor.main.measure.measure_operate import allowed_file, save_new_file, process_delete, select_file_all, \
     insert_message_info, select_messages, \
     delete_messages, delete_user_info, login, add_new_user, select_users_all, update_users_info, select_user_info_one, \
-    select_user_info_page, update_file_label, select_message_info_page
+    select_user_info_page, update_file_label, select_message_info_page, select_message_info_model, \
+    select_message_model_page, insert_reply_message_info, get_user_roles, select_reply_info, delete_reply_info
 import json, os
 
 
@@ -23,8 +24,8 @@ def upload_word():
             f = request.files['file']
             if f and allowed_file(f.filename):
                 doc_name = f.filename
-                f.save(os.path.join(upload_files, doc_name))
-                file_root = os.path.join(upload_files, doc_name)
+                f.save(os.path.join(UPLOAD_FILES, doc_name))
+                file_root = os.path.join(UPLOAD_FILES, doc_name)
                 message = save_new_file(file_root, doc_name, user_name, is_private, file_label)
                 if message:
                     return jsonify({"message": message}), 201
@@ -42,7 +43,7 @@ def upload_word():
 @mod.route("/download/<path:filename>")
 def downloader(filename):
     try:
-        dirpath = os.path.join(upload_files)  # 这里是下载目录，从工程的根目录写起，比如你要下载static/js里面的js文件，这里就要写“static/js”
+        dirpath = os.path.join(UPLOAD_FILES)  # 这里是下载目录，从工程的根目录写起，比如你要下载static/js里面的js文件，这里就要写“static/js”
         return send_from_directory(dirpath, filename, as_attachment=True)  # as_attachment=True 一定要写，不然会变成打开，而不是下载
     except Exception as erro:
         app.logger.error(erro)
@@ -55,7 +56,6 @@ def remove_file():
     try:
         file_name = request.form.get('file_name', '')
         user_name = session.get('user')
-        print(file_name, user_name)
         if file_name and user_name:
             message = process_delete(file_name, user_name)
             if message:
@@ -90,7 +90,6 @@ def update_label():
 def select_file():
     try:
         user_name = session.get('user')
-        print(user_name)
         if user_name:
             message = select_file_all(user_name)
             return jsonify({"message": message}), 200
@@ -127,7 +126,7 @@ def select_message():
     try:
         user_name = session.get('user')
         if user_name:
-            message, count = select_messages()
+            message, count = select_messages(user_name)
             return jsonify({"message": message, "all_count": count}), 200
         else:
             return jsonify({"message": "input is null"}), 406
@@ -142,11 +141,12 @@ def select_message_page():
     try:
         datas = request.form.get('data', '')
         datas_info = json.loads(datas)
+        user = session.get('user')
         page = datas_info['page']
         count = datas_info['count']
 
         if page and count:
-            message = select_message_info_page(page, count)
+            message = select_message_info_page(page, count, user)
             return jsonify({"message": message}), 200
         else:
             return jsonify({"message": "type input is null"}), 406
@@ -186,8 +186,6 @@ def login_user():
             try:
                 session["user"] = user
                 session["user_level"] = info
-                print('================')
-                print(session.get('user'))
                 return jsonify({"message": "ok", "user_level": info}), 200
             except (Exception)as e:
                 app.logger.error(e)
@@ -210,7 +208,6 @@ def get_sessions():
 
 
 # 注销
-
 @mod.route('/logout/')
 def del_session():
     app.logger.info("用户注销数据！")
@@ -334,6 +331,108 @@ def select_user_page():
             return jsonify({"message": message}), 200
         else:
             return jsonify({"message": "type input is null"}), 406
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(0)
+
+
+# 根据模块查询留言信息
+@mod.route('/select_message_model/', methods=['POST'])
+def select_message_model():
+    try:
+        datas = request.form.get('data', '')
+        datas_info = json.loads(datas)
+        user = session.get("user")
+        model_name = datas_info['model_name']
+        if model_name:
+            message, count = select_message_info_model(model_name, user)
+            return jsonify({"message": message, "count": count}), 200
+        else:
+            return jsonify({"message": "type input is null"}), 406
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(0)
+
+
+# 根据模块查询留言信息-分页
+@mod.route('/select_model_page/', methods=['POST'])
+def select_model_page():
+    try:
+        datas = request.form.get('data', '')
+        datas_info = json.loads(datas)
+        user = session.get("user")
+        page = datas_info['page']
+        count = datas_info['count']
+        model_name = datas_info['model_name']
+
+        if page and count and model_name:
+            message = select_message_model_page(page, count, model_name, user)
+            return jsonify({"message": message}), 200
+        else:
+            return jsonify({"message": "type input is null"}), 406
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(0)
+
+
+# 添加留言回复
+@mod.route("/insert_reply_message/", methods=['post'])
+def insert_reply_message():
+    try:
+        datas = request.form.get('data', '')
+        datas_info = json.loads(datas)
+        user_name = session.get('user')  # 获取当前登录的用户
+        role_number = get_user_roles(user_name)
+        message_author = datas_info.get('message_author')
+        if user_name == message_author:
+            return jsonify({"message": "you can't reply yourself"}), 406
+        elif role_number != '0' and role_number != '1':
+            return jsonify({"message": "you don't have permission"}), 406
+        message_id = datas_info.get('message_id')
+        reply_message = datas_info.get('reply_message')
+        if message_id and reply_message:
+            message = insert_reply_message_info(message_id, message_author, reply_message, user_name)
+            return jsonify({"message": message}), 200
+        else:
+            return jsonify({"message": "input is null"}), 406
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(0)
+
+
+# 获取留言回复
+@mod.route('/select_reply/', methods=['POST'])
+def select_reply():
+    try:
+        user = session.get("user")
+        if user:
+            message, count = select_reply_info(user)
+            return jsonify({"message": message, "count":count}), 200
+        else:
+            return jsonify({"message": "type input is null"}), 406
+    except Exception as erro:
+        app.logger.error(erro)
+        return str(0)
+
+
+# 删除留言回复
+@mod.route("/delete_reply/", methods=['post'])
+def delete_reply():
+    try:
+        datas = request.form.get('data', '')
+        datas_info = json.loads(datas)
+        user_name = session.get('user')
+        reply_id = datas_info.get('reply_id')
+        role_number = get_user_roles(user_name)
+        if role_number == '0' or role_number == '1':
+            if reply_id:
+                message = delete_reply_info(reply_id)
+                return jsonify({"message": message}), 200
+            else:
+                return jsonify({"message": "input is null"}), 406
+        else:
+            return jsonify({"message": "you don't have permission"}), 406
+
     except Exception as erro:
         app.logger.error(erro)
         return str(0)

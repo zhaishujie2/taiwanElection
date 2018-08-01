@@ -4,7 +4,7 @@ from monitor import app
 import os,sys,time
 from docx import Document
 from monitor.main.measure.langconv import Converter
-from monitor.util.config import upload_files
+from monitor.util.config import UPLOAD_FILES
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif', 'docx'])
 
 
@@ -87,7 +87,7 @@ def process_delete(file_name, user_name):
                 return 0
             else:
                 try:
-                    os.remove(os.path.join(upload_files, file_name))
+                    os.remove(os.path.join(UPLOAD_FILES, file_name))
                 except Exception as e:
                     return 0
                 return 1
@@ -157,13 +157,18 @@ def insert_message_info(user_name, model_info, message):
 
 
 # 查找所有留言消息
-def select_messages():
+def select_messages(user):
     conn = getconn()
     cur = conn.cursor()
-
+    role_number = get_user_roles(user)
     try:
-        select_sql = """SELECT `id`,`user` ,`model_info` ,`message` ,`time`  FROM `messages` """
-        re = cur.execute(select_sql)
+        if role_number == '0' or role_number == '1':
+            # 管理员可查看所有的消息
+            select_sql = """SELECT `id`,`user` ,`model_info` ,`message` ,`time`  FROM `messages` """
+            re = cur.execute(select_sql)
+        else:
+            select_sql = """SELECT `id`,`user` ,`model_info` ,`message` ,`time`  FROM `messages` WHERE `user`= %s"""
+            re = cur.execute(select_sql, user)
         if re < 1:
             return 0
         else:
@@ -187,28 +192,31 @@ def select_messages():
         closeAll(conn, cur)
 
 
-def select_message_info_page(page, count):
+def select_message_info_page(page, count, user):
     conn = getconn()
     cur = conn.cursor()
+    role_number = get_user_roles(user)
     try:
-        select_info = '''SELECT `id`,`user` ,`model_info` ,`message` ,`time` FROM `messages` LIMIT %s, %s;'''
-        count = count
         if int(page) == 1 or int(page) == 0:
             page_t = 0
         else:
             page_t = (int(page) - 1) * int(count)
-        re = cur.execute(select_info, (int(page_t), int(count)))
+
+        if role_number == '0' or role_number == '1':
+            select_info = '''SELECT `id`,`user` ,`model_info` ,`message` ,`time` FROM `messages` LIMIT %s, %s;'''
+            re = cur.execute(select_info, (int(page_t), int(count)))
+        else:
+            select_info = '''SELECT `id`,`user` ,`model_info` ,`message` ,`time` FROM `messages` WHERE `user`= %s LIMIT %s, %s;'''
+            re = cur.execute(select_info, (user, int(page_t), int(count)))
         if re < 1:
             return 0
         else:
             result = cur.fetchall()
             lists = []
             for item in result:
-                # pro_name = select_pro_by_id(item[1])
                 dict = {}
                 dict['id'] = item[0]
                 dict['user'] = item[1]
-                # dict['administrative_name'] = pro_name
                 dict['model_info'] = item[2]
                 dict['message'] = item[3]
                 dict['time'] = item[4]
@@ -220,7 +228,6 @@ def select_message_info_page(page, count):
     finally:
         closeAll(conn, cur)
 
-    pass
 
 # 删除指定的消息
 def delete_messages(user_name, message_id):
@@ -260,8 +267,9 @@ def login(name, password):
         password = md5(password)
         sql = "select `user`, `position` from users where user=%s and passwd=%s"
         result = cur.execute(sql, (name, password))
-        print(result)
+        # print(result)
         if result < 1:
+
 
             return 0, 0
         else:
@@ -279,7 +287,7 @@ def login(name, password):
 def add_new_user(new_user,password, user_level):
     conn = getconn()
     cur = conn.cursor()
-    print('add_new_user')
+    # print('add_new_user')
     try:
         insert_sql = """INSERT INTO `users` (`user`,`passwd`,`position`) VALUES (%s,%s,%s)"""
         select_sql = """SELECT `user` FROM `users` WHERE `user`= %s"""
@@ -287,7 +295,7 @@ def add_new_user(new_user,password, user_level):
         if select_result != 0:
             return "当前用户已存在"
         password = md5(password)
-        print(password)
+        # print(password)
         result = cur.execute(insert_sql, (new_user, password, user_level))
         if result < 1:
             return "插入失败"
@@ -359,7 +367,7 @@ def update_users_info(datas):
             up_num = 0
             for k, v in where_dict.items():
                 ency_password = select_user_secret(v)
-                print(ency_password)
+                # print(ency_password)
                 where_num += 1
                 if where_num < len(where_dict):
                     where_sql += "{} = '{}' AND ".format(k, v)
@@ -475,8 +483,8 @@ def select_user_info_page(page, count):
 def update_file_label(datas):
     where_dict = datas.get('where_dict')
     up_dict = datas.get('up_dict')
-    print(where_dict)
-    print(up_dict)
+    # print(where_dict)
+    # print(up_dict)
     if len(where_dict) == 0 or len(up_dict) == 0:
         if len(where_dict) == 0:
             return "更新条件不能为空"
@@ -515,3 +523,168 @@ def update_file_label(datas):
             closeAll(conn, cur)
 
 
+# 根据模块名查询此模块下的所有留言信息
+def select_message_info_model(model_name, user_name):
+    conn = getconn()
+    cur = conn.cursor()
+    role_number = get_user_roles(user_name)
+    # print(user_name)
+    try:
+        if role_number == '0' or role_number == '1':
+
+            select_sql = """SELECT `id`,`user` ,`model_info` ,`message` ,`time`  FROM `messages` WHERE `model_info` = %s"""
+            re = cur.execute(select_sql, model_name)
+        else:
+            select_sql = """SELECT `id`,`user` ,`model_info` ,`message` ,`time`  FROM `messages` WHERE `model_info` = %s AND `user` = %s"""
+            re = cur.execute(select_sql, (model_name, user_name))
+
+        if re < 1:
+            return 0, 0
+        else:
+            count = re
+            result = cur.fetchall()
+            lists = []
+            for item in result:
+                dict = {}
+                dict['id'] = item[0]
+                dict['user'] = item[1]
+                dict['model_info'] = item[2]
+                dict['message'] = item[3]
+                dict['time'] = item[4]
+                lists.append(dict)
+            return lists, count
+
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
+    finally:
+        closeAll(conn, cur)
+
+
+# 根据留言模块分页查询留言信息
+def select_message_model_page(page, count, model_name, user):
+    conn = getconn()
+    cur = conn.cursor()
+    role_number = get_user_roles(user)
+    try:
+        if int(page) == 1 or int(page) == 0:
+            page_t = 0
+        else:
+            page_t = (int(page) - 1) * int(count)
+        if role_number == '0' or role_number == '1':
+            select_info = '''SELECT `id`,`user` ,`model_info` ,`message` ,`time` FROM `messages` WHERE `model_info` = %s LIMIT %s, %s;'''
+            re = cur.execute(select_info, (model_name, int(page_t), int(count)))
+        else:
+            select_info = '''SELECT `id`,`user` ,`model_info` ,`message` ,`time` FROM `messages` WHERE `model_info` = %s AND `user` = %s  LIMIT %s, %s;'''
+            re = cur.execute(select_info, (model_name, user, int(page_t), int(count)))
+        if re < 1:
+            return 0
+        else:
+            result = cur.fetchall()
+            lists = []
+            for item in result:
+                dict = {}
+                dict['id'] = item[0]
+                dict['user'] = item[1]
+                dict['model_info'] = item[2]
+                dict['message'] = item[3]
+                dict['time'] = item[4]
+                lists.append(dict)
+            return lists
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
+    finally:
+        closeAll(conn, cur)
+
+
+# 获取用户权限信息
+def get_user_roles(user):
+    conn = getconn()
+    cur = conn.cursor()
+    try:
+        select_info = '''SELECT `id`,`user` ,`position` FROM `users` WHERE `user` = %s;'''
+        re = cur.execute(select_info, user)
+        if re < 1:
+            return 0
+        else:
+            result = cur.fetchone()
+            return result[2]
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
+    finally:
+        closeAll(conn, cur)
+
+
+# 插入回复信息
+def insert_reply_message_info(message_id, message_author, reply_message, user_name):
+    conn = getconn()
+    cur = conn.cursor()
+    current_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+    insert_sql = """INSERT INTO `reply_messages` (`message_id`, `message_author`, `reply_message`,`replyer`,`time`) VALUES (%s,%s,%s,%s,%s)"""
+    try:
+        insert_re = cur.execute(insert_sql, (message_id, message_author, reply_message, user_name, current_time))
+        if insert_re < 1:
+            return 0
+        else:
+            return 1
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
+    finally:
+        closeAll(conn, cur)
+
+
+# 获取留言回复
+def select_reply_info(user):
+    conn = getconn()
+    cur = conn.cursor()
+    role_number = get_user_roles(user)
+    # print(user, role_number)
+    try:
+        if role_number == '0' or role_number == '1':
+            select_sql = """SELECT `id`,`message_id` ,`reply_message` ,`replyer` ,`time` FROM `reply_messages` """
+            re = cur.execute(select_sql)
+        else:
+            select_sql = """SELECT `id`,`message_id` ,`reply_message` ,`replyer` ,`time` FROM `reply_messages` WHERE `message_author` = %s"""
+            re = cur.execute(select_sql, user)
+
+        if re < 1:
+            return 0, 0
+        else:
+            count = re
+            result = cur.fetchall()
+            lists = []
+            for item in result:
+                dict = {}
+                dict['id'] = item[0]
+                dict['message_id'] = item[1]
+                dict['reply_message'] = item[2]
+                dict['replyer'] = item[3]
+                dict['time'] = item[4]
+                lists.append(dict)
+            return lists, count
+
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
+    finally:
+        closeAll(conn, cur)
+
+
+# 删除留言回复
+def delete_reply_info(reply_id):
+    conn = getconn()
+    cur = conn.cursor()
+    try:
+        delete_sql = """DELETE FROM `reply_messages` WHERE id = %s """
+        re = cur.execute(delete_sql, reply_id)
+        if re < 1:
+            return 0
+        return 1
+    except Exception as erro:
+        app.logger.error(erro)
+        return 0
+    finally:
+        closeAll(conn, cur)
