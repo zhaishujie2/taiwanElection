@@ -46,6 +46,7 @@ def get_egional_electors(id, year):
     finally:
         closeAll(conn, cur)
 
+
 # 获取当前地区的session
 def get_session(id, year):
     dict_img = {}
@@ -62,12 +63,13 @@ def get_session(id, year):
         for item in result:
             dict_img[item[1]] = item[3]
             dict_partisan[item[1]] = item[2]
-        return dict_img,dict_partisan
+        return dict_img, dict_partisan
     except (Exception) as e:
         app.logger.error(e)
         return 0
     finally:
         closeAll(conn, cur)
+
 
 # 获取当前选举人图片
 def get_egional_images(id):
@@ -84,6 +86,7 @@ def get_egional_images(id):
         return 0
     finally:
         closeAll(conn, cur)
+
 
 def get_partisan(id):
     conn = getconn()
@@ -103,22 +106,67 @@ def get_partisan(id):
         closeAll(conn, cur)
 
 
-def get_popularity_partisan():
+def get_popularity_partisan(year):
     conn = getconn()
     cur = conn.cursor()
     dict = {}
     try:
-        sql = "select m.a as area ,partisan from popularity,(select max(popularity_score) as s ,m.s as t ,m.n as a from  popularity ,(select max(create_data) as s,administrative_id as n  from popularity GROUP BY administrative_id)m where administrative_id = m.n  and create_data=m.s GROUP BY administrative_id)m ,candidate_personnel_information where create_data = m.t and administrative_id = m.a and popularity_score = m.s and popularity.candidate_id = candidate_personnel_information.candidate_id"
-        count = cur.execute(sql)
-        if count ==0:
+        sql = "select m.a as area ,partisan from popularity,(select max(popularity_score) as s ,m.s as t ,m.n as a from  popularity ,(select max(create_data) as s,administrative_id as n  from popularity where `year`=%s GROUP BY administrative_id )m where administrative_id = m.n  and create_data=m.s GROUP BY administrative_id)m ,candidate_personnel_information where create_data = m.t and administrative_id = m.a and popularity_score = m.s and popularity.candidate_id = candidate_personnel_information.candidate_id"
+        count = cur.execute(sql, year)
+        if count == 0:
             return 0
-        else :
+        else:
             result = cur.fetchmany(count)
             for item in result:
-                dict[item[0]]=item[1]
+                dict[item[0]] = item[1]
             return dict
         return 0
     except (Exception) as e:
         return 0
     finally:
         closeAll(conn, cur)
+
+
+def get_popularity_partisan_compared(year):
+    cnp = 0
+    dpp = 0
+    other = 0
+    result = get_popularity_partisan(year)
+    for k, v in result.items():
+        if v == "国民党":
+            cnp += 1
+        elif v == "民进党":
+            dpp += 1
+        else:
+            other += 1
+    return {"cnp": cnp, "dpp": dpp, "other": other}
+
+
+def partisan_compared(year):
+    present = get_map_color(year)
+    popularity = get_popularity_partisan(year)
+    cnp_dpp = []
+    dpp_cnp = []
+    cnp_other = []
+    dpp_other = []
+    other_cnp = []
+    other_dpp = []
+    for key in present.keys():
+        if present[key] == popularity[key]:
+            pass
+        else:
+            if present[key] == "国民党" and popularity[key] == "民进党":
+                cnp_dpp.append(key)
+            elif present[key] == "民进党" and popularity[key] == "国民党":
+                dpp_cnp.append(key)
+            elif present[key] == "国民党" and popularity[key] != "民进党":
+                cnp_other.append(key)
+            elif present[key] == "民进党" and popularity[key] != "国民党":
+                dpp_other.append(key)
+            elif present[key]!="国民党" and present[key]!="民进党" and popularity[key] == "国民党":
+                other_cnp.append(key)
+            elif present[key]!="国民党" and present[key]!="民进党" and popularity[key] == "民进党":
+                other_dpp.append(key)
+    return {"cnp_dpp":cnp_dpp,"dpp_cnp":dpp_cnp,"cnp_other":cnp_other,"dpp_other":dpp_other,"other_cnp":other_cnp,"other_dpp":other_dpp}
+
+
