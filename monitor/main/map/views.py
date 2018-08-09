@@ -161,5 +161,3 @@ def partisan_compared_info():
             return jsonify({"message": "mysql查询出现错误"}), 406
         else:
             return jsonify({"message": result}), 200
-
-

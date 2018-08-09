@@ -148,32 +148,37 @@ def partisan_compared(year):
     dpp = []
     cnp = []
     other = []
+    unchang_dpp = []
+    unchang_cnp = []
+    unchang_other = []
     for key in present.keys():
         if (present[key] == popularity[key]):
-            pass
+            if (present[key] =="国民党"):
+                unchang_cnp.append(key)
+            elif (present[key] =="民进党"):
+                unchang_dpp.append(key)
+            else:
+                unchang_other.append(key)
         else:
-    #         if present[key] == "国民党" and popularity[key] == "民进党":
-    #             cnp_dpp.append(key)
-    #         elif present[key] == "民进党" and popularity[key] == "国民党":
-    #             dpp_cnp.append(key)
-    #         elif present[key] == "国民党" and popularity[key] != "民进党":
-    #             cnp_other.append(key)
-    #         elif present[key] == "民进党" and popularity[key] != "国民党":
-    #             dpp_other.append(key)
-    #         elif present[key]!="国民党" and present[key]!="民进党" and popularity[key] == "国民党":
-    #             other_cnp.append(key)
-    #         elif present[key]!="国民党" and present[key]!="民进党" and popularity[key] == "民进党":
-    #             other_dpp.append(key)
-    # return {"cnp_dpp":cnp_dpp,"dpp_cnp":dpp_cnp,"cnp_other":cnp_other,"dpp_other":dpp_other,"other_cnp":other_cnp,"other_dpp":other_dpp}
-            if (popularity[key])  == "民进党":
+            #         if present[key] == "国民党" and popularity[key] == "民进党":
+            #             cnp_dpp.append(key)
+            #         elif present[key] == "民进党" and popularity[key] == "国民党":
+            #             dpp_cnp.append(key)
+            #         elif present[key] == "国民党" and popularity[key] != "民进党":
+            #             cnp_other.append(key)
+            #         elif present[key] == "民进党" and popularity[key] != "国民党":
+            #             dpp_other.append(key)
+            #         elif present[key]!="国民党" and present[key]!="民进党" and popularity[key] == "国民党":
+            #             other_cnp.append(key)
+            #         elif present[key]!="国民党" and present[key]!="民进党" and popularity[key] == "民进党":
+            #             other_dpp.append(key)
+            # return {"cnp_dpp":cnp_dpp,"dpp_cnp":dpp_cnp,"cnp_other":cnp_other,"dpp_other":dpp_other,"other_cnp":other_cnp,"other_dpp":other_dpp}
+            if (popularity[key]) == "民进党":
                 dpp.append(key)
-            elif (popularity[key]) =="国民党":
+            elif (popularity[key]) == "国民党":
                 cnp.append(key)
             else:
                 other.append(key)
-    return  {"cnp":cnp,"dpp":dpp,"other":other}
+    return {"change": {"cnp": cnp, "dpp": dpp, "other": other}, "unchange": {"cnp":unchang_cnp,"dpp":unchang_dpp,"other":unchang_other}}
 
 
-if __name__ == '__main__':
-    result = partisan_compared(2018)
-    print(result)
