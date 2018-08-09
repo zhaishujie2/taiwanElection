@@ -1,6 +1,7 @@
 # coding=utf-8
 from flask import request, session, jsonify
-from .draw_mysql import get_map_color, get_egional_electors,get_session,get_popularity_partisan
+from .draw_mysql import get_map_color, get_egional_electors, get_session, get_popularity_partisan, \
+    get_popularity_partisan_compared, partisan_compared
 from .news_show import taiwan_latest_news, taiwan_event_news
 from .election import get_popularity
 from monitor import app
@@ -25,6 +26,7 @@ def get_map():
         return jsonify({"message": result}), 200
 
 
+# 获得session
 @mod.route('/record_session/', methods=['POST'])
 def record_session():
     data = request.form.get('data', '')
@@ -42,9 +44,9 @@ def record_session():
                     session["electors"] = user_dict
                     session["year"] = year
                     session["area_id"] = id
-                    img,partisan = get_session(int(id),int(year))
-                    dict["electors"] =img
-                    dict["partisan"] =partisan
+                    img, partisan = get_session(int(id), int(year))
+                    dict["electors"] = img
+                    dict["partisan"] = partisan
                     dict["year"] = year
                     dict["area_id"] = id
                     return jsonify({"message": dict}), 200
@@ -56,6 +58,7 @@ def record_session():
             return jsonify({"message": "传入area_id,year有误"}), 406
 
 
+# 获取新闻
 @mod.route('/get_latest_news/')
 def get_latest_news():
     count = request.args.get('count', '')
@@ -70,6 +73,7 @@ def get_latest_news():
             return jsonify({"message": result}), 200
 
 
+# 获取事件
 @mod.route('/get_event_news/')
 def get_event_news():
     count = request.args.get('count', '')
@@ -84,6 +88,7 @@ def get_event_news():
             return jsonify({"message": result}), 200
 
 
+# 获得支持率
 @mod.route('/get_popularity/', methods=['POST'])
 def get_popularity_info():
     data = request.form.get('data', '')
@@ -95,7 +100,7 @@ def get_popularity_info():
         id = data["id"]
         year = data["year"]
         user_dict = get_egional_electors(int(id), int(year))
-        if user_dict != 0:
+        if (user_dict != 0):
             if len(user_dict) > 0:
                 end_time = datetime.datetime.now().strftime("%Y-%m-%d")
                 start_time = get_before_time(end_time, 45)
@@ -113,10 +118,48 @@ def get_popularity_info():
         return jsonify({"message": "传入area_id,year有误"}), 406
 
 
+# 支持率颜色画图
 @mod.route('/get_popularity_partisan/')
 def get_popularity_partisan_info():
-    result = get_popularity_partisan()
-    if result == 0:
-        return jsonify({"message": "mysql查询出现错误"}), 406
+    year = request.args.get('year', '')
+    if year == '':
+        app.logger.error("year传入错误")
+        return jsonify({"message": "year传入错误"}), 406
     else:
-        return jsonify({"message": result}), 200
+        result = get_popularity_partisan(year)
+        if result == 0:
+            return jsonify({"message": "mysql查询出现错误"}), 406
+        else:
+            return jsonify({"message": result}), 200
+
+
+# 对比合计
+@mod.route('/get_popularity_partisan_compared/')
+def get_popularity_partisan_compared_info():
+    year = request.args.get('year', '')
+    if year == '':
+        app.logger.error("year传入错误")
+        return jsonify({"message": "year传入错误"}), 406
+    else:
+        result = get_popularity_partisan_compared(year)
+        if result == 0:
+            return jsonify({"message": "mysql查询出现错误"}), 406
+        else:
+            return jsonify({"message": result}), 200
+
+
+# 对比变色
+@mod.route('/get_partisan_compared/')
+def partisan_compared_info():
+    year = request.args.get('year', '')
+    if year == '':
+        app.logger.error("year传入错误")
+        return jsonify({"message": "year传入错误"}), 406
+    else:
+        result = partisan_compared(year)
+        if result == 0:
+            return jsonify({"message": "mysql查询出现错误"}), 406
+        else:
+            return jsonify({"message": result}), 200
+
+
