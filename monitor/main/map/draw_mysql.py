@@ -148,10 +148,17 @@ def partisan_compared(year):
     dpp = []
     cnp = []
     other = []
-    dict = {}
+    unchang_dpp = []
+    unchang_cnp = []
+    unchang_other = []
     for key in present.keys():
         if (present[key] == popularity[key]):
-            dict[key] = present[key]
+            if (present[key] =="国民党"):
+                unchang_cnp.append(key)
+            elif (present[key] =="民进党"):
+                unchang_dpp.append(key)
+            else:
+                unchang_other.append(key)
         else:
             #         if present[key] == "国民党" and popularity[key] == "民进党":
             #             cnp_dpp.append(key)
@@ -172,9 +179,6 @@ def partisan_compared(year):
                 cnp.append(key)
             else:
                 other.append(key)
-    return {"change": {"cnp": cnp, "dpp": dpp, "other": other}, "unchange": dict}
+    return {"change": {"cnp": cnp, "dpp": dpp, "other": other}, "unchange": {"cnp":unchang_cnp,"dpp":unchang_dpp,"other":unchang_other}}
 
 
-if __name__ == '__main__':
-    result = partisan_compared(2018)
-    print(result)
