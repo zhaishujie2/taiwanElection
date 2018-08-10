@@ -1,7 +1,7 @@
 # coding=utf-8
 from flask import request, session, jsonify
 from .draw_mysql import get_map_color, get_egional_electors, get_session, get_popularity_partisan, \
-    get_popularity_partisan_compared, partisan_compared
+    get_popularity_partisan_compared, partisan_compared,get_city
 from .news_show import taiwan_latest_news, taiwan_event_news
 from .election import get_popularity
 from monitor import app
@@ -157,6 +157,16 @@ def partisan_compared_info():
         return jsonify({"message": "year传入错误"}), 406
     else:
         result = partisan_compared(year)
+        if result == 0:
+            return jsonify({"message": "mysql查询出现错误"}), 406
+        else:
+            return jsonify({"message": result}), 200
+
+
+# 对比变色
+@mod.route('/get_city/')
+def get_city_info():
+        result = get_city()
         if result == 0:
             return jsonify({"message": "mysql查询出现错误"}), 406
         else:
