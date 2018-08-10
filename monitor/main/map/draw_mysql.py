@@ -143,6 +143,7 @@ def get_popularity_partisan_compared(year):
 
 
 def partisan_compared(year):
+    city_dict = get_city()
     present = get_map_color(year)
     popularity = get_popularity_partisan(year)
     dpp = []
@@ -153,12 +154,12 @@ def partisan_compared(year):
     unchang_other = []
     for key in present.keys():
         if (present[key] == popularity[key]):
-            if (present[key] =="国民党"):
-                unchang_cnp.append(key)
-            elif (present[key] =="民进党"):
-                unchang_dpp.append(key)
+            if (present[key] == "国民党"):
+                unchang_cnp.append({"id": key, "name": city_dict[key]})
+            elif (present[key] == "民进党"):
+                unchang_dpp.append({"id": key, "name": city_dict[key]})
             else:
-                unchang_other.append(key)
+                unchang_other.append({"id": key, "name": city_dict[key]})
         else:
             #         if present[key] == "国民党" and popularity[key] == "民进党":
             #             cnp_dpp.append(key)
@@ -174,11 +175,31 @@ def partisan_compared(year):
             #             other_dpp.append(key)
             # return {"cnp_dpp":cnp_dpp,"dpp_cnp":dpp_cnp,"cnp_other":cnp_other,"dpp_other":dpp_other,"other_cnp":other_cnp,"other_dpp":other_dpp}
             if (popularity[key]) == "民进党":
-                dpp.append(key)
+                dpp.append({"id": key, "name": city_dict[key]})
             elif (popularity[key]) == "国民党":
-                cnp.append(key)
+                cnp.append({"id": key, "name": city_dict[key]})
             else:
-                other.append(key)
-    return {"change": {"cnp": cnp, "dpp": dpp, "other": other}, "unchange": {"cnp":unchang_cnp,"dpp":unchang_dpp,"other":unchang_other}}
+                other.append({"id": key, "name": city_dict[key]})
+    return {"change": {"cnp": cnp, "dpp": dpp, "other": other},
+            "unchange": {"cnp": unchang_cnp, "dpp": unchang_dpp, "other": unchang_other}}
 
 
+def get_city():
+    dict = {}
+    conn = getconn()
+    cur = conn.cursor()
+    try:
+        sql = "SELECT administrative_id,administrative_name from administrative_area where `status`=1"
+        count = cur.execute(sql)
+        if count < 1:
+            app.logger.error("查询出错")
+            return 0
+        result = cur.fetchmany(count)
+        for item in result:
+            dict[item[0]] = item[1]
+        return dict
+    except (Exception) as e:
+        app.logger.error(e)
+        return 0
+    finally:
+        closeAll(conn, cur)
